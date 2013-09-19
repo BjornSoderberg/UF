@@ -1,0 +1,7 @@
+package misc;
+
+public class Data {
+
+	public static final String NUMBER_OF_GAMES = "numberOfGames";
+	
+}

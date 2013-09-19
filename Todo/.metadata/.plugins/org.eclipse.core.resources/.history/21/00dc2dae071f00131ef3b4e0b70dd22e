@@ -1,0 +1,13 @@
+package misc;
+
+public class JSONEncoder {
+
+	public JSONEncoder() {
+		
+	}
+	
+	public String encode(String[] data) {
+		return null;
+	}
+	
+}

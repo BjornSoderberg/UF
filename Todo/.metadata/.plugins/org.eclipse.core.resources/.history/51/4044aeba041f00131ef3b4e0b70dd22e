@@ -1,0 +1,22 @@
+package misc;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+
+public class SharedPreferencesEditor {
+
+	private SharedPreferences prefs;
+	private Editor editor;
+	
+	public SharedPreferencesEditor(SharedPreferences prefs) {
+		this.prefs = prefs;
+		editor = prefs.edit();
+	}
+	
+	public void updateFolderData(String key, String value) {
+		editor.putString(key, value);
+		
+		editor.commit();
+	}
+	
+}

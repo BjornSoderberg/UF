@@ -1,0 +1,9 @@
+package misc;
+
+public class SharedPreferencesEditor {
+
+	public SharedPreferencesEditor() {
+		
+	}
+	
+}

@@ -1,0 +1,143 @@
+package com.todoapp.code;
+
+import misc.Data;
+import misc.SharedPreferencesEditor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
+public class MainActivity extends Activity implements OnClickListener {
+
+	private LinearLayout folderList;
+	private Button addFolder;
+
+	private SharedPreferences prefs;
+	private SharedPreferencesEditor editor;
+
+	private JSONObject taskData;
+
+	private int numberOfFolders = 0;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		initXMLElements();
+
+		prefs = getSharedPreferences(Data.PREFERNCES_NAME, Context.MODE_PRIVATE);
+		editor = new SharedPreferencesEditor(prefs);
+
+		String data = prefs.getString(Data.TASK_DATA, null);
+
+		if (data == null) {
+			// If no data is recieved, the number of folders is set to 0
+			try {
+				taskData = new JSONObject();
+				taskData.put(Data.NUMBER_OF_FOLDERS, 0);
+				editor.put(Data.TASK_DATA, taskData.toString());
+			} catch (JSONException e) {
+			}
+		} else {
+			try {
+				taskData = new JSONObject(data);
+				setFolderButtons();
+			} catch (JSONException e) {
+			}
+		}
+
+		Log.i("Retrieved data", taskData.toString());
+
+	}
+
+	private void initXMLElements() {
+		folderList = (LinearLayout) findViewById(R.id.folderList);
+
+		addFolder = (Button) findViewById(R.id.addFolder);
+		addFolder.setOnClickListener(this);
+	}
+
+	private void setFolderButtons() {
+		try {
+			numberOfFolders = Integer.parseInt(taskData.getString(Data.NUMBER_OF_FOLDERS));
+
+			if (numberOfFolders != 0) folderList.removeAllViews();
+
+			for (int i = 0; i < numberOfFolders; i++) {
+				Log.i("fsafsa", "Getting " + Data.FOLDER + i +" from " +taskData.toString());
+				
+				Button b = new Button(this);
+
+				JSONObject o = taskData.getJSONObject(Data.FOLDER + i);
+				
+				String s = taskData.getString(Data.FOLDER + i);
+				
+
+				b.setText(o.getString(Data.FOLDER_NAME));
+
+				// Set on click listener to b
+
+				folderList.addView(b);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void onClick(View v) {
+		if (v.getId() == R.id.addFolder) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle("Add a new folder");
+			alert.setMessage("Name the folder!");
+
+			// Set edit text view to get user input
+			final EditText input = new EditText(this);
+			alert.setView(input);
+			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					String name = input.getText().toString();
+					addNewFolder(name);
+				}
+			});
+
+			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					// Does nothing
+				}
+			});
+
+			alert.show();
+		}
+	}
+
+	private void addNewFolder(String name) {
+		try {
+			if (taskData != null) Log.i("before", taskData.toString());
+
+			JSONObject folderData = new JSONObject();
+			folderData.put(Data.NAME, name);
+
+			taskData.put(Data.NUMBER_OF_FOLDERS, numberOfFolders + 1);
+			taskData.put(Data.FOLDER + numberOfFolders, folderData.toString());
+			editor.put(Data.TASK_DATA, taskData.toString());
+
+			setFolderButtons();
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+}
