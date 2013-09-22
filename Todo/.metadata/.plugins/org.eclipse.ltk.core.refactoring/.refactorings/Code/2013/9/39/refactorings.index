@@ -1,2 +1,5 @@
 1379863065338	Rename field 'PREFERNCES_NAME'
 1379867471185	Rename field 'description'
+1379877420431	Rename local variable 'taskData'
+1379877560029	Rename method 'addNewFolder'
+1379877565430	Rename method 'addNewTask'

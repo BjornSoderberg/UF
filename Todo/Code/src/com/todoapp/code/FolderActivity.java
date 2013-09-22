@@ -100,19 +100,32 @@ public class FolderActivity extends Activity implements OnClickListener {
 	}
 
 	private void updateTaskButtons() {
+		taskList.removeAllViews();
+		
 		try {
 			numberOfTasks = Integer.parseInt(data.getString(Data.NUMBER_OF_TASKS));
 
-			if (numberOfTasks != 0) taskList.removeAllViews();
-
 			for (int i = 0; i < numberOfTasks; i++) {
-				Button b = new Button(this);
-
 				final JSONObject taskData = new JSONObject(data.getString(Data.TASK + i));
 
-				b.setText(taskData.getString(Data.TASK_NAME));
+				LinearLayout l = new LinearLayout(this);
+				TextView t = new TextView(this);
+				Button b = new Button(this);
 
-				b.setOnClickListener(new OnClickListener() {
+				l.setWeightSum(1);
+
+				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				p.weight = 0.8f;
+
+				LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				pp.weight = 0.2f;
+
+				l.addView(t, p);
+				l.addView(b, pp);
+
+				t.setText(taskData.getString(Data.TASK_NAME));
+
+				t.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
 						try {
 							Intent i = new Intent(FolderActivity.this, TaskActivity.class);
@@ -125,11 +138,40 @@ public class FolderActivity extends Activity implements OnClickListener {
 					}
 				});
 
-				taskList.addView(b);
+				b.setText("Done");
+
+				b.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) {
+						try {
+							setTaskCompleted(taskData.getInt(Data.TASK_ID));
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				
+				if (taskData.has(Data.TASK_COMPLETED)) {
+					if (taskData.getBoolean(Data.TASK_COMPLETED)) {
+						b.setText("Completed!");
+						b.setEnabled(false);
+						b.setOnClickListener(null);
+					}
+				}
+
+				taskList.addView(l);
 			}
 
 		} catch (JSONException e) {
 			e.printStackTrace();
+		}
+		
+		if (taskList.getChildCount() == 0) {
+			TextView tv = new TextView(this);
+			tv.setText("You do not have any folders! Tap the button above to add a new folder.");
+			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			tv.setLayoutParams(p);
+
+			taskList.addView(tv);
 		}
 	}
 
@@ -145,7 +187,7 @@ public class FolderActivity extends Activity implements OnClickListener {
 			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					String name = input.getText().toString();
-					addNewTask(name);
+					addTask(name);
 				}
 			});
 
@@ -178,7 +220,7 @@ public class FolderActivity extends Activity implements OnClickListener {
 	private void updateFolderName() {
 		try {
 			String s = folderNameET.getText().toString();
-			if(s == null) return;
+			if (s == null) return;
 			data.put(Data.FOLDER_NAME, s);
 
 			String ss = prefs.getString(Data.TASK_DATA, null);
@@ -194,7 +236,7 @@ public class FolderActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	private void addNewTask(String name) {
+	private void addTask(String name) {
 		try {
 			JSONObject taskData = new JSONObject();
 			taskData.put(Data.TASK_NAME, name);
@@ -209,6 +251,27 @@ public class FolderActivity extends Activity implements OnClickListener {
 			JSONObject o = new JSONObject(s);
 
 			o.put(Data.FOLDER + data.getString(Data.FOLDER_ID), data.toString());
+			editor.put(Data.TASK_DATA, o.toString());
+
+			updateData();
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setTaskCompleted(int id) {
+		try {
+			JSONObject taskData = new JSONObject(data.getString(Data.TASK + id));
+			taskData.put(Data.TASK_COMPLETED, true);
+
+			data.put(Data.TASK + id, taskData.toString());
+
+			String s = prefs.getString(Data.TASK_DATA, null);
+
+			JSONObject o = new JSONObject(s);
+			o.put(Data.FOLDER + data.getString(Data.FOLDER_ID), data.toString());
+
 			editor.put(Data.TASK_DATA, o.toString());
 
 			updateData();

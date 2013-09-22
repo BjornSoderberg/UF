@@ -18,6 +18,7 @@ public class Data {
 	public static final String TASK_NAME = "taskName";
 	public static final String TASK_DATA = "taskData";
 	public static final String TASK_ID = "taskId";
+	public static final String TASK_COMPLETED = "taskCompleted";
 	
 	public static final String DESCRIPTION = "description";
 	
