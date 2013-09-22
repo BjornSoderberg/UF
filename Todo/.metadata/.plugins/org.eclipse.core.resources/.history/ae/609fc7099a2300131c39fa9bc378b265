@@ -1,0 +1,34 @@
+package com.todoapp.code;
+
+import misc.Data;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+
+public class TaskActivity extends Activity {
+	
+	private JSONObject data;
+	
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		Intent intent = getIntent();
+		String taskData = intent.getExtras().getString(Data.TASK_DATA, null);
+		
+		if(taskData == null) {
+			onBackPressed();
+			finish();
+		} else try {
+			data = new JSONObject(taskData);
+		} catch(JSONException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+}

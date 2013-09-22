@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		initXMLElements();
 
-		prefs = getSharedPreferences(Data.PREFERNCES_NAME, Context.MODE_PRIVATE);
+		prefs = getSharedPreferences(Data.PREFERENCES_NAME, Context.MODE_PRIVATE);
 		editor = new SharedPreferencesEditor(prefs);
 
 		getData();
@@ -149,7 +149,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 	}
 	
-	@Override
 	protected void onRestart() {
 		super.onRestart();
 		getData();

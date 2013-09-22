@@ -2,7 +2,7 @@ package misc;
 
 public class Data {
 	
-	public static final String PREFERNCES_NAME = "com.todoapp.code";
+	public static final String PREFERENCES_NAME = "com.todoapp.code";
 
 	public static final String NUMBER_OF_FOLDERS = "numberOfFolders";
 	public static final String NUMBER_OF_TASKS = "numberOfTasks";
@@ -17,5 +17,8 @@ public class Data {
 	public static final String TASK = "task";
 	public static final String TASK_NAME = "taskName";
 	public static final String TASK_DATA = "taskData";
+	public static final String TASK_ID = "taskId";
+	
+	public static final String DESCRIPTION = "description";
 	
 }

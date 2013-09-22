@@ -11,9 +11,6 @@ public class SharedPreferencesEditor {
 	public SharedPreferencesEditor(SharedPreferences prefs) {
 		this.prefs = prefs;
 		editor = prefs.edit();
-		
-//		editor.remove(Data.TASK_DATA);
-//		editor.commit();
 	}
 	
 	public void put(String key, String value) {
