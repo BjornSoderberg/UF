@@ -15,8 +15,12 @@ import android.content.SharedPreferences;
 import android.opengl.Visibility;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -41,18 +45,20 @@ public class FolderActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		Intent intent = getIntent();
-		String folderData = intent.getExtras().getString(Data.FOLDER_DATA, null);
+		String folderData = intent.getStringExtra(Data.FOLDER_DATA);
 
 		if (folderData == null) {
 			onBackPressed();
 			finish();
-		} else try {
-			data = new JSONObject(folderData);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		} else
+			try {
+				data = new JSONObject(folderData);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 
-		prefs = getSharedPreferences(Data.PREFERENCES_NAME, Context.MODE_PRIVATE);
+		prefs = getSharedPreferences(Data.PREFERENCES_NAME,
+				Context.MODE_PRIVATE);
 		editor = new SharedPreferencesEditor(prefs);
 
 		setContentView(R.layout.activity_folder);
@@ -68,7 +74,8 @@ public class FolderActivity extends Activity implements OnClickListener {
 
 		try {
 			JSONObject o = new JSONObject(folderData);
-			data = new JSONObject(o.getString(Data.FOLDER + data.getString(Data.FOLDER_ID)));
+			data = new JSONObject(o.getString(Data.FOLDER
+					+ data.getString(Data.FOLDER_ID)));
 			updateData();
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -78,6 +85,40 @@ public class FolderActivity extends Activity implements OnClickListener {
 	private void initXMLElements() {
 		folderNameET = (EditText) findViewById(R.id.folderName);
 		folderNameET.setOnClickListener(this);
+		folderNameET.setOnFocusChangeListener(new OnFocusChangeListener() {
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (hasFocus) {
+					folderNameET.setGravity(Gravity.LEFT);
+					saveFolderName.setVisibility(View.VISIBLE);
+				} else {
+					folderNameET.setGravity(Gravity.CENTER);
+					saveFolderName.setVisibility(View.INVISIBLE);
+					folderNameET.setText(folderName);
+				}
+			}
+		});
+
+		// When the enter button is pressed, the keyboard
+		// is hidden, the save button becomes invisible
+		// and the text of the edit text is set to what it
+		// was before it was changed
+		folderNameET.setOnKeyListener(new OnKeyListener() {
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN) {
+					switch (keyCode) {
+					case KeyEvent.KEYCODE_DPAD_CENTER:
+					case KeyEvent.KEYCODE_ENTER:
+						folderNameET.setGravity(Gravity.CENTER);
+						saveFolderName.setVisibility(View.INVISIBLE);
+						folderNameET.setText(folderName);
+						hideKeyboard(v);
+						return true;
+					}
+				}
+				return true;
+			}
+
+		});
 
 		taskList = (LinearLayout) findViewById(R.id.taskList);
 
@@ -86,6 +127,11 @@ public class FolderActivity extends Activity implements OnClickListener {
 
 		saveFolderName = (Button) findViewById(R.id.saveFolderName);
 		saveFolderName.setOnClickListener(this);
+	}
+
+	private void hideKeyboard(View v) {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
 
 	private void updateData() {
@@ -101,12 +147,14 @@ public class FolderActivity extends Activity implements OnClickListener {
 
 	private void updateTaskButtons() {
 		taskList.removeAllViews();
-		
+
 		try {
-			numberOfTasks = Integer.parseInt(data.getString(Data.NUMBER_OF_TASKS));
+			numberOfTasks = Integer.parseInt(data
+					.getString(Data.NUMBER_OF_TASKS));
 
 			for (int i = 0; i < numberOfTasks; i++) {
-				final JSONObject taskData = new JSONObject(data.getString(Data.TASK + i));
+				final JSONObject taskData = new JSONObject(
+						data.getString(Data.TASK + i));
 
 				LinearLayout l = new LinearLayout(this);
 				TextView t = new TextView(this);
@@ -114,10 +162,14 @@ public class FolderActivity extends Activity implements OnClickListener {
 
 				l.setWeightSum(1);
 
-				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
+						LinearLayout.LayoutParams.WRAP_CONTENT,
+						LinearLayout.LayoutParams.WRAP_CONTENT);
 				p.weight = 0.8f;
 
-				LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+				LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(
+						LinearLayout.LayoutParams.WRAP_CONTENT,
+						LinearLayout.LayoutParams.WRAP_CONTENT);
 				pp.weight = 0.2f;
 
 				l.addView(t, p);
@@ -128,9 +180,11 @@ public class FolderActivity extends Activity implements OnClickListener {
 				t.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
 						try {
-							Intent i = new Intent(FolderActivity.this, TaskActivity.class);
+							Intent i = new Intent(FolderActivity.this,
+									TaskActivity.class);
 							i.putExtra(Data.TASK_DATA, taskData.toString());
-							i.putExtra(Data.FOLDER_ID, Integer.parseInt(data.getString(Data.FOLDER_ID)));
+							i.putExtra(Data.FOLDER_ID, Integer.parseInt(data
+									.getString(Data.FOLDER_ID)));
 							startActivity(i);
 						} catch (JSONException e) {
 							e.printStackTrace();
@@ -149,11 +203,10 @@ public class FolderActivity extends Activity implements OnClickListener {
 						}
 					}
 				});
-				
+
 				if (taskData.has(Data.TASK_COMPLETED)) {
 					if (taskData.getBoolean(Data.TASK_COMPLETED)) {
 						b.setText("Completed!");
-						b.setEnabled(false);
 						b.setOnClickListener(null);
 					}
 				}
@@ -164,11 +217,13 @@ public class FolderActivity extends Activity implements OnClickListener {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (taskList.getChildCount() == 0) {
 			TextView tv = new TextView(this);
 			tv.setText("You do not have any folders! Tap the button above to add a new folder.");
-			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.WRAP_CONTENT,
+					LinearLayout.LayoutParams.WRAP_CONTENT);
 			tv.setLayoutParams(p);
 
 			taskList.addView(tv);
@@ -184,18 +239,20 @@ public class FolderActivity extends Activity implements OnClickListener {
 			// Set edit text view to get user input
 			final EditText input = new EditText(this);
 			alert.setView(input);
-			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					String name = input.getText().toString();
-					addTask(name);
-				}
-			});
+			alert.setPositiveButton("Add",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							String name = input.getText().toString();
+							addTask(name);
+						}
+					});
 
-			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					// Does nothing
-				}
-			});
+			alert.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// Does nothing
+						}
+					});
 
 			alert.show();
 		}
@@ -203,24 +260,21 @@ public class FolderActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.folderName) {
 			folderNameET.setGravity(Gravity.LEFT);
 			saveFolderName.setVisibility(View.VISIBLE);
-			saveFolderName.setEnabled(true);
 		}
 
 		if (v.getId() == R.id.saveFolderName) {
-			if (saveFolderName.isEnabled()) {
-				folderNameET.setGravity(Gravity.CENTER);
-				saveFolderName.setVisibility(View.INVISIBLE);
-				saveFolderName.setEnabled(false);
+			folderNameET.setGravity(Gravity.CENTER);
+			saveFolderName.setVisibility(View.INVISIBLE);
 
-				updateFolderName();
-			}
+			updateFolderName();
 		}
 	}
 
 	private void updateFolderName() {
 		try {
 			String s = folderNameET.getText().toString();
-			if (s == null) return;
+			if (s == null)
+				return;
 			data.put(Data.FOLDER_NAME, s);
 
 			String ss = prefs.getString(Data.TASK_DATA, null);

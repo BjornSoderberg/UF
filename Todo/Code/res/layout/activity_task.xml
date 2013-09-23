@@ -30,7 +30,6 @@
             android:id="@+id/saveTaskName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:text="Save"
             android:visibility="invisible"
             android:layout_weight="0.2" />

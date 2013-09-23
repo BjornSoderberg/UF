@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;et&apos; in &apos;com.todoapp.code.TaskActivity.hideKeyboard(...)&apos; to &apos;v&apos;&#x0D;&#x0A;- Original project: &apos;Code&apos;&#x0D;&#x0A;- Original element: &apos;com.todoapp.code.TaskActivity.hideKeyboard(View).et&apos;&#x0D;&#x0A;- Renamed element: &apos;et&apos;&#x0D;&#x0A;- Update references to refactored element" description="Rename local variable &apos;et&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;com.todoapp.code{TaskActivity.java[TaskActivity~hideKeyboard~QView;@et!2635!2641!2640!2641!QView;!0!true" name="v" references="true" stamp="1379922116040" version="1.0"/>
+</session>
