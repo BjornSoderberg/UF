@@ -1,6 +1,7 @@
 package com.todoapp.code;
 
 import misc.Data;
+import misc.LinearLayout2;
 import misc.SharedPreferencesEditor;
 
 import org.json.JSONException;
@@ -12,14 +13,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnKeyListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,10 +26,11 @@ import android.widget.TextView;
 
 public class FolderActivity extends Activity implements OnClickListener {
 
-	private TextView folderNameET;
+	private TextView nameTV;
 	private Button addTask;
-	private Button saveFolderName;
+	private Button saveName;
 	private LinearLayout taskList;
+	private EditText editName;
 
 	private JSONObject data;
 	private String folderName = "";
@@ -45,20 +44,18 @@ public class FolderActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		Intent intent = getIntent();
-		String folderData = intent.getStringExtra(Data.FOLDER_DATA);
+		String folderData = intent.getExtras().getString(Data.FOLDER_DATA, null);
 
 		if (folderData == null) {
 			onBackPressed();
 			finish();
-		} else
-			try {
-				data = new JSONObject(folderData);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+		} else try {
+			data = new JSONObject(folderData);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-		prefs = getSharedPreferences(Data.PREFERENCES_NAME,
-				Context.MODE_PRIVATE);
+		prefs = getSharedPreferences(Data.PREFERENCES_NAME, Context.MODE_PRIVATE);
 		editor = new SharedPreferencesEditor(prefs);
 
 		setContentView(R.layout.activity_folder);
@@ -74,8 +71,7 @@ public class FolderActivity extends Activity implements OnClickListener {
 
 		try {
 			JSONObject o = new JSONObject(folderData);
-			data = new JSONObject(o.getString(Data.FOLDER
-					+ data.getString(Data.FOLDER_ID)));
+			data = new JSONObject(o.getString(Data.FOLDER + data.getString(Data.FOLDER_ID)));
 			updateData();
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -83,61 +79,33 @@ public class FolderActivity extends Activity implements OnClickListener {
 	}
 
 	private void initXMLElements() {
-		folderNameET = (EditText) findViewById(R.id.folderName);
-		folderNameET.setOnClickListener(this);
-		folderNameET.setOnFocusChangeListener(new OnFocusChangeListener() {
-			public void onFocusChange(View v, boolean hasFocus) {
-				if (hasFocus) {
-					folderNameET.setGravity(Gravity.LEFT);
-					saveFolderName.setVisibility(View.VISIBLE);
-				} else {
-					folderNameET.setGravity(Gravity.CENTER);
-					saveFolderName.setVisibility(View.INVISIBLE);
-					folderNameET.setText(folderName);
-				}
-			}
-		});
-
-		// When the enter button is pressed, the keyboard
-		// is hidden, the save button becomes invisible
-		// and the text of the edit text is set to what it
-		// was before it was changed
-		folderNameET.setOnKeyListener(new OnKeyListener() {
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-					switch (keyCode) {
-					case KeyEvent.KEYCODE_DPAD_CENTER:
-					case KeyEvent.KEYCODE_ENTER:
-						folderNameET.setGravity(Gravity.CENTER);
-						saveFolderName.setVisibility(View.INVISIBLE);
-						folderNameET.setText(folderName);
-						hideKeyboard(v);
-						return true;
-					}
-				}
-				return true;
-			}
-
-		});
+		LinearLayout2.setActivity(this);
+		
+		nameTV = (TextView) findViewById(R.id.folderNameTV);
+		nameTV.setOnClickListener(this);
 
 		taskList = (LinearLayout) findViewById(R.id.taskList);
 
 		addTask = (Button) findViewById(R.id.addTask);
 		addTask.setOnClickListener(this);
 
-		saveFolderName = (Button) findViewById(R.id.saveFolderName);
-		saveFolderName.setOnClickListener(this);
-	}
+		saveName = (Button) findViewById(R.id.saveName);
+		saveName.setOnClickListener(this);
 
-	private void hideKeyboard(View v) {
-		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+		editName = (EditText) findViewById(R.id.editName);
+		editName.setOnClickListener(this);
+		editName.setOnFocusChangeListener(new OnFocusChangeListener() {
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(hasFocus) showKeyboard();
+			}
+		});
+		
 	}
 
 	private void updateData() {
 		try {
 			folderName = data.getString(Data.FOLDER_NAME);
-			folderNameET.setText(folderName);
+			nameTV.setText(folderName);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -149,42 +117,35 @@ public class FolderActivity extends Activity implements OnClickListener {
 		taskList.removeAllViews();
 
 		try {
-			numberOfTasks = Integer.parseInt(data
-					.getString(Data.NUMBER_OF_TASKS));
+			numberOfTasks = Integer.parseInt(data.getString(Data.NUMBER_OF_TASKS));
 
 			for (int i = 0; i < numberOfTasks; i++) {
-				final JSONObject taskData = new JSONObject(
-						data.getString(Data.TASK + i));
+				final JSONObject taskData = new JSONObject(data.getString(Data.TASK + i));
 
 				LinearLayout l = new LinearLayout(this);
-				TextView t = new TextView(this);
-				Button b = new Button(this);
+				Button name = new Button(this);
+				Button complete = new Button(this);
 
 				l.setWeightSum(1);
 
-				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.WRAP_CONTENT,
-						LinearLayout.LayoutParams.WRAP_CONTENT);
+				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 				p.weight = 0.8f;
 
-				LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.WRAP_CONTENT,
-						LinearLayout.LayoutParams.WRAP_CONTENT);
+				LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 				pp.weight = 0.2f;
 
-				l.addView(t, p);
-				l.addView(b, pp);
+				l.addView(name, p);
+				l.addView(complete, pp);
 
-				t.setText(taskData.getString(Data.TASK_NAME));
+				name.setText(taskData.getString(Data.TASK_NAME));
 
-				t.setOnClickListener(new OnClickListener() {
+				name.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
 						try {
-							Intent i = new Intent(FolderActivity.this,
-									TaskActivity.class);
+							Intent i = new Intent(FolderActivity.this, TaskActivity.class);
 							i.putExtra(Data.TASK_DATA, taskData.toString());
-							i.putExtra(Data.FOLDER_ID, Integer.parseInt(data
-									.getString(Data.FOLDER_ID)));
+							i.putExtra(Data.TASK_ID, taskData.getInt(Data.TASK_ID));
+							i.putExtra(Data.FOLDER_ID, Integer.parseInt(data.getString(Data.FOLDER_ID)));
 							startActivity(i);
 						} catch (JSONException e) {
 							e.printStackTrace();
@@ -192,9 +153,9 @@ public class FolderActivity extends Activity implements OnClickListener {
 					}
 				});
 
-				b.setText("Done");
+				complete.setText("Done");
 
-				b.setOnClickListener(new OnClickListener() {
+				complete.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
 						try {
 							setTaskCompleted(taskData.getInt(Data.TASK_ID));
@@ -206,8 +167,9 @@ public class FolderActivity extends Activity implements OnClickListener {
 
 				if (taskData.has(Data.TASK_COMPLETED)) {
 					if (taskData.getBoolean(Data.TASK_COMPLETED)) {
-						b.setText("Completed!");
-						b.setOnClickListener(null);
+						complete.setText("Completed!");
+						complete.setEnabled(false);
+						complete.setOnClickListener(null);
 					}
 				}
 
@@ -218,12 +180,12 @@ public class FolderActivity extends Activity implements OnClickListener {
 			e.printStackTrace();
 		}
 
+		// if no element has been added (a.k.a. there are no folders) a text
+		// view is being shown
 		if (taskList.getChildCount() == 0) {
 			TextView tv = new TextView(this);
 			tv.setText("You do not have any folders! Tap the button above to add a new folder.");
-			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.WRAP_CONTENT,
-					LinearLayout.LayoutParams.WRAP_CONTENT);
+			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 			tv.setLayoutParams(p);
 
 			taskList.addView(tv);
@@ -231,6 +193,7 @@ public class FolderActivity extends Activity implements OnClickListener {
 	}
 
 	public void onClick(View v) {
+		
 		if (v.getId() == R.id.addTask) {
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle("Add a new task");
@@ -239,43 +202,38 @@ public class FolderActivity extends Activity implements OnClickListener {
 			// Set edit text view to get user input
 			final EditText input = new EditText(this);
 			alert.setView(input);
-			alert.setPositiveButton("Add",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							String name = input.getText().toString();
-							addTask(name);
-						}
-					});
+			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					String name = input.getText().toString();
+					addTask(name);
+				}
+			});
 
-			alert.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							// Does nothing
-						}
-					});
+			alert.setNegativeButton("Cancel", null);
 
 			alert.show();
 		}
 
-		if (v.getId() == R.id.folderName) {
-			folderNameET.setGravity(Gravity.LEFT);
-			saveFolderName.setVisibility(View.VISIBLE);
+		if (v.getId() == R.id.folderNameTV) {
+			toggleHeader(Data.ENABLE_EDITING);
 		}
 
-		if (v.getId() == R.id.saveFolderName) {
-			folderNameET.setGravity(Gravity.CENTER);
-			saveFolderName.setVisibility(View.INVISIBLE);
+		if (v.getId() == R.id.saveName) {
+			String name = editName.getText().toString();
+			updateFolderName(name);
+			
+			toggleHeader(!Data.ENABLE_EDITING);
+			
+			hideKeyboard();
 
-			updateFolderName();
 		}
+
 	}
 
-	private void updateFolderName() {
+	private void updateFolderName(String name) {
 		try {
-			String s = folderNameET.getText().toString();
-			if (s == null)
-				return;
-			data.put(Data.FOLDER_NAME, s);
+			if (name == null) return;
+			data.put(Data.FOLDER_NAME, name);
 
 			String ss = prefs.getString(Data.TASK_DATA, null);
 
@@ -334,9 +292,56 @@ public class FolderActivity extends Activity implements OnClickListener {
 			e.printStackTrace();
 		}
 	}
+	
+	public void toggleHeader(boolean b) {
+		if(b) {
+			nameTV.setVisibility(View.GONE);
+			saveName.setVisibility(View.VISIBLE);
+
+			editName.setText(folderName);
+			editName.setVisibility(View.VISIBLE);
+			editName.requestFocus();
+		} else {
+			nameTV.setText(folderName);
+			nameTV.setVisibility(View.VISIBLE);
+
+			saveName.setVisibility(View.GONE);
+			editName.setVisibility(View.GONE);
+		}
+	}
+
+	public void onBackPressed() {
+		super.onBackPressed();
+		toggleHeader(!Data.ENABLE_EDITING);
+		
+		Log.i("FOLDER ACTIVITY", "BACK PRESSED");
+	}
+
+	private void showKeyboard() {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.toggleSoftInput(InputMethodManager.RESULT_SHOWN, 0);
+	}
+	
+	private void hideKeyboard() {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(editName.getWindowToken(), 0);
+	}
+
+	protected void onPause() {
+		super.onPause();
+		toggleHeader(!Data.ENABLE_EDITING);
+	}
 
 	protected void onRestart() {
 		super.onRestart();
+		LinearLayout2.setActivity(this);
 		getData();
+		
+	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		LinearLayout2.recycle();
 	}
 }

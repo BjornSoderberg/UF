@@ -22,4 +22,6 @@ public class Data {
 	
 	public static final String DESCRIPTION = "description";
 	
+	public static final boolean ENABLE_EDITING = true;
+	
 }

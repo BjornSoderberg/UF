@@ -97,8 +97,8 @@ public class MainActivity extends Activity implements OnClickListener {
 					final JSONObject folderData = new JSONObject(data.getString(Data.FOLDER + i));
 
 					LinearLayout l = new LinearLayout(this);
-					TextView t = new TextView(this);
-					Button b = new Button(this);
+					Button name = new Button(this);
+					Button remove = new Button(this);
 
 					l.setWeightSum(1);
 
@@ -108,12 +108,12 @@ public class MainActivity extends Activity implements OnClickListener {
 					LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 					pp.weight = 0.2f;
 
-					l.addView(t, p);
-					l.addView(b, pp);
+					l.addView(name, p);
+					l.addView(remove, pp);
 
-					t.setText(folderData.getString(Data.FOLDER_NAME));
+					name.setText(folderData.getString(Data.FOLDER_NAME));
 
-					t.setOnClickListener(new OnClickListener() {
+					name.setOnClickListener(new OnClickListener() {
 						public void onClick(View v) {
 							Intent i = new Intent(MainActivity.this, FolderActivity.class);
 							i.putExtra(Data.FOLDER_DATA, folderData.toString());
@@ -121,9 +121,9 @@ public class MainActivity extends Activity implements OnClickListener {
 						}
 					});
 
-					b.setText("Remove");
+					remove.setText("Remove");
 
-					b.setOnClickListener(new OnClickListener() {
+					remove.setOnClickListener(new OnClickListener() {
 						public void onClick(View v) {
 							try {
 								removeFolder(folderData.getInt(Data.FOLDER_ID));
