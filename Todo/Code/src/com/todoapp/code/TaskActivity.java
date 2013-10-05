@@ -129,6 +129,7 @@ public class TaskActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.save) {
 			save();
 			hideKeyboard();
+			focusDummy.requestFocus();
 		}
 		
 		if (v.getId() == R.id.taskNameTV) {

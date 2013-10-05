@@ -24,18 +24,19 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f08000c;
-        public static final int addFolder=0x7f080006;
-        public static final int addTask=0x7f080003;
+        public static final int action_settings=0x7f08000d;
+        public static final int addFolder=0x7f080007;
+        public static final int addTask=0x7f080004;
         public static final int description=0x7f08000a;
-        public static final int folderList=0x7f080007;
-        public static final int folderName=0x7f080001;
-        public static final int save=0x7f08000b;
-        public static final int saveFolderName=0x7f080002;
-        public static final int saveTaskName=0x7f080009;
-        public static final int scrollView=0x7f080004;
-        public static final int taskList=0x7f080005;
-        public static final int taskName=0x7f080008;
+        public static final int editName=0x7f080002;
+        public static final int focusDummy=0x7f08000b;
+        public static final int folderList=0x7f080008;
+        public static final int folderNameTV=0x7f080001;
+        public static final int save=0x7f08000c;
+        public static final int saveName=0x7f080003;
+        public static final int scrollView=0x7f080005;
+        public static final int taskList=0x7f080006;
+        public static final int taskNameTV=0x7f080009;
         public static final int topLinear=0x7f080000;
     }
     public static final class layout {
