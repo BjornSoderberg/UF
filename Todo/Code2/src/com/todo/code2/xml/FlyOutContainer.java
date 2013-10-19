@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 
@@ -19,6 +20,8 @@ public class FlyOutContainer extends LinearLayout {
 	protected static final int menuMargin = 150;
 	private static final int menuAnimationDuration = 400;
 	private static final int menuAnimationPollingInterval = 16;
+	
+	private boolean ready = false;
 
 	public enum MenuState {
 		CLOSED, OPEN, CLOSING, OPENING, MOVING
@@ -42,6 +45,7 @@ public class FlyOutContainer extends LinearLayout {
 
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
+		ready = true;
 
 		menu = (LinearLayout) getChildAt(0);
 		content = (LinearLayout) getChildAt(1);
@@ -72,6 +76,7 @@ public class FlyOutContainer extends LinearLayout {
 	}
 
 	public void toggleMenu() {
+		if(!ready) return;
 		switch (this.menuCurrentState) {
 		case CLOSED:
 			menuCurrentState = MenuState.OPENING;
@@ -102,6 +107,7 @@ public class FlyOutContainer extends LinearLayout {
 	}
 
 	private void adjustContentPosition(boolean isAnimationOngoing) {
+		if(!ready) return;
 		int scrollerOffset = menuAnimationScroller.getCurrX();
 
 		content.offsetLeftAndRight(scrollerOffset - currentContentOffset);
@@ -109,7 +115,7 @@ public class FlyOutContainer extends LinearLayout {
 
 		currentContentOffset = scrollerOffset;
 
-		invalidate();
+		//invalidate();
 
 		if (isAnimationOngoing) menuAnimationHandler.postDelayed(menuAnimationRunnable, menuAnimationPollingInterval);
 		else onMenuTransitionComplete();
@@ -128,16 +134,9 @@ public class FlyOutContainer extends LinearLayout {
 			return;
 		}
 	}
-	
-	public LinearLayout getContent() {
-		return content;
-	}
-	
-	public void addContent(View v) {
-		content.addView(v);
-	}
 
 	public void move(int dx) {
+		if(!ready) return;
 		if (menuCurrentState == MenuState.OPENING || menuCurrentState == MenuState.CLOSING) return;
 
 		if (menuCurrentState != MenuState.MOVING) {
@@ -160,7 +159,7 @@ public class FlyOutContainer extends LinearLayout {
 
 		currentContentOffset = nx;
 
-		invalidate();
+		//invalidate();
 
 	}
 

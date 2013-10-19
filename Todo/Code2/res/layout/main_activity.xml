@@ -1,40 +1,53 @@
 <com.todo.code2.xml.FlyOutContainer xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="#ff0000" >
 
     <!-- MENU -->
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#bbbbbb"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:background="#3c3c3c" >
 
-        <Button
-            android:id="@+id/button1"
+        <EditText
+            android:id="@+id/editText1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="toggleMenu"
-            android:text="Button 1" />
+            android:background="#222222"
+            android:ems="10"
+            android:hint="Search..."
+            android:textAppearance="?android:attr/textAppearanceLarge" >
+        </EditText>
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="toggleMenu"
-            android:text="Button 2" />
+        <EditText
+            android:id="@+id/focusDummy"
+            android:layout_width="0px"
+            android:layout_height="0px"
+            android:inputType="none"
+            android:ems="10" >
 
-        <Button
-            android:id="@+id/button3"
+            <requestFocus />
+        </EditText>
+
+        <ScrollView
+            android:id="@+id/menuScroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="toggleMenu"
-            android:text="Button 3" />
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:id="@+id/menuList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
-
     <!-- CONTENT -->
-    <LinearLayout
+
+    <LinearLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="466dp"
@@ -51,21 +64,21 @@
                 android:id="@+id/dragButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#8ADDA9"
-                android:onClick="toggleMenu"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true" />
-            
+                android:layout_alignParentTop="true"
+                android:background="#8ADDA9"
+                android:onClick="toggleMenu" />
+
             <Button
                 android:id="@+id/add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#8ADDA9"
-                android:layout_alignParentRight="true" 
+                android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
+                android:background="#8ADDA9"
                 android:text="+"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff" />
 
             <TextView
                 android:id="@+id/name"
@@ -77,7 +90,6 @@
                 android:text="Folder"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#ffffff" />
-
         </RelativeLayout>
 
         <LinearLayout
@@ -86,13 +98,18 @@
             android:background="#70BC8E" >
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/list"
+        <ScrollView
+            android:id="@+id/contentScroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
+            android:layout_height="wrap_content" >
 
+            <LinearLayout
+                android:id="@+id/contentList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 </com.todo.code2.xml.FlyOutContainer>

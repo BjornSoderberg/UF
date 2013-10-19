@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.todo.code2.misc.App;
@@ -29,6 +30,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private LinearLayout menu, content, list;
 	private TextView nameTV;
 	private Button add;
+
+	private MenuHandler menuHandler;
 
 	private SharedPreferences prefs;
 	private SPEditor editor;
@@ -52,16 +55,19 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		initXML();
 
+		menuHandler = new MenuHandler(this, root, menu);
+
 		prefs = getSharedPreferences(App.PREFERENCES_NAME, Context.MODE_PRIVATE);
 		editor = new SPEditor(prefs);
 
-		getData();
+		getDataFromSharedPreferences();
+		menuHandler.updateData();
 	}
 
 	private void initXML() {
 		menu = (LinearLayout) findViewById(R.id.menu);
 		content = (LinearLayout) findViewById(R.id.content);
-		list = (LinearLayout) findViewById(R.id.list);
+		list = (LinearLayout) findViewById(R.id.contentList);
 
 		nameTV = (TextView) findViewById(R.id.name);
 
@@ -69,13 +75,13 @@ public class MainActivity extends Activity implements OnClickListener {
 		add.setOnClickListener(this);
 	}
 
-	private void getData() {
+	private void getDataFromSharedPreferences() {
 		try {
 			String d = prefs.getString(App.DATA, null);
 
 			if (d == null) {
 				data = new JSONObject();
-				data.put(App.NUM_FOLDERS, 0);
+				data.put(App.NUM_CHILDREN, 0);
 
 				addFolder("Inbox", App.TASK, false);
 
@@ -91,18 +97,17 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private void updateData() {
 		Log.i("Updating data...", "" + data.toString());
-
+		
 		list.removeAllViews();
+		
 
 		try {
 			JSONObject folder = null;
-			for (int i = 0; i < data.getInt(App.NUM_FOLDERS); i++) {
+			for (int i = 0; i < data.getInt(App.NUM_CHILDREN); i++) {
 				JSONObject o = new JSONObject(data.getString(App.FOLDER + i));
 
 				if (o.getString(App.NAME).equalsIgnoreCase(currentFolderName)) folder = new JSONObject(data.getString(App.FOLDER + i));
 			}
-
-			Log.i("Folder data", folder.toString());
 
 			nameTV.setText(folder.getString(App.NAME));
 
@@ -112,18 +117,18 @@ public class MainActivity extends Activity implements OnClickListener {
 			 * { if (folder.has(App.CHECKLIST + i)) { location = App.CHECKLIST +
 			 * i;} } } else
 			 */if (folder.getString(App.CONTENT_TYPE).equals(App.TASK)) {
-				for (int i = folder.getInt(App.NUM_TASKS) - 0; i >= 0; i--) {
+				for (int i = folder.getInt(App.NUM_CHILDREN) - 0; i >= 0; i--) {
 					if (folder.has(App.TASK + i)) {
 						JSONObject itemData = new JSONObject(folder.getString(App.TASK + i));
-						if (!itemData.has(App.COMPLETED) || !itemData.getBoolean(App.COMPLETED)) list
-								.addView(getTaskItem(itemData.getString(App.NAME), itemData.getInt(App.ID), folder.getInt(App.ID)));
+						if (!itemData.has(App.COMPLETED) || !itemData.getBoolean(App.COMPLETED)) list.addView(getTaskItem(itemData.getString(App.NAME), itemData.getInt(App.ID), folder.getInt(App.ID),
+								App.UNCHECKED));
 					}
 				}
-				for (int i = folder.getInt(App.NUM_TASKS) - 0; i >= 0; i--) {
+				for (int i = folder.getInt(App.NUM_CHILDREN) - 0; i >= 0; i--) {
 					if (folder.has(App.TASK + i)) {
 						JSONObject itemData = new JSONObject(folder.getString(App.TASK + i));
-						if (itemData.has(App.COMPLETED)) if (itemData.getBoolean(App.COMPLETED)) list
-								.addView(getTaskItem(itemData.getString(App.NAME) + " - done", itemData.getInt(App.ID), folder.getInt(App.ID)));
+						if (itemData.has(App.COMPLETED)) if (itemData.getBoolean(App.COMPLETED)) list.addView(getTaskItem(itemData.getString(App.NAME), itemData.getInt(App.ID), folder.getInt(App.ID),
+								App.CHECKED));
 					}
 				}
 			}
@@ -144,12 +149,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		return null;
 	}
 
-	private TaskItem getTaskItem(String name, final int taskId, final int parentId) {
-		return getTaskItem(name, taskId, parentId, -1);
+	private TaskItem getTaskItem(String name, final int taskId, final int parentId, boolean checked) {
+		return getTaskItem(name, taskId, parentId, -1, checked);
 	}
 
-	private TaskItem getTaskItem(String name, final int taskId, final int parentId, final int grandParentId) {
-		TaskItem ti = new TaskItem(this, name);
+	private TaskItem getTaskItem(String name, final int taskId, final int parentId, final int grandParentId, boolean checked) {
+		TaskItem ti = new TaskItem(this, name, checked);
 		ti.getCheckBox().setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				completeTask(taskId, parentId, grandParentId);
@@ -189,7 +194,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	private void addFolder(String name) {
+	public void addFolder(String name) {
 		addFolder(name, App.CHECKLIST, true);
 	}
 
@@ -198,31 +203,31 @@ public class MainActivity extends Activity implements OnClickListener {
 			JSONObject folderData = new JSONObject();
 			folderData.put(App.NAME, name);
 			folderData.put(App.CONTENT_TYPE, content);
-			folderData.put(App.ID, data.getInt(App.NUM_FOLDERS));
+			folderData.put(App.ID, data.getInt(App.NUM_CHILDREN));
 			folderData.put(App.REMOVABLE, removable);
 
-			if (content == App.CHECKLIST) folderData.put(App.NUM_CHECKLISTS, 0);
-			if (content == App.TASK) folderData.put(App.NUM_TASKS, 0);
+			if (content == App.CHECKLIST) folderData.put(App.NUM_CHILDREN, 0);
+			if (content == App.TASK) folderData.put(App.NUM_CHILDREN, 0);
 
-			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folderData.toString());
-			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
+			data.put(App.FOLDER + data.getInt(App.NUM_CHILDREN), folderData.toString());
+			data.put(App.NUM_CHILDREN, data.getInt(App.NUM_CHILDREN) + 1);
 
 			editor.put(App.DATA, data.toString());
 
-			updateData();
+			menuHandler.updateData();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void addTask(String name) {
+	public void addTask(String name) {
 		try {
 			JSONObject taskData = new JSONObject();
 			taskData.put(App.NAME, name);
 
 			JSONObject folder = null;
 
-			for (int i = 0; i < data.getInt(App.NUM_FOLDERS); i++) {
+			for (int i = 0; i < data.getInt(App.NUM_CHILDREN); i++) {
 				JSONObject f = new JSONObject(data.getString(App.FOLDER + i));
 
 				if (f.getString(App.NAME).equalsIgnoreCase(currentFolderName)) folder = new JSONObject(data.getString(App.FOLDER + i));
@@ -230,23 +235,23 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			// This will not be used in the beginning
 			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				for (int i = 0; i < folder.getInt(App.NUM_CHECKLISTS); i++) {
+				for (int i = 0; i < folder.getInt(App.NUM_CHILDREN); i++) {
 					JSONObject cl = new JSONObject(folder.getString(App.CHECKLIST + i));
 
 					if (cl.getString(App.NAME).equalsIgnoreCase(currentChecklistName)) {
-						taskData.put(App.ID, cl.getInt(App.NUM_TASKS));
+						taskData.put(App.ID, cl.getInt(App.NUM_CHILDREN));
 
-						cl.put(App.TASK + cl.getInt(App.NUM_TASKS), taskData.toString());
-						cl.put(App.NUM_TASKS, cl.getInt(App.NUM_TASKS) + 1);
+						cl.put(App.TASK + cl.getInt(App.NUM_CHILDREN), taskData.toString());
+						cl.put(App.NUM_CHILDREN, cl.getInt(App.NUM_CHILDREN) + 1);
 
 						folder.put(App.CHECKLIST + cl.getInt(App.ID), cl.toString());
 					}
 				}
 			} else if (folder.getString(App.CONTENT_TYPE).equals(App.TASK)) {
-				taskData.put(App.ID, folder.getInt(App.NUM_TASKS));
+				taskData.put(App.ID, folder.getInt(App.NUM_CHILDREN));
 
-				folder.put(App.TASK + folder.getInt(App.NUM_TASKS), taskData.toString());
-				folder.put(App.NUM_TASKS, folder.getInt(App.NUM_TASKS) + 1);
+				folder.put(App.TASK + folder.getInt(App.NUM_CHILDREN), taskData.toString());
+				folder.put(App.NUM_CHILDREN, folder.getInt(App.NUM_CHILDREN) + 1);
 			}
 
 			data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
@@ -260,6 +265,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	public void toggleMenu(View v) {
 		root.toggleMenu();
+	}
+	
+	public JSONObject getData() {
+		return data;
 	}
 
 	public void onClick(View v) {

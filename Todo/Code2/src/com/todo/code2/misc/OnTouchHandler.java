@@ -12,7 +12,7 @@ import com.todo.code2.xml.FlyOutContainer;
 
 public class OnTouchHandler implements OnTouchListener {
 
-	private FlyOutContainer flyOutContainer;
+	private FlyOutContainer root;
 	private Button button;
 
 	private float x = -1, y = -1;
@@ -22,7 +22,7 @@ public class OnTouchHandler implements OnTouchListener {
 	int i = 0;
 
 	public OnTouchHandler(FlyOutContainer f, Button b) {
-		flyOutContainer = f;
+		root = f;
 		button = b;
 	}
 
@@ -34,13 +34,15 @@ public class OnTouchHandler implements OnTouchListener {
 			button.setBackgroundColor(0xff6ABD89);
 		}
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
-			if (x == -1 || y == -1)
-				return false;
+//			if (x == -1 || y == -1)
+//				return false;
 
 			int dx = (int) (event.getX() - x);
 			int dy = (int) (event.getY() - y);
 			
-			flyOutContainer.move(dx);
+			root.move(dx);
+			
+			//Log.i("On touch - root", flyOutContainer + "");
 
 			if (Math.abs(dx) > 2 && Math.abs(dy) > 2)
 				dragged = true;
@@ -50,9 +52,9 @@ public class OnTouchHandler implements OnTouchListener {
 			y = -1;
 
 			if (!dragged)
-				flyOutContainer.clicked();
+				root.clicked();
 			else
-				flyOutContainer.released();
+				root.released();
 			
 			dragged = false;
 
