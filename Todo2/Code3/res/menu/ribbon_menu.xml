@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/ribbon_menu_home"
+            android:icon="@drawable/cancel"
+            android:title="@string/fly_with">
+    </item>
+    <item
+            android:id="@+id/ribbon_menu_home2"
+            android:enabled="false"
+            android:icon="@drawable/collapse"
+            android:title="@string/keep_open">
+    </item>
+    <item
+            android:id="@+id/ribbon_menu_home3"
+            android:icon="@drawable/split"
+            android:title="@string/slide_over">
+    </item>
+
+</menu>
