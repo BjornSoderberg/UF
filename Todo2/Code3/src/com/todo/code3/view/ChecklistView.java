@@ -6,12 +6,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
@@ -22,6 +22,7 @@ import com.todo.code3.xml.ChecklistItem;
 public class ChecklistView extends ContentView {
 	
 	private ListView listView;
+	private TextView empty;
 	
 	protected int currentFolder = -1;
 	
@@ -58,6 +59,9 @@ public class ChecklistView extends ContentView {
 				}
 			}
 		});
+
+		empty = (TextView) findViewById(R.id.empty);
+		empty.setText("This folder is empty. Tap the + in the upper right corner to add a new checklist");
 	}
 
 	public void update(JSONObject data) {
@@ -82,6 +86,11 @@ public class ChecklistView extends ContentView {
 			((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
 		} catch(JSONException e) {
 			e.printStackTrace();
+		}
+		if(checklistItems.size() == 0) {
+			empty.setVisibility(View.VISIBLE);
+		} else {
+			empty.setVisibility(View.GONE);
 		}
 	}
 	

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
@@ -28,7 +28,7 @@ public class TaskAdapter extends BaseAdapter {
 		this.taskView = taskView;
 	}
 
-	public int getCount() {		
+	public int getCount() {
 		return taskView.getTaskItems().size();
 	}
 
@@ -40,30 +40,30 @@ public class TaskAdapter extends BaseAdapter {
 		return -1;
 	}
 
-	public View getView(int position, View view, ViewGroup parent) {		
+	public View getView(int position, View view, ViewGroup parent) {
 		final TaskItem item = taskView.getTaskItems().get(position);
-//		final TaskItem item = new TaskItem();
-//		item.setTitle("asd");
-//		item.setId(1337);
-//		item.isCompleted();
 
 		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.task_item, null);
 
-		Button button = (Button) view.findViewById(R.id.rbm_item_button);
+		ImageView button = (ImageView) view.findViewById(R.id.rbm_item_checkbox);
 		TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
 		text.setText(item.getTitle());
 
 		if (item instanceof TaskItem) {
+
 			button.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					activity.completeTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId());
+					activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
+					Log.i("complete task task adapter", ((TaskItem) item).getId() + ", " + ((TaskItem) item).getChecklistId() + ", " + ((TaskItem) item).getFolderId());
 				}
 			});
 
 			if (((TaskItem) item).isCompleted()) {
+				button.setBackgroundColor(0xff585858);
 				text.setTextColor(0xff888888);
 				text.setPaintFlags(text.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 			} else {
+				button.setBackgroundColor(0xff888888);
 				// These need to be set, otherwise attributes from the last
 				// task will be inherited
 				text.setTextColor(0xff585858);

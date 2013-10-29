@@ -16,11 +16,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 
@@ -31,6 +34,7 @@ import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
 import com.todo.code3.view.ChecklistView;
 import com.todo.code3.view.ContentView;
+import com.todo.code3.view.TaskContentView;
 import com.todo.code3.view.TaskView;
 
 public class MainActivity extends FlyInFragmentActivity {
@@ -51,6 +55,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	// this may later be alterable
 	private int currentFolder = -1;
 	private int currentChecklist = -1;
+	private int currentTask = -1;
 	private String folderContentType;
 
 	public ArrayList<ContentView> contentViews;
@@ -59,16 +64,24 @@ public class MainActivity extends FlyInFragmentActivity {
 	private Scroller scroller;
 	private Runnable scrollRunnable;
 	private Handler scrollHandler;
+	private boolean isMoving = false;
+	private int scrollDuration = 300;
 	private int currentContentOffset = 0;
 	private int posInWrapper = 0;
+	private long scrollFps = 1000 / 60;
 
 	private int width, height;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// this makes the app go fullscreen
+		// this solved the issue about the wrapper being to big
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		scroller = new Scroller(this, new SmoothInterpolator());
+		//scroller = new Scroller(this, new SmoothInterpolator());
+		scroller = new Scroller(this, AnimationUtils.loadInterpolator(this,
+				android.R.anim.decelerate_interpolator));
 		scrollRunnable = new AnimationRunnable();
 		scrollHandler = new Handler();
 
@@ -82,15 +95,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor = new SPEditor(prefs);
 
 		contentViews = new ArrayList<ContentView>();
-		// contentViews.add(new TaskView(this));
 
 		initXML();
+		initBar();
 
 		loadFlyInMenu();
 
 		getDataFromSharedPreferences();
-
-		// wrapper.addView(contentViews.get(0));
 	}
 
 	private void getDataFromSharedPreferences() {
@@ -158,9 +169,27 @@ public class MainActivity extends FlyInFragmentActivity {
 		getFlyInMenu().setCustomView(mAddFolderButton);
 	}
 
-	private void updateData() {
-		// Log.i("Updating data...", "" + data.toString());
+	private void initBar() {
+		int barHeight = height / 12 - height / 120;
+		int buttonSize = barHeight;
+		int borderHeight = height / 120;
 
+		Button[] buttons = { dragButton, backButton, (Button) findViewById(R.id.addButton) };
+
+		for (int i = 0; i < buttons.length; i++) {
+			RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) buttons[i].getLayoutParams();
+			p.height = buttonSize;
+			p.width = buttonSize;
+			buttons[i].setLayoutParams(p);
+		}
+
+		LinearLayout l = (LinearLayout) findViewById(R.id.barBorder);
+		LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) l.getLayoutParams();
+		p.height = borderHeight;
+		l.setLayoutParams(p);
+	}
+
+	private void updateData() {
 		// removes the view that are not next to the right of the view the user
 		// sees
 		for (int i = 0; i < contentViews.size(); i++) {
@@ -345,17 +374,17 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
-	public void completeTask(int taskId, int checklistId, int folderId) {
+	public void checkTask(int taskId, int checklistId, int folderId, boolean isChecked) {
 		Log.i("completeTask", taskId + ", " + checklistId + ", " + folderId);
 
 		try {
 			JSONObject folder = new JSONObject(data.getString(App.FOLDER + folderId));
 
-			if (checklistId != -1 && folder.has(App.CHECKLIST + checklistId)) {
+			if (checklistId != -1 /* && folder.has(App.CHECKLIST + checklistId) */) {
 				JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + checklistId));
 				JSONObject task = new JSONObject(checklist.getString(App.TASK + taskId));
 
-				task.put(App.COMPLETED, true);
+				task.put(App.COMPLETED, isChecked);
 
 				checklist.put(App.TASK + taskId, task.toString());
 				folder.put(App.CHECKLIST + checklistId, checklist.toString());
@@ -363,7 +392,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			} else if (folder.has(App.TASK + taskId)) {
 				JSONObject task = new JSONObject(folder.getString(App.TASK + taskId));
 
-				task.put(App.COMPLETED, true);
+				task.put(App.COMPLETED, isChecked);
 
 				folder.put(App.TASK + taskId, task.toString());
 				data.put(App.FOLDER + folderId, folder.toString());
@@ -380,6 +409,8 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	// previously known as setCurrentFolder
 	private void openFolder(int i) throws JSONException {
+		if (isMoving) return;
+
 		currentChecklist = -1;
 
 		if (currentFolder == i) return;
@@ -393,20 +424,28 @@ public class MainActivity extends FlyInFragmentActivity {
 		folderContentType = folder.getString(App.CONTENT_TYPE);
 
 		posInWrapper = 0;
-
-		if (folderContentType.equals(App.TASK)) {
-			contentViews.remove(posInWrapper);
-
-			if (contentViews.size() - 1 > posInWrapper && contentViews.get(posInWrapper) instanceof TaskView) ((TaskView) contentViews.get(posInWrapper)).setCurrentFolderAndChecklist(currentFolder,
-					currentChecklist);
-			else contentViews.add(posInWrapper, new TaskView(this, currentFolder, currentChecklist));
-		} else if (folderContentType.equals(App.CHECKLIST)) {
-			// contentViews.add(new ChecklistView(this, currentFolder));
-			contentViews.remove(posInWrapper);
-
-			if (contentViews.size() - 1 > posInWrapper && contentViews.get(posInWrapper) instanceof ChecklistView) ((ChecklistView) contentViews.get(posInWrapper)).setCurrentFolder(currentFolder);
-			else contentViews.add(posInWrapper, new ChecklistView(this, currentFolder));
+		contentViews.clear();
+		
+		if(folderContentType.equals(App.TASK)) {
+			contentViews.add(posInWrapper, new TaskView(this, currentFolder, currentChecklist));
+		} else if(folderContentType.equals(App.CHECKLIST)) {
+			contentViews.add(posInWrapper, new ChecklistView(this, currentFolder));
 		}
+
+//		if (folderContentType.equals(App.TASK)) {
+//			if (contentViews.size() + 1 == posInWrapper) contentViews.remove(posInWrapper);
+//
+//			if (contentViews.size() - 1 > posInWrapper && contentViews.get(posInWrapper) instanceof TaskView) ((TaskView) contentViews.get(posInWrapper)).setFolderAndChecklist(currentFolder,
+//					currentChecklist);
+//			else contentViews.add(posInWrapper, new TaskView(this, currentFolder, currentChecklist));
+//		} else if (folderContentType.equals(App.CHECKLIST)) {
+//			// contentViews.add(new ChecklistView(this, currentFolder));
+//			if (contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
+//			contentViews.clear();
+//
+//			if (contentViews.size() - 1 > posInWrapper && contentViews.get(posInWrapper) instanceof ChecklistView) ((ChecklistView) contentViews.get(posInWrapper)).setCurrentFolder(currentFolder);
+//			else contentViews.add(posInWrapper, new ChecklistView(this, currentFolder));
+//		}
 
 		Log.i("Changed the current folder", folder.getString(App.NAME));
 
@@ -414,19 +453,56 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void openChecklist(JSONObject checklist) {
+		if (isMoving) return;
+
 		Log.i("openChecklist", "Opened checklist");
 
 		try {
-			backButton.setVisibility(View.VISIBLE);
-			dragButton.setVisibility(View.GONE);
-
 			currentChecklist = checklist.getInt(App.ID);
 			nameTV.setText(checklist.getString(App.NAME));
 
-			scroller.startScroll(currentContentOffset, 0, -width, 0, 1000);
+			scroller.startScroll(currentContentOffset, 0, -width, 0, scrollDuration);
 			scrollHandler.postDelayed(scrollRunnable, 1000 / 60);
 
 			posInWrapper++;
+
+			/*if (contentViews.size() - 1 > posInWrapper && contentViews.get(posInWrapper) instanceof TaskView) ((TaskView) contentViews.get(posInWrapper)).setFolderAndChecklist(currentFolder,
+					currentChecklist);
+			else */
+			if(contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
+			contentViews.add(posInWrapper, new TaskView(this, currentFolder, currentChecklist));
+
+			backButton.setVisibility(View.VISIBLE);
+			dragButton.setVisibility(View.GONE);
+			updateData();
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void openTask(JSONObject task) {
+		if (isMoving) return;
+
+		Log.i("openTask", "Opened task");
+
+		try {
+			currentTask = task.getInt(App.ID);
+			nameTV.setText(task.getString(App.NAME));
+
+			scroller.startScroll(currentContentOffset, 0, -width, 0, scrollDuration);
+			scrollHandler.postDelayed(scrollRunnable, scrollFps);
+
+			posInWrapper++;
+
+			/*if (contentViews.size() - 1 > posInWrapper && contentViews.get(posInWrapper) instanceof TaskContentView) //
+			((TaskContentView) contentViews.get(posInWrapper)).setFolderAndChecklistAndTask(currentFolder, currentChecklist, currentTask);
+			else */
+			if(contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
+			contentViews.add(posInWrapper, new TaskContentView(this, currentFolder, currentChecklist, currentTask));
+
+			backButton.setVisibility(View.VISIBLE);
+			dragButton.setVisibility(View.GONE);
 			updateData();
 
 		} catch (JSONException e) {
@@ -435,20 +511,38 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void goBack(View v) {
-		backButton.setVisibility(View.GONE);
-		dragButton.setVisibility(View.VISIBLE);
+		if (isMoving) return;
 
-		if (currentChecklist == -1) return;
+		// this means that it is not in anything
+		if (currentChecklist == -1 && currentTask == -1) return;
 
 		try {
+			if (currentTask == -1) {
+				currentChecklist = -1;
 
-			currentChecklist = -1;
+				nameTV.setText(new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.NAME));
+				// cListView.setAdapter(checklistAdapter);
 
-			nameTV.setText(new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.NAME));
-			// cListView.setAdapter(checklistAdapter);
+			} else {
+				currentTask = -1;
 
-			scroller.startScroll(currentContentOffset, 0, width, 0, 1000);
-			scrollHandler.postDelayed(scrollRunnable, 1000 / 60);
+				String name;
+				if (currentChecklist == -1) {
+					name = new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.NAME);
+				} else {
+					name = new JSONObject(new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.CHECKLIST + currentChecklist)).getString(App.NAME);
+				}
+
+				nameTV.setText(name);
+			}
+			
+			if(currentChecklist == -1 && currentTask == -1) {
+				backButton.setVisibility(View.GONE);
+				dragButton.setVisibility(View.VISIBLE);
+			}
+			
+			scroller.startScroll(currentContentOffset, 0, width, 0, scrollDuration);
+			scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 			posInWrapper--;
 			updateData();
@@ -463,8 +557,9 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public int getContentHeight() {
-		return 600;
-		// return height - barheight;
+		// the height of the bar (including the border) is 1 / 12 of the height
+		// (see @initBar())
+		return height * 11 / 12;
 	}
 
 	public JSONObject getData() {
@@ -484,7 +579,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		wrapper.invalidate();
 
 		if (isAnimationOngoing) scrollHandler.postDelayed(scrollRunnable, 16);
-		else currentContentOffset = offset;
+		else {
+			currentContentOffset = offset;
+			isMoving = false;
+		}
 
 	}
 
@@ -496,6 +594,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	protected class AnimationRunnable implements Runnable {
 		public void run() {
+			isMoving = true;
 			boolean isAnimationOngoing = scroller.computeScrollOffset();
 
 			adjustContentPosition(isAnimationOngoing);

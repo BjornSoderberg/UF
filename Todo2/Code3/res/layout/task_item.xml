@@ -8,11 +8,12 @@
               android:paddingLeft="@dimen/rbm_item_padding_leftright"
               android:paddingRight="@dimen/rbm_item_padding_leftright">
 
-    <Button
-            android:id="@+id/rbm_item_button"
+    <ImageView
+            android:id="@+id/rbm_item_checkbox"
             android:layout_height="@dimen/rbm_item_image_height"
             android:layout_width="@dimen/rbm_item_image_width"
             android:scaleType="fitCenter"
+            android:background="#888888"
             />
 
     <TextView

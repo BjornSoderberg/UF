@@ -1,5 +1,9 @@
 package com.todo.code3.misc;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+
 public class App {
 	
 	public static final String PREFERENCES_NAME = "Code3SP";
@@ -26,5 +30,14 @@ public class App {
 	public static final String CHECKLIST = "checklist";
 
 	public static final String TASK = "task";
+	
+	public static final String DESCRIPTION = "description";
+	
+	public static float dpToPx(float dp, Context context){
+	    Resources resources = context.getResources();
+	    DisplayMetrics metrics = resources.getDisplayMetrics();
+	    float px = dp * (metrics.densityDpi / 160f);
+	    return px;
+	}
 
 }
