@@ -58,7 +58,7 @@ public class TaskView extends ContentView {
 						JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
 						task = new JSONObject(checklist.getString(App.TASK + taskItems.get(view.getId()).getId()));
 					} else {
-						task = new JSONObject(folder.getString(App.TASK + currentFolder));
+						task = new JSONObject(folder.getString(App.TASK + taskItems.get(view.getId()).getId()));
 					}
 					
 					activity.openTask(task);
@@ -126,10 +126,14 @@ public class TaskView extends ContentView {
 		return taskItems;
 	}
 
-	public void setFolderAndChecklist(int folder, int checklist) {
-		currentFolder = folder;
-		currentChecklist = checklist;
+	public void leave() {
+		
 	}
+
+//	public void setFolderAndChecklist(int folder, int checklist) {
+//		currentFolder = folder;
+//		currentChecklist = checklist;
+//	}
 
 }
 

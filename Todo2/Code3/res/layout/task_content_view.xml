@@ -8,12 +8,20 @@
     <EditText
         android:id="@+id/descET"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="414dp"
         android:ems="10"
-        android:inputType="textMultiLine"
         android:gravity="top"
+        android:inputType="textMultiLine"
         android:visibility="gone" >
+
     </EditText>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/descTV"

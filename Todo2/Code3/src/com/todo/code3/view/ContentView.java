@@ -20,5 +20,7 @@ public abstract class ContentView extends LinearLayout {
 
 	protected abstract void init();
 	
+	public abstract void leave();
+	
 	public abstract void update(JSONObject data);
 }

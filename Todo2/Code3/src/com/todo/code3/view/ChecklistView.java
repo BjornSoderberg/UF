@@ -94,11 +94,15 @@ public class ChecklistView extends ContentView {
 		}
 	}
 	
-	public void setCurrentFolder(int folder) {
-		currentFolder = folder;
-	}
+//	public void setCurrentFolder(int folder) {
+//		currentFolder = folder;
+//	}
 	
 	public ArrayList<ChecklistItem> getChecklistItems() {
 		return checklistItems;
+	}
+
+	public void leave() {
+		
 	}
 }
