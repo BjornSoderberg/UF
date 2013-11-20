@@ -1,5 +1,8 @@
 package com.espian.flyin.library;
 
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
@@ -15,47 +18,42 @@ import android.view.Window;
  * ability to use fly-in menus. If you are only targeting Android 3.0 and above,
  * you can use the standard {@link Activity} class by replacing
  * "extends FragmentActivity" with "extends Activity".
- *
+ * 
  * @author Alex Curran
  */
-public abstract class FlyInFragmentActivity extends FragmentActivity implements
-		OnFlyInItemClickListener {
+public abstract class FlyInFragmentActivity extends FragmentActivity implements OnFlyInItemClickListener {
 
 	private FlyInMenu flyMenuView = null;
 	private boolean hasFlyMenu = false;
 
-    @Override
-    public void onCreate(Bundle saved) {
+	@Override
+	public void onCreate(Bundle saved) {
+		super.onCreate(saved);
+		flyMenuView = new FlyInMenu(this);
+		flyMenuView.setType(FlyInMenu.FLY_IN_WITH_ACTIVITY);
+		flyMenuView.post(new Runnable() {
+			public void run() {
+				flyMenuView.setPadding(0, getStatusBarOffset(), 0, 0);
+			}
+		});
+	}
 
-        super.onCreate(saved);
-        flyMenuView = new FlyInMenu(this);
-        flyMenuView.setType(FlyInMenu.FLY_IN_WITH_ACTIVITY);
-        flyMenuView.post(new Runnable()
-        {
-            public void run()
-            {
-                flyMenuView.setPadding(0, getStatusBarOffset(), 0, 0);
-            }
-        });
-    }
-
-    /**
-     * Retrieves the current status bar height.
-     * Note: Needs to be called from a Runnable because the layout is
-     * not initialized in onCreate() yet.
-     *
-     * @return the status bar height
-     */
-    private int getStatusBarOffset() {
-        Rect rect = new Rect();
-        Window window = getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(rect);
-        return rect.top;
-    }
+	/**
+	 * Retrieves the current status bar height. Note: Needs to be called from a
+	 * Runnable because the layout is not initialized in onCreate() yet.
+	 * 
+	 * @return the status bar height
+	 */
+	private int getStatusBarOffset() {
+		Rect rect = new Rect();
+		Window window = getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame(rect);
+		return rect.top;
+	}
 
 	/**
 	 * Retrieves the {@link FlyInMenu} associated with this Activity
-	 *
+	 * 
 	 * @return the FlyInMenu, or null if there isn't one
 	 */
 	protected FlyInMenu getFlyInMenu() {
@@ -67,9 +65,10 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements
 	 * {@link FlyInMenu#FLY_IN_WITH_ACTIVITY}, where the fly-in menu pushes the
 	 * Activity right; or {@link FlyInMenu#FLY_IN_OVER_ACTIVITY}, where the
 	 * fly-in menu slides over the Activity.
-	 *
-	 * @param type Either {@link FlyInMenu#FLY_IN_WITH_ACTIVITY} or
-	 *             {@link FlyInMenu#FLY_IN_OVER_ACTIVITY}
+	 * 
+	 * @param type
+	 *            Either {@link FlyInMenu#FLY_IN_WITH_ACTIVITY} or
+	 *            {@link FlyInMenu#FLY_IN_OVER_ACTIVITY}
 	 */
 	protected void setFlyInType(int type) {
 		flyMenuView.setType(type);
@@ -82,26 +81,29 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements
 	 * is Honeycomb or above. Bear in mind, devices below Honeycomb or themes
 	 * with no ActionBar (e.g. Theme.Holo.NoActionBar) will require some way to
 	 * manually open the fly-in menu.
-	 *
-	 * @param menuId menu resource to load
+	 * 
+	 * @param menuId
+	 *            menu resource to load
 	 */
-	protected void loadFlyInMenu(int menuId) {
-		flyMenuView.setMenuItems(menuId);
+	protected void loadFlyInMenu() {
+		flyMenuView.setMenuItems();
 		flyMenuView.setOnFlyInItemClickListener(this);
+		((ViewGroup) getWindow().getDecorView()).removeView(flyMenuView);
 		((ViewGroup) getWindow().getDecorView()).addView(flyMenuView);
 		hasFlyMenu = true;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			try {
-				getActionBar().setDisplayHomeAsUpEnabled(true);
+				// getActionBar().setDisplayHomeAsUpEnabled(false);
 			} catch (NullPointerException npe) {
-				throw new RuntimeException(
-						"SherlockActivity has no Support ActionBar. Ensure you are not using "
-								+ "a NoActionBarTheme");
+				throw new RuntimeException("SherlockActivity has no Support ActionBar. Ensure you are not using " + "a NoActionBarTheme");
 			} catch (Exception ex) {
-				Log.w(FlyInFragmentActivity.class.getName(), ex.getClass()
-						.getName() + " : Likely running an API lower than 11");
+				Log.w(FlyInFragmentActivity.class.getName(), ex.getClass().getName() + " : Likely running an API lower than 11");
 			}
 		}
+	}
+
+	protected void updateMenuItems() {
+		flyMenuView.setMenuItems();
 	}
 
 	@Override
@@ -120,16 +122,14 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements
 	 * Show the {@link FlyInMenu} if it is hidden, and hide it if it is shown.
 	 */
 	protected void toggleFlyIn() {
-		if (flyMenuView != null)
-			flyMenuView.toggleMenu();
+		if (flyMenuView != null) flyMenuView.toggleMenu();
 	}
 
 	@Override
 	public void onBackPressed() {
 		if (flyMenuView.isMenuVisible()) {
 			flyMenuView.toggleMenu();
-		} else
-			super.onBackPressed();
+		} else super.onBackPressed();
 	}
 
 	@Override

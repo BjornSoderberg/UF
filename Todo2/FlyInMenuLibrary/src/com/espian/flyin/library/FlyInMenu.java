@@ -1,27 +1,34 @@
 package com.espian.flyin.library;
 
+import java.util.ArrayList;
+
+import org.xmlpull.v1.XmlPullParser;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
-import org.xmlpull.v1.XmlPullParser;
-
-import java.util.ArrayList;
 
 public class FlyInMenu extends LinearLayout {
 
@@ -33,15 +40,23 @@ public class FlyInMenu extends LinearLayout {
 	private LinearLayout mMenuHolder;
 	private ViewStub mCustomStub;
 	private View mCustomView;
-	private View mWrappedSearchView;
-	private boolean hasSearchView = false;
+	//private View mWrappedSearchView;
+	//private boolean hasSearchView = false;
 	private int flyType;
 	private int animStartFlyType;
 	private Activity mAct;
 
 	private OnFlyInItemClickListener callback;
 
-	private static ArrayList<FlyInMenuItem> menuItems;
+	public ArrayList<FlyInMenuItem> menuItems;
+	
+	public void clearMenuItems() {
+		menuItems.clear();
+	}
+	
+	public void addMenuItem(FlyInMenuItem i) {
+		menuItems.add(i);
+	}
 
 	public FlyInMenu(Context context) {
 		super(context);
@@ -89,7 +104,6 @@ public class FlyInMenu extends LinearLayout {
 		mMenuHolder = (LinearLayout) findViewById(R.id.fly_menu_holder);
 
 		mOutsideView.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				hideMenu();
@@ -114,7 +128,6 @@ public class FlyInMenu extends LinearLayout {
 			}
 
 		});
-
 	}
 
 	public void setOnFlyInItemClickListener(OnFlyInItemClickListener callback) {
@@ -126,7 +139,7 @@ public class FlyInMenu extends LinearLayout {
 	 * is API level 11 (Honeycomb) or above. The SearchView can be accessed with
 	 * {@link #getSearchView()}.
 	 */
-	public void enableSearchView() {
+	/*@SuppressLint("NewApi") public void enableSearchView() {
 		if (Build.VERSION.SDK_INT >= 11) {
 			SearchView s = new SearchView(getContext());
 			s.setIconifiedByDefault(false);
@@ -136,7 +149,7 @@ public class FlyInMenu extends LinearLayout {
 			mMenuHolder.addView(mWrappedSearchView, 0);
 			hasSearchView = true;
 		}
-	}
+	}*/
 
 	/**
 	 * Fetches the SearchView associated with the Fly-in menu. Note that calling
@@ -146,11 +159,11 @@ public class FlyInMenu extends LinearLayout {
 	 *
 	 * @return the SearchView instance, or null if it hasn't been initialised
 	 */
-	public SearchView getSearchView() {
+	/*public SearchView getSearchView() {
 		if (!hasSearchView)
 			return null;
 		return (SearchView) mWrappedSearchView;
-	}
+	}*/
 
 	/**
 	 * Fetch the custom view at the bottom of the fly-in menu.
@@ -190,16 +203,14 @@ public class FlyInMenu extends LinearLayout {
 	 *
 	 * @param menu resource id of the menu to be inflated
 	 */
-	public void setMenuItems(int menu) {
-		setMenuItems(menu, -1);
-	}
+	public void setMenuItems() {
 
-	public void setMenuItems(int menu, int resourceId) {
-
-		parseXml(menu);
+		if(menuItems == null || menuItems.size() <= 0)
+			menuItems = new ArrayList<FlyInMenuItem>();
+		
 		if (menuItems != null && menuItems.size() > 0) {
 			mListView.setAdapter(new Adapter());
-
+			
 		}
 
 	}
@@ -211,9 +222,9 @@ public class FlyInMenu extends LinearLayout {
 		mMenuHolder.setBackgroundResource(resource);
 	}
 
-	private int getInteger(int id) {
-		return getResources().getInteger(id);
-	}
+//	private int getInteger(int id) {
+//		return getResources().getInteger(id);
+//	}
 
 	public void showMenu() {
 
@@ -303,10 +314,11 @@ public class FlyInMenu extends LinearLayout {
 		}
 	}
 
-	private void parseXml(int menu) {
+	/*private void parseXml(int menu) {
 
 		menuItems = new ArrayList<FlyInMenuItem>();
-
+		
+		if(1 == 1) return;
 		try {
 			XmlResourceParser xpp = getResources().getXml(menu);
 
@@ -355,20 +367,21 @@ public class FlyInMenu extends LinearLayout {
 		}
 
 	}
+	*/
 
-	private String resourceIdToString(String text) {
-
-		if (!text.contains("@")) {
-			return text;
-		} else {
-
-			String id = text.replace("@", "");
-			int rid = Integer.valueOf(id);
-			return getResources().getString(rid);
-
-		}
-
-	}
+//	private String resourceIdToString(String text) {
+//
+//		if (!text.contains("@")) {
+//			return text;
+//		} else {
+//
+//			String id = text.replace("@", "");
+//			int rid = Integer.valueOf(id);
+//			return getResources().getString(rid);
+//
+//		}
+//
+//	}
 
 	public boolean isMenuVisible() {
 		return mOutsideView.getVisibility() == View.VISIBLE;
@@ -461,6 +474,7 @@ public class FlyInMenu extends LinearLayout {
 			TextView text = (TextView) convertView
 					.findViewById(R.id.rbm_item_text);
 			FlyInMenuItem item = menuItems.get(position);
+			
 			text.setText(item.getTitle());
 			icon.setImageResource(item.getIconId());
 			convertView.setEnabled(item.isEnabled());

@@ -29,19 +29,16 @@ public final class R {
         public static int rbm_menu_width=0x7f050000;
     }
     public static final class id {
-        public static int fly_custom=0x7f060007;
-        public static int fly_item_text=0x7f060003;
-        public static int fly_listview=0x7f060006;
-        public static int fly_menu_holder=0x7f060004;
-        public static int fly_outside=0x7f060008;
-        public static int fly_searchstub=0x7f060005;
+        public static int fly_custom=0x7f060005;
+        public static int fly_listview=0x7f060004;
+        public static int fly_menu_holder=0x7f060003;
+        public static int fly_outside=0x7f060006;
         public static int fly_searchview=0x7f060000;
         public static int rbm_item_icon=0x7f060001;
         public static int rbm_item_text=0x7f060002;
     }
     public static final class layout {
         public static int fly_item=0x7f020000;
-        public static int fly_item_2=0x7f020001;
-        public static int fly_menu=0x7f020002;
+        public static int fly_menu=0x7f020001;
     }
 }

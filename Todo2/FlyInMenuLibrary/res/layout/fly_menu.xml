@@ -1,47 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_gravity="left"
-              android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="left"
+    android:orientation="horizontal" >
 
     <LinearLayout
-            android:id="@+id/fly_menu_holder"
-            android:layout_width="@dimen/rbm_menu_width"
-            android:layout_height="match_parent"
-            android:background="@color/rbm_menu_background"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-        <ViewStub
-                android:id="@+id/fly_searchstub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+        android:id="@+id/fly_menu_holder"
+        android:layout_width="@dimen/rbm_menu_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
         <ListView
-                android:id="@+id/fly_listview"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:cacheColorHint="#00000000"
-                android:visibility="visible">
+            android:id="@+id/fly_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:cacheColorHint="#00000000"
+            android:visibility="visible" >
         </ListView>
 
         <ViewStub
-                android:id="@+id/fly_custom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"/>
+            android:id="@+id/fly_custom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- simple drop shadow -->
 
     <View
-            android:id="@+id/fly_outside"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:visibility="gone"/>
+        android:id="@+id/fly_outside"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:visibility="gone" />
 
 </LinearLayout>

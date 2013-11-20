@@ -9,7 +9,7 @@ public class FlyInMenuItem {
 	private int mIconId;
 	private CharSequence mText;
 	private CharSequence mCondText;
-	private int mItemId;
+	private int id;
 
 	private boolean mEnabled;
 
@@ -21,8 +21,8 @@ public class FlyInMenuItem {
 		return mIntent;
 	}
 
-	public int getItemId() {
-		return mItemId;
+	public int getId() {
+		return id;
 	}
 
 	public CharSequence getTitle() {
@@ -67,8 +67,8 @@ public class FlyInMenuItem {
 		return this;
 	}
 
-	public FlyInMenuItem setItemId(int id) {
-		mItemId = id;
+	public FlyInMenuItem setId(int id) {
+		this.id = id;
 		return this;
 	}
 
