@@ -22,13 +22,13 @@ public class App {
 	public static final boolean CHECKED = true;
 	public static final boolean UNCHECKED = false;
 	
+	public static final String TYPE = "type";
 	public static final String CONTENT_TYPE = "contentType";
 	public static final String PARENT_CONTENT_TYPE = "parentContentType";
 
 	public static final String FOLDER = "folder";
-	
+	public static final String PROJECT = "project";
 	public static final String CHECKLIST = "checklist";
-
 	public static final String TASK = "task";
 	
 	public static final String DESCRIPTION = "description";

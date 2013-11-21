@@ -10,6 +10,7 @@ public class FlyInMenuItem {
 	private CharSequence mText;
 	private CharSequence mCondText;
 	private int id;
+	private String contentType;
 
 	private boolean mEnabled;
 
@@ -23,6 +24,10 @@ public class FlyInMenuItem {
 
 	public int getId() {
 		return id;
+	}
+	
+	public String getType() {
+		return contentType;
 	}
 
 	public CharSequence getTitle() {
@@ -59,6 +64,11 @@ public class FlyInMenuItem {
 
 	public FlyInMenuItem setTitle(int title, Resources resc) {
 		mText = resc.getString(title);
+		return this;
+	}
+	
+	public FlyInMenuItem setType(String contentType) {
+		this.contentType = contentType;
 		return this;
 	}
 

@@ -60,6 +60,8 @@ public class TaskContentView extends ContentView {
 				descTV.setVisibility(View.GONE);
 				descET.setVisibility(View.VISIBLE);
 				saveButton.setVisibility(View.VISIBLE);
+				
+				descET.setText(descTV.getText());
 
 				descET.requestFocus();
 			}

@@ -17,7 +17,4 @@ public class SPEditor {
 		editor.putString(key, value);
 		editor.commit();
 	}
-
-
-
 }

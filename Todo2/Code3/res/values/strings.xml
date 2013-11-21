@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, RibbonsampleActivity!</string>
-    <string name="app_name">Ribbonsample</string>
+    <string name="app_name">Next Task</string>
     <string name="keep_open">Keep open</string>
     <string name="slide_over">Fly over</string>
     <string name="fly_with">Fly with</string>

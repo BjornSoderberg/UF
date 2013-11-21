@@ -13,22 +13,22 @@ import com.todo.code3.view.ChecklistView;
 import com.todo.code3.view.ProjectView;
 import com.todo.code3.xml.ContentItem;
 
-public class ChecklistAdapter extends BaseAdapter {
+public class ProjectAdapter extends BaseAdapter {
 
 	private LayoutInflater inflater;
 
 	private MainActivity activity;
-	private ChecklistView checklistView;
+	private ProjectView projectView;
 	
 	
-	public ChecklistAdapter(MainActivity activity, ChecklistView checklistView) {
+	public ProjectAdapter(MainActivity activity, ProjectView projectView) {
 		inflater = LayoutInflater.from(activity);
 		this.activity = activity;
-		this.checklistView = checklistView;
+		this.projectView = projectView;
 	}
 
 	public int getCount() {
-		return checklistView.getChecklistItems().size();
+		return projectView.getChecklistItems().size();
 	}
 
 	public Object getItem(int position) {
@@ -40,7 +40,7 @@ public class ChecklistAdapter extends BaseAdapter {
 	}
 
 	public View getView(int position, View view, ViewGroup parent) {
-		ContentItem item = checklistView.getChecklistItems().get(position);
+		ContentItem item = projectView.getChecklistItems().get(position);
 
 		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.checklist_item, null);
 
