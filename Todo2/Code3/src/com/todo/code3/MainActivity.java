@@ -1,6 +1,7 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,7 +112,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			if (d == null) {
 				data = new JSONObject();
-				data.put(App.NUM_CHILDREN, 0);
+				data.put(App.CONTENT_TYPE, App.FOLDER);
+				data.put(App.NUM_TASKS, 0);
+				data.put(App.NUM_CHECKLISTS, 0);
+				data.put(App.NUM_FOLDERS, 0);
 
 				addFolder("Inbox", App.TASK, App.FOLDER, false);
 
@@ -119,12 +123,14 @@ public class MainActivity extends FlyInFragmentActivity {
 				data = new JSONObject(d);
 			}
 
-			for (int i = 0; i < data.getInt(App.NUM_CHILDREN); i++) {
-				JSONObject o = new JSONObject(data.getString(App.FOLDER + i));
+			for (int i = 0; i < data.getInt(App.NUM_FOLDERS); i++) {
+				if (data.has(App.FOLDER + i)) {
+					JSONObject o = new JSONObject(data.getString(App.FOLDER + i));
 
-				if (o.getString(App.NAME).equalsIgnoreCase("Inbox")) {
-					openFolder(i, o.getString(App.TYPE));
-					break;
+					if (o.getString(App.NAME).equalsIgnoreCase("Inbox")) {
+						openFolder(i, o.getString(App.TYPE));
+						break;
+					}
 				}
 			}
 		} catch (JSONException e) {
@@ -226,8 +232,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-		// removes the view that are not next to the right of the view the user
-		// sees
+		Log.i("Updating data...", data.toString());
+
+		// removes the view that are not next 
+		//to the right of the view the user sees
 		for (int i = 0; i < contentViews.size(); i++) {
 			if (i > posInWrapper + 1) contentViews.remove(i);
 		}
@@ -247,25 +255,31 @@ public class MainActivity extends FlyInFragmentActivity {
 		menu.clearMenuItems();
 
 		try {
-			for (int i = 0; i < data.getInt(App.NUM_CHILDREN); i++) {				
-				if (data.has(App.FOLDER + i)) {
-					JSONObject folder = new JSONObject(data.getString(App.FOLDER + i));
+			String[] childrenIds = data.getString(App.CHILDREN_IDS).split(",");
+			
+			for (int i = 0; i < childrenIds.length; i++) {
+				String id = childrenIds[i];
+				if (data.has(App.FOLDER + id)) {
+					JSONObject folder = new JSONObject(data.getString(App.FOLDER + id));
 					FlyInMenuItem mi = new FlyInMenuItem();
-					mi.setTitle(folder.getString(App.NAME) + " - " + folder.getInt(App.NUM_CHILDREN) + " (" + folder.getString(App.TYPE)+")");
+					mi.setTitle(folder.getString(App.NAME) + " - " + (folder.getString(App.CHILDREN_IDS).split(",").length - 1) + " (" + folder.getString(App.TYPE) + ")");
 					mi.setId(folder.getInt(App.ID));
 					mi.setType(folder.getString(App.TYPE));
 					// mi.setIcon(res id);
 					menu.addMenuItem(mi);
-				} 
-//				if(data.has(App.PROJECT + i)) {
-//					JSONObject project = new JSONObject(data.getString(App.PROJECT + i));
-//					FlyInMenuItem mi = new FlyInMenuItem();
-//					mi.setTitle(project.getString(App.NAME) + " - " + project.getInt(App.NUM_CHILDREN) + " (" + project.getString(App.TYPE)+")");
-//					mi.setId(project.getInt(App.ID));
-//					mi.setType(project.getString(App.TYPE));
-//					// mi.setIcon(res id);
-//					menu.addMenuItem(mi);
-//				}
+				}
+				// if(data.has(App.PROJECT + i)) {
+				// JSONObject project = new
+				// JSONObject(data.getString(App.PROJECT + i));
+				// FlyInMenuItem mi = new FlyInMenuItem();
+				// mi.setTitle(project.getString(App.NAME) + " - " +
+				// project.getInt(App.NUM_CHILDREN) + " (" +
+				// project.getString(App.TYPE)+")");
+				// mi.setId(project.getInt(App.ID));
+				// mi.setType(project.getString(App.TYPE));
+				// // mi.setIcon(res id);
+				// menu.addMenuItem(mi);
+				// }
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -317,33 +331,36 @@ public class MainActivity extends FlyInFragmentActivity {
 		Log.i("Main Activity", "Added task " + name);
 
 		try {
-			JSONObject taskData = new JSONObject();
-			taskData.put(App.NAME, name);
+			JSONObject task = new JSONObject();
+			task.put(App.NAME, name);
+			// It needs to be checked if the number of tasks is correct
+			task.put(App.ID, data.getInt(App.NUM_TASKS));
 
 			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
 
 			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				JSONObject cl = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
+				JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
 
-				taskData.put(App.PARENT_CONTENT_TYPE, App.CHECKLIST);
-				taskData.put(App.PARENT_ID, currentChecklist);
+				task.put(App.PARENT_CONTENT_TYPE, App.CHECKLIST);
+				task.put(App.PARENT_ID, currentChecklist);
 
-				taskData.put(App.ID, cl.getInt(App.NUM_CHILDREN));
+				checklist.put(App.TASK + task.getInt(App.ID), task.toString());
+				
+				String children = addToChildrenString(checklist, task.getInt(App.ID));
+				checklist.put(App.CHILDREN_IDS, children);
 
-				cl.put(App.TASK + cl.getInt(App.NUM_CHILDREN), taskData.toString());
-				cl.put(App.NUM_CHILDREN, cl.getInt(App.NUM_CHILDREN) + 1);
-
-				folder.put(App.CHECKLIST + currentChecklist, cl.toString());
+				folder.put(App.CHECKLIST + currentChecklist, checklist.toString());
 			} else if (folder.getString(App.CONTENT_TYPE).equals(App.TASK)) {
-				taskData.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
-				taskData.put(App.PARENT_ID, currentFolder);
+				task.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
+				task.put(App.PARENT_ID, currentFolder);
 
-				taskData.put(App.ID, folder.getInt(App.NUM_CHILDREN));
-
-				folder.put(App.TASK + folder.getInt(App.NUM_CHILDREN), taskData.toString());
-				folder.put(App.NUM_CHILDREN, folder.getInt(App.NUM_CHILDREN) + 1);
+				String children = addToChildrenString(folder, task.getInt(App.ID));
+				folder.put(App.CHILDREN_IDS, children);
+				
+				folder.put(App.TASK + task.getInt(App.ID), task.toString());
 			}
 
+			data.put(App.NUM_TASKS, data.getInt(App.NUM_TASKS) + 1);
 			data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
 			editor.put(App.DATA, data.toString());
 
@@ -357,32 +374,28 @@ public class MainActivity extends FlyInFragmentActivity {
 		Log.i("Main Activity", "Added checklist " + name);
 
 		try {
-			JSONObject checklistData = new JSONObject();
-			checklistData.put(App.NAME, name);
-			checklistData.put(App.PARENT_ID, currentFolder);
-			checklistData.put(App.PARENT_CONTENT_TYPE, App.CHECKLIST);
+			JSONObject checklist = new JSONObject();
+			checklist.put(App.NAME, name);
+			checklist.put(App.PARENT_ID, currentFolder);
+			checklist.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
 
 			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
 
 			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				checklistData.put(App.ID, folder.getInt(App.NUM_CHILDREN));
-				checklistData.put(App.NUM_CHILDREN, 0);
+				// It needs to be checked if the number of checklists is correct
 
-				folder.put(App.CHECKLIST + folder.getInt(App.NUM_CHILDREN), checklistData.toString());
-				folder.put(App.NUM_CHILDREN, folder.getInt(App.NUM_CHILDREN) + 1);
-			} /*
-			 * else
-			 * 
-			 * if (folder.getString(App.CONTENT_TYPE).equals(App.TASK)) {
-			 * checklistData.put(App.ID, folder.getInt(App.NUM_CHILDREN));
-			 * 
-			 * folder.put(App.TASK + folder.getInt(App.NUM_CHILDREN),
-			 * checklistData.toString()); folder.put(App.NUM_CHILDREN,
-			 * folder.getInt(App.NUM_CHILDREN) + 1); }
-			 */
+				checklist.put(App.ID, data.getInt(App.NUM_CHECKLISTS));
 
-			data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
-			editor.put(App.DATA, data.toString());
+				folder.put(App.CHECKLIST + checklist.getInt(App.ID), checklist.toString());
+
+				String children = addToChildrenString(folder, checklist.getInt(App.ID));
+				folder.put(App.CHILDREN_IDS, children);
+
+				data.put(App.NUM_CHECKLISTS, data.getInt(App.NUM_CHECKLISTS) + 1);
+				data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
+
+				editor.put(App.DATA, data.toString());
+			}
 
 			updateData();
 		} catch (JSONException e) {
@@ -396,21 +409,27 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void addFolder(String name, String contentType, String type, boolean removable) {
 		try {
-			JSONObject folderData = new JSONObject();
-			folderData.put(App.NAME, name);
-			folderData.put(App.CONTENT_TYPE, contentType);
-			folderData.put(App.ID, data.getInt(App.NUM_CHILDREN));
-			folderData.put(App.REMOVABLE, removable);
-			folderData.put(App.TYPE, type);
+			JSONObject folder = new JSONObject();
+			folder.put(App.NAME, name);
+			folder.put(App.CONTENT_TYPE, contentType);
+			folder.put(App.ID, data.getInt(App.NUM_FOLDERS));
+			folder.put(App.REMOVABLE, removable);
+			folder.put(App.TYPE, type);
 
-			folderData.put(App.NUM_CHILDREN, 0);
+			// folder.put(App.NUM_CHILDREN, 0);
+			folder.put(App.CHILDREN_IDS, "");
 			// if (contentType == App.CHECKLIST)
 			// folderData.put(App.NUM_CHILDREN, 0);
 			// if (contentType == App.TASK) folderData.put(App.NUM_CHILDREN, 0);
 
 			// This makes the project non-visible
-			data.put(App.FOLDER + data.getInt(App.NUM_CHILDREN), folderData.toString());
-			data.put(App.NUM_CHILDREN, data.getInt(App.NUM_CHILDREN) + 1);
+			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
+			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
+			
+			String children = addToChildrenString(data, folder.getInt(App.ID));
+			data.put(App.CHILDREN_IDS, children);
+
+			// data.put(App.NUM_CHILDREN, data.getInt(App.NUM_CHILDREN) + 1);
 
 			editor.put(App.DATA, data.toString());
 
@@ -498,8 +517,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			// this should also load the correct data...
 
 			JSONObject object = new JSONObject(data.getString(App.FOLDER + id));
-			//if (type.equals(App.FOLDER)) object = new JSONObject(data.getString(App.FOLDER + id));
-			//else if (type.equals(App.PROJECT)) object = new JSONObject(data.getString(App.PROJECT + id));
+			// if (type.equals(App.FOLDER)) object = new
+			// JSONObject(data.getString(App.FOLDER + id));
+			// else if (type.equals(App.PROJECT)) object = new
+			// JSONObject(data.getString(App.PROJECT + id));
 
 			setTitle(object.getString(App.NAME));
 
@@ -693,6 +714,28 @@ public class MainActivity extends FlyInFragmentActivity {
 			name = name.substring(0, name.length() - 1);
 			nameTV.setText(name + "...");
 		}
+	}
+	
+	private String addToChildrenString(JSONObject parent, int newChildId) {
+		String[] s;
+		Log.i("Adding to child string", newChildId + "");
+		
+		try {
+			if(parent.has(App.CHILDREN_IDS))
+			s = parent.getString(App.CHILDREN_IDS).split(",");
+			else s = new String[0];
+			
+			String children = "";
+			for (String string : s)
+				children += string + ",";
+			children += newChildId;
+			
+			return children;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 
 	public void onBackPressed() {

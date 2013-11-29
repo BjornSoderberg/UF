@@ -85,9 +85,12 @@ public class ProjectView extends ContentView {
 			
 			JSONObject project = new JSONObject(data.getString(App.FOLDER + currentProject));
 			
-			for(int i = 0; i < project.getInt(App.NUM_CHILDREN); i++) {
-				if(project.has(App.CHECKLIST + i)) {
-					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + i));
+			String childrenIds[] = project.getString(App.CHILDREN_IDS).split(",");
+			
+			for(int i = 0; i < childrenIds.length; i++) {
+				String id = childrenIds[i];
+				if(project.has(App.CHECKLIST + id)) {
+					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + id));
 					
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));

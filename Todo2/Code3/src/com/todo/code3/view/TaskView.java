@@ -56,9 +56,10 @@ public class TaskView extends ContentView {
 					JSONObject task;
 					if (currentChecklist != -1) {
 						JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
-						task = new JSONObject(checklist.getString(App.TASK + taskItems.get(view.getId()).getId()));
+						
+						task = new JSONObject(checklist.getString(App.TASK + view.getId()));
 					} else {
-						task = new JSONObject(folder.getString(App.TASK + taskItems.get(view.getId()).getId()));
+						task = new JSONObject(folder.getString(App.TASK + view.getId()));
 					}
 					
 					activity.openTask(task);
@@ -88,10 +89,13 @@ public class TaskView extends ContentView {
 				parent = new JSONObject(parent.getString(App.CHECKLIST + currentChecklist));
 				isChecklistChild = true;
 			}
+			
+			String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
 
-			for (int i = 0; i < parent.getInt(App.NUM_CHILDREN); i++) {
-				if (parent.has(App.TASK + i)) {
-					JSONObject task = new JSONObject(parent.getString(App.TASK + i));
+			for (int i = 0; i < childrenIds.length; i++) {
+				String id = childrenIds[i];
+				if (parent.has(App.TASK + id)) {
+					JSONObject task = new JSONObject(parent.getString(App.TASK + id));
 
 					TaskItem ti = new TaskItem();
 					ti.setTitle(task.getString(App.NAME));

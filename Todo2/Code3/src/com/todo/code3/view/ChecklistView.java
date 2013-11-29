@@ -70,9 +70,12 @@ public class ChecklistView extends ContentView {
 			
 			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
 			
-			for(int i = 0; i < folder.getInt(App.NUM_CHILDREN); i++) {
-				if(folder.has(App.CHECKLIST + i)) {
-					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + i));
+			String childrenIds[] = folder.getString(App.CHILDREN_IDS).split(",");
+			
+			for(int i = 0; i < childrenIds.length; i++) {
+				String id = childrenIds[i];
+				if(folder.has(App.CHECKLIST + id)) {
+					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + id));
 					
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));
