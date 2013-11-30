@@ -1,13 +1,11 @@
 package com.todo.code3.view;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -19,12 +17,16 @@ import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.TaskAdapter;
 import com.todo.code3.misc.App;
+import com.todo.code3.xml.ContentItem;
+import com.todo.code3.xml.DynamicListView;
 import com.todo.code3.xml.TaskItem;
 
 public class TaskView extends ContentView {
 
 	private ListView listView;
 	private TextView empty;
+
+	private boolean hasDynamicListView;
 
 	private ArrayList<TaskItem> taskItems;
 
@@ -38,7 +40,12 @@ public class TaskView extends ContentView {
 	}
 
 	protected void init() {
-		View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.task_view, null);
+		hasDynamicListView = activity.getSDKVersion() >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS;
+
+		View v;
+		if (hasDynamicListView) v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.task_view_dynamic, null);
+		else v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.task_view, null);
+
 		LayoutParams params = new LayoutParams(activity.getContentWidth(), activity.getContentHeight());
 		v.setLayoutParams(params);
 		addView(v);
@@ -46,9 +53,12 @@ public class TaskView extends ContentView {
 		taskItems = new ArrayList<TaskItem>();
 
 		listView = (ListView) v.findViewById(R.id.listview);
-		TaskAdapter adapter = new TaskAdapter(activity, this);
 
+		TaskAdapter adapter = new TaskAdapter(activity, this);
 		listView.setAdapter(adapter);
+
+		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
+
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				try {
@@ -56,24 +66,19 @@ public class TaskView extends ContentView {
 					JSONObject task;
 					if (currentChecklist != -1) {
 						JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
-						
+
 						task = new JSONObject(checklist.getString(App.TASK + view.getId()));
 					} else {
 						task = new JSONObject(folder.getString(App.TASK + view.getId()));
 					}
-					
-					activity.openTask(task);
-					// JSONObject task = new
-					// JSONObject(checklist.getString(App.TASK +
-					// currentChecklist));
 
-					// vchecklistItems.get(view.getId()).getId())
+					activity.openTask(task);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
+
 		empty = (TextView) findViewById(R.id.empty);
 		empty.setText("This checklist is empty. Tap the + in the upper right corner to add a new task");
 	}
@@ -89,7 +94,7 @@ public class TaskView extends ContentView {
 				parent = new JSONObject(parent.getString(App.CHECKLIST + currentChecklist));
 				isChecklistChild = true;
 			}
-			
+
 			String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
 
 			for (int i = 0; i < childrenIds.length; i++) {
@@ -104,8 +109,6 @@ public class TaskView extends ContentView {
 					ti.setFolderId(currentFolder);
 
 					if (isChecklistChild) ti.setChecklistId(parent.getInt(App.ID));
-					// redundant
-					// else ti.isChecklistChild(isChecklistChild);
 
 					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED)) ti.completed(true);
 					else ti.completed(false);
@@ -114,16 +117,43 @@ public class TaskView extends ContentView {
 				}
 			}
 
+			sortTaskItems();
+
 			((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+
+			if (hasDynamicListView) ((DynamicListView) listView).setTaskItems(taskItems);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
-		if(taskItems.size() == 0) {
+
+		if (taskItems.size() == 0) {
 			empty.setVisibility(View.VISIBLE);
 		} else {
 			empty.setVisibility(View.GONE);
 		}
+	}
+
+	public void updateContentItemsOrder() {
+		String order = "";
+		for (int i = 0; i < taskItems.size() - 1; i++) {
+			order += taskItems.get(i).getId() + ",";
+		}
+		order += taskItems.get(taskItems.size() - 1).getId();
+		activity.updateChilrenOrder(order, currentChecklist, currentFolder);
+	}
+
+	private void sortTaskItems() {
+		ArrayList<TaskItem> checked = new ArrayList<TaskItem>();
+		ArrayList<TaskItem> unchecked = new ArrayList<TaskItem>();
+
+		for (TaskItem i : taskItems) {
+			if (i.isCompleted()) checked.add(i);
+			else unchecked.add(i);
+		}
+
+		taskItems.clear();
+		taskItems.addAll(unchecked);
+		taskItems.addAll(checked);
 	}
 
 	public ArrayList<TaskItem> getTaskItems() {
@@ -131,24 +161,7 @@ public class TaskView extends ContentView {
 	}
 
 	public void leave() {
-		
+
 	}
 
-//	public void setFolderAndChecklist(int folder, int checklist) {
-//		currentFolder = folder;
-//		currentChecklist = checklist;
-//	}
-
 }
-
-/*
- * FOR CHECKLIST VIEW public void onItemClick(AdapterView<?> parent, View view,
- * int position, long id) { if (folderContentType.equals(App.CHECKLIST)) { try {
- * JSONObject folder = new JSONObject(data.getString(App.FOLDER +
- * currentFolder)); JSONObject checklist = new
- * JSONObject(folder.getString(App.CHECKLIST +
- * contentItems.get(view.getId()).getId())); if
- * (contentItems.get(view.getId()).isEnabled()) openChecklist(checklist);
- * 
- * } catch (JSONException e) { e.printStackTrace(); } } }
- */

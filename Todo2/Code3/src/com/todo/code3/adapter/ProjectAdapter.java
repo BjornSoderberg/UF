@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
-import com.todo.code3.view.ChecklistView;
 import com.todo.code3.view.ProjectView;
+import com.todo.code3.xml.ChecklistItem;
 import com.todo.code3.xml.ContentItem;
 
 public class ProjectAdapter extends BaseAdapter {
@@ -19,8 +19,7 @@ public class ProjectAdapter extends BaseAdapter {
 
 	private MainActivity activity;
 	private ProjectView projectView;
-	
-	
+
 	public ProjectAdapter(MainActivity activity, ProjectView projectView) {
 		inflater = LayoutInflater.from(activity);
 		this.activity = activity;
@@ -31,12 +30,16 @@ public class ProjectAdapter extends BaseAdapter {
 		return projectView.getChecklistItems().size();
 	}
 
-	public Object getItem(int position) {
-		return null;
+	public ChecklistItem getItem(int position) {
+		return projectView.getChecklistItems().get(position);
 	}
 
 	public long getItemId(int position) {
-		return -1;
+		if (position < 0 || position >= projectView.getChecklistItems().size()) {
+			return -1;
+		}
+		ChecklistItem item = getItem(position);
+		return item.getId();
 	}
 
 	public View getView(int position, View view, ViewGroup parent) {

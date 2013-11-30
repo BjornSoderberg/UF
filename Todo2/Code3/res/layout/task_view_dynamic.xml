@@ -12,13 +12,13 @@
         android:text="Empty..."
         android:visibility="gone" />
 
-    <ListView
+    <com.todo.code3.xml.DynamicListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="#00000000"
         android:background="#cccccc"
         android:visibility="visible" >
-    </ListView>
+    </com.todo.code3.xml.DynamicListView>
 
 </LinearLayout>

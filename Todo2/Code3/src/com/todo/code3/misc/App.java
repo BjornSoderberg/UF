@@ -35,13 +35,10 @@ public class App {
 	public static final String CHECKLIST = "checklist";
 	public static final String TASK = "task";
 	
+	public static final int TASK_VIEW = 0;
+	public static final int CHECKLIST_VIEW = 1;
+	
 	public static final String DESCRIPTION = "description";
 	
-	public static float dpToPx(float dp, Context context){
-	    Resources resources = context.getResources();
-	    DisplayMetrics metrics = resources.getDisplayMetrics();
-	    float px = dp * (metrics.densityDpi / 160f);
-	    return px;
-	}
-
+	public static final int MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS = 11;
 }

@@ -23,4 +23,6 @@ public abstract class ContentView extends LinearLayout {
 	public abstract void leave();
 	
 	public abstract void update(JSONObject data);
+	
+	public abstract void updateContentItemsOrder();
 }

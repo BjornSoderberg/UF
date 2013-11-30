@@ -1,7 +1,6 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -37,8 +37,8 @@ import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
 import com.todo.code3.view.ChecklistView;
 import com.todo.code3.view.ContentView;
-import com.todo.code3.view.TaskContentView;
 import com.todo.code3.view.ProjectView;
+import com.todo.code3.view.TaskContentView;
 import com.todo.code3.view.TaskView;
 
 public class MainActivity extends FlyInFragmentActivity {
@@ -234,8 +234,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void updateData() {
 		Log.i("Updating data...", data.toString());
 
-		// removes the view that are not next 
-		//to the right of the view the user sees
+		// removes the view that are not next
+		// to the right of the view the user sees
 		for (int i = 0; i < contentViews.size(); i++) {
 			if (i > posInWrapper + 1) contentViews.remove(i);
 		}
@@ -256,13 +256,14 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		try {
 			String[] childrenIds = data.getString(App.CHILDREN_IDS).split(",");
-			
+
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
 				if (data.has(App.FOLDER + id)) {
 					JSONObject folder = new JSONObject(data.getString(App.FOLDER + id));
 					FlyInMenuItem mi = new FlyInMenuItem();
-					mi.setTitle(folder.getString(App.NAME) + " - " + (folder.getString(App.CHILDREN_IDS).split(",").length - 1) + " (" + folder.getString(App.TYPE) + ")");
+					int numChildren = (folder.getString(App.CHILDREN_IDS).length() == 0) ? 0 : folder.getString(App.CHILDREN_IDS).split(",").length;
+					mi.setTitle(folder.getString(App.NAME) + " - " + numChildren + " (" + folder.getString(App.TYPE) + ")");
 					mi.setId(folder.getInt(App.ID));
 					mi.setType(folder.getString(App.TYPE));
 					// mi.setIcon(res id);
@@ -345,7 +346,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				task.put(App.PARENT_ID, currentChecklist);
 
 				checklist.put(App.TASK + task.getInt(App.ID), task.toString());
-				
+
 				String children = addToChildrenString(checklist, task.getInt(App.ID));
 				checklist.put(App.CHILDREN_IDS, children);
 
@@ -356,7 +357,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 				String children = addToChildrenString(folder, task.getInt(App.ID));
 				folder.put(App.CHILDREN_IDS, children);
-				
+
 				folder.put(App.TASK + task.getInt(App.ID), task.toString());
 			}
 
@@ -425,8 +426,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			// This makes the project non-visible
 			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
 			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
+
 			
-			String children = addToChildrenString(data, folder.getInt(App.ID));
+			String children = addToChildrenString(data, folder.getInt(App.ID), true);
+			Log.i("asdsadsadsads c", children);
 			data.put(App.CHILDREN_IDS, children);
 
 			// data.put(App.NUM_CHILDREN, data.getInt(App.NUM_CHILDREN) + 1);
@@ -715,27 +718,68 @@ public class MainActivity extends FlyInFragmentActivity {
 			nameTV.setText(name + "...");
 		}
 	}
-	
+
 	private String addToChildrenString(JSONObject parent, int newChildId) {
+		return addToChildrenString(parent, newChildId, false);
+	}
+
+	private String addToChildrenString(JSONObject parent, int newChildId, boolean atBeginning) {
 		String[] s;
 		Log.i("Adding to child string", newChildId + "");
-		
+
 		try {
-			if(parent.has(App.CHILDREN_IDS))
-			s = parent.getString(App.CHILDREN_IDS).split(",");
+			if (parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
 			else s = new String[0];
-			
+
 			String children = "";
-			for (String string : s)
-				children += string + ",";
-			children += newChildId;
-			
+			if (atBeginning) {
+				for (String string : s)
+					children += string + ",";
+				children += newChildId;
+			} else {
+				children += newChildId;
+				for (String string : s)
+					children += "," + string;
+			}
 			return children;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "";
+	}
+
+	public void updateChilrenOrder(String children, int checklistId, int folderId) {
+		try {
+			JSONObject folder, checklist;
+			
+			children = children.replaceAll(" ", "");
+
+			if (folderId != -1) {
+				if (data.has(App.FOLDER + folderId)) {
+					folder = new JSONObject(data.getString(App.FOLDER + folderId));
+
+					if (checklistId == -1) {
+						folder.put(App.CHILDREN_IDS, children);
+					} else if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
+						if (folder.has(App.CHECKLIST + checklistId)) {
+							checklist = new JSONObject(folder.getString(App.CHECKLIST + checklistId));
+							checklist.put(App.CHILDREN_IDS, children);
+
+							folder.put(App.CHECKLIST + checklistId, checklist.toString());
+						}
+					}
+
+					data.put(App.FOLDER + folderId, folder.toString());
+
+					editor.put(App.DATA, data.toString());
+					updateData();
+				}
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onBackPressed() {
@@ -744,6 +788,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		} else {
 			goBack();
 		}
+	}
+	
+	public int getSDKVersion() {
+		return Build.VERSION.SDK_INT;
 	}
 
 	protected class SmoothInterpolator implements Interpolator {

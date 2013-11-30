@@ -118,9 +118,8 @@ public class TaskContentView extends ContentView {
 		activity.setTaskDescription(desc, currentTask, currentChecklist, currentFolder);
 	}
 
-	// public void setFolderAndChecklistAndTask(int folder, int checklist, int
-	// task) {
-	//
-	// }
+	// not used
+	public void updateContentItemsOrder() {		
+	}
 
 }

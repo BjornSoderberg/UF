@@ -32,13 +32,17 @@ public class TaskAdapter extends BaseAdapter {
 		return taskView.getTaskItems().size();
 	}
 
-	public Object getItem(int position) {
-		return null;
+	public TaskItem getItem(int position) {
+		return taskView.getTaskItems().get(position);
 	}
 
 	public long getItemId(int position) {
-		return -1;
-	}
+        if (position < 0 || position >= taskView.getTaskItems().size()) {
+            return -1;
+        }
+        TaskItem item = getItem(position);
+        return item.getId();
+    }
 
 	public View getView(int position, View view, ViewGroup parent) {
 		final TaskItem item = taskView.getTaskItems().get(position);
