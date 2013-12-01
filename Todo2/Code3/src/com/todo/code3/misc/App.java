@@ -3,6 +3,7 @@ package com.todo.code3.misc;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 public class App {
 	
@@ -41,4 +42,17 @@ public class App {
 	public static final String DESCRIPTION = "description";
 	
 	public static final int MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS = 11;
+	public static final int BEZEL_AREA_DP = 30;
+	
+	public static int dpToPx(int dp, Resources r) {
+	    DisplayMetrics displayMetrics = r.getDisplayMetrics();
+	    int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
+	    return px;
+	}
+	
+	public static int pxToDp(int px, Resources r) {
+	    DisplayMetrics displayMetrics = r.getDisplayMetrics();
+	    int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+	    return dp;
+	}
 }

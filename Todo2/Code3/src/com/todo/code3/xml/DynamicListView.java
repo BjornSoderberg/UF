@@ -30,16 +30,20 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.espian.flyin.library.FlyInMenu;
 import com.todo.code3.misc.App;
 import com.todo.code3.view.ChecklistView;
 import com.todo.code3.view.ContentView;
@@ -254,62 +258,119 @@ public class DynamicListView extends ListView {
 		}
 	}
 
+	int x, ox, y, startX, startY;
+	long time;
+	boolean startedAtEdge = false;
+	boolean isDragging = false;
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_DOWN:
-			mDownX = (int) event.getX();
-			mDownY = (int) event.getY();
-			mActivePointerId = event.getPointerId(0);
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mActivePointerId == INVALID_POINTER_ID) {
-				break;
-			}
-
-			int pointerIndex = event.findPointerIndex(mActivePointerId);
-
-			mLastEventY = (int) event.getY(pointerIndex);
-			int deltaY = mLastEventY - mDownY;
-
-			if (mCellIsMobile) {
-				mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mHoverCellOriginalBounds.top + deltaY + mTotalOffset);
-				mHoverCell.setBounds(mHoverCellCurrentBounds);
-				invalidate();
-
-				handleCellSwitch();
-
-				mIsMobileScrolling = false;
-				handleMobileCellScroll();
-
-				return false;
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			touchEventsEnded();
-			break;
-		case MotionEvent.ACTION_CANCEL:
-			touchEventsCancelled();
-			break;
-		case MotionEvent.ACTION_POINTER_UP:
-			/*
-			 * If a multitouch event took place and the original touch dictating
-			 * the movement of the hover cell has ended, then the dragging event
-			 * ends and the hover cell is animated to its corresponding position
-			 * in the listview.
-			 */
-			pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-			final int pointerId = event.getPointerId(pointerIndex);
-			if (pointerId == mActivePointerId) {
-				touchEventsEnded();
-			}
-			break;
-		default:
-			break;
-		}
-
-		return super.onTouchEvent(event);
+//		ViewConfiguration v = ViewConfiguration.get(contentView.getActivity());
+//
+//		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//			startX = x = (int) event.getRawX();
+//			startY = y = (int) event.getRawY();
+//
+//			time = System.currentTimeMillis();
+//
+//			if (x <= App.dpToPx(30, contentView.getActivity().getResources())) startedAtEdge = true;
+//
+//			Log.i("Action down", startedAtEdge + " : " + x + " (needs to be " + App.dpToPx(30, contentView.getActivity().getResources()) + ")");
+//		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+//
+//			x = (int) event.getRawX();
+//			y = (int) event.getRawY();
+//
+//			if (startedAtEdge) {
+//				if (Math.hypot(x - startX, y - startY) > v.getScaledTouchSlop()) {
+//					isDragging = true;
+//				}
+//				if (isDragging) {
+//					int dx = x - ox;
+//					((FlyInMenu) contentView.getActivity().getFlyInMenu()).moveMenu(dx);
+//					ox = x;
+//				}
+//
+//				Log.i("touch slop", v.getScaledTouchSlop() + " : " + Math.hypot(x - startX, y - startY));
+//			}
+//
+//		} else if (event.getAction() == MotionEvent.ACTION_UP) {
+//			startedAtEdge = false;
+//			isDragging = false;
+//
+//			long dt = System.currentTimeMillis() - time;
+//
+//			if (Math.hypot(x - startX, y - startY) / dt > v.getScaledMinimumFlingVelocity()) {
+//				if (x - startX > 0) contentView.getActivity().getFlyInMenu().showMenu();
+//				else contentView.getActivity().getFlyInMenu().hideMenu();
+//			} else {
+//				if(x - startX > contentView.getActivity().getContentWidth()/2) contentView.getActivity().getFlyInMenu().showMenu();
+//				else contentView.getActivity().getFlyInMenu().hideMenu();
+//			}
+//
+//			Log.i("asdsadsa", dt + "");
+//			Log.i("asdasdsad", Math.hypot(x - startX, y - startY) / (dt*1.0 / 1000*1.0) + " px / s ...... " + v.getScaledMinimumFlingVelocity() + " px / s");
+//
+//			Log.i("Action up", "stopped dragging");
+//		}
+//
+//		return super.onTouchEvent(event);
+		 switch (event.getAction() & MotionEvent.ACTION_MASK) {
+		 case MotionEvent.ACTION_DOWN:
+		 mDownX = (int) event.getX();
+		 mDownY = (int) event.getY();
+		 mActivePointerId = event.getPointerId(0);
+		 break;
+		 case MotionEvent.ACTION_MOVE:
+		 if (mActivePointerId == INVALID_POINTER_ID) {
+		 break;
+		 }
+		
+		 int pointerIndex = event.findPointerIndex(mActivePointerId);
+		
+		 mLastEventY = (int) event.getY(pointerIndex);
+		 int deltaY = mLastEventY - mDownY;
+		
+		 if (mCellIsMobile) {
+		 mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left,
+		 mHoverCellOriginalBounds.top + deltaY + mTotalOffset);
+		 mHoverCell.setBounds(mHoverCellCurrentBounds);
+		 invalidate();
+		
+		 handleCellSwitch();
+		
+		 mIsMobileScrolling = false;
+		 handleMobileCellScroll();
+		
+		 return false;
+		 }
+		 break;
+		 case MotionEvent.ACTION_UP:
+		 touchEventsEnded();
+		 break;
+		 case MotionEvent.ACTION_CANCEL:
+		 touchEventsCancelled();
+		 break;
+		 case MotionEvent.ACTION_POINTER_UP:
+		 /*
+		 * If a multitouch event took place and the original touch dictating
+		 * the movement of the hover cell has ended, then the dragging event
+		 * ends and the hover cell is animated to its corresponding position
+		 * in the listview.
+		 */
+		 pointerIndex = (event.getAction() &
+		 MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+		 MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+		 final int pointerId = event.getPointerId(pointerIndex);
+		 if (pointerId == mActivePointerId) {
+		 touchEventsEnded();
+		 }
+		 break;
+		 default:
+		 break;
+		 }
+		
+		 return super.onTouchEvent(event);
 	}
 
 	/**
@@ -614,5 +675,10 @@ public class DynamicListView extends ListView {
 				}
 			}
 		}
+	};
+
+	public boolean onInterceptTouchEvent(MotionEvent e) {
+		Log.i("asdasd", "intercept");
+		return false;
 	};
 }

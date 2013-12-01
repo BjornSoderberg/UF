@@ -40,6 +40,7 @@ import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ProjectView;
 import com.todo.code3.view.TaskContentView;
 import com.todo.code3.view.TaskView;
+import com.todo.code3.xml.Wrapper;
 
 public class MainActivity extends FlyInFragmentActivity {
 
@@ -73,7 +74,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private int posInWrapper = 0;
 	private long scrollFps = 1000 / 60;
 
-	private int width, height;
+	private int width, height, menuWidth;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,6 +91,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		width = dm.widthPixels;
 		height = dm.heightPixels;
+		menuWidth = (int) (width * 0.8);
 
 		setContentView(R.layout.wrapper);
 
@@ -101,7 +103,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		initXML();
 		initBar();
 
-		loadFlyInMenu();
+		loadFlyInMenu(getMenuWidth());
 
 		getDataFromSharedPreferences();
 	}
@@ -141,6 +143,9 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void initXML() {
+		// Gives the wrapper (which makes swiping the menu open) possible
+		((Wrapper) findViewById(R.id.bigWrapper)).setActivity(this);
+		
 		wrapper = (LinearLayout) findViewById(R.id.wrapper);
 
 		nameTV = (TextView) findViewById(R.id.name);
@@ -427,7 +432,6 @@ public class MainActivity extends FlyInFragmentActivity {
 			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
 			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
 
-			
 			String children = addToChildrenString(data, folder.getInt(App.ID), true);
 			Log.i("asdsadsadsads c", children);
 			data.put(App.CHILDREN_IDS, children);
@@ -752,7 +756,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void updateChilrenOrder(String children, int checklistId, int folderId) {
 		try {
 			JSONObject folder, checklist;
-			
+
 			children = children.replaceAll(" ", "");
 
 			if (folderId != -1) {
@@ -789,9 +793,17 @@ public class MainActivity extends FlyInFragmentActivity {
 			goBack();
 		}
 	}
-	
+
+	public FlyInMenu getFlyInMenu() {
+		return super.getFlyInMenu();
+	}
+
 	public int getSDKVersion() {
 		return Build.VERSION.SDK_INT;
+	}
+
+	public int getMenuWidth() {
+		return menuWidth;
 	}
 
 	protected class SmoothInterpolator implements Interpolator {
@@ -807,5 +819,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			adjustContentPosition(isAnimationOngoing);
 		}
+	}
+	
+	public Button getDragButton() {
+		return dragButton;
 	}
 }

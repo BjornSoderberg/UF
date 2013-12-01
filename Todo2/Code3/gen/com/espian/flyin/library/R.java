@@ -17,13 +17,12 @@ public final class R {
 		public static final int rbm_menu_background = 0x7f050000;
 	}
 	public static final class dimen {
-		public static final int rbm_item_image_height = 0x7f060003;
-		public static final int rbm_item_image_width = 0x7f060004;
-		public static final int rbm_item_padding_leftright = 0x7f060002;
-		public static final int rbm_item_padding_topbottom = 0x7f060001;
-		public static final int rbm_item_text_padding_left = 0x7f060006;
-		public static final int rbm_item_text_size = 0x7f060005;
-		public static final int rbm_menu_width = 0x7f060000;
+		public static final int rbm_item_image_height = 0x7f060002;
+		public static final int rbm_item_image_width = 0x7f060003;
+		public static final int rbm_item_padding_leftright = 0x7f060001;
+		public static final int rbm_item_padding_topbottom = 0x7f060000;
+		public static final int rbm_item_text_padding_left = 0x7f060005;
+		public static final int rbm_item_text_size = 0x7f060004;
 	}
 	public static final class id {
 		public static final int fly_custom = 0x7f070007;

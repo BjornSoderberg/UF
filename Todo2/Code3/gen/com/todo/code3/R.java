@@ -20,13 +20,12 @@ public final class R {
         public static final int rbm_menu_background=0x7f050000;
     }
     public static final class dimen {
-        public static final int rbm_item_image_height=0x7f060003;
-        public static final int rbm_item_image_width=0x7f060004;
-        public static final int rbm_item_padding_leftright=0x7f060002;
-        public static final int rbm_item_padding_topbottom=0x7f060001;
-        public static final int rbm_item_text_padding_left=0x7f060006;
-        public static final int rbm_item_text_size=0x7f060005;
-        public static final int rbm_menu_width=0x7f060000;
+        public static final int rbm_item_image_height=0x7f060002;
+        public static final int rbm_item_image_width=0x7f060003;
+        public static final int rbm_item_padding_leftright=0x7f060001;
+        public static final int rbm_item_padding_topbottom=0x7f060000;
+        public static final int rbm_item_text_padding_left=0x7f060005;
+        public static final int rbm_item_text_size=0x7f060004;
     }
     public static final class drawable {
         public static final int cancel=0x7f020000;
@@ -36,42 +35,49 @@ public final class R {
         public static final int split=0x7f020004;
     }
     public static final class id {
-        public static final int addButton=0x7f070011;
-        public static final int backButton=0x7f070010;
-        public static final int bar=0x7f07000e;
-        public static final int barBorder=0x7f070013;
-        public static final int descET=0x7f070009;
-        public static final int descTV=0x7f07000b;
-        public static final int dragButton=0x7f07000f;
+        public static final int addButton=0x7f070013;
+        public static final int backButton=0x7f070012;
+        public static final int bar=0x7f070010;
+        public static final int barBorder=0x7f070015;
+        public static final int bigWrapper=0x7f07000f;
+        public static final int descET=0x7f07000a;
+        public static final int descTV=0x7f07000c;
+        public static final int dragButton=0x7f070011;
         public static final int empty=0x7f070002;
         public static final int fly_custom=0x7f070007;
         public static final int fly_listview=0x7f070006;
         public static final int fly_menu_holder=0x7f070005;
         public static final int fly_outside=0x7f070008;
         public static final int fly_searchview=0x7f070000;
-        public static final int focusDummy=0x7f07000c;
+        public static final int focusDummy=0x7f07000d;
         public static final int listview=0x7f070003;
-        public static final int name=0x7f070012;
-        public static final int rbm_item_checkbox=0x7f07000d;
+        public static final int name=0x7f070014;
+        public static final int rbm_item_checkbox=0x7f07000e;
         public static final int rbm_item_icon=0x7f070004;
         public static final int rbm_item_text=0x7f070001;
-        public static final int ribbon_menu_home=0x7f070016;
-        public static final int ribbon_menu_home2=0x7f070017;
-        public static final int ribbon_menu_home3=0x7f070018;
-        public static final int saveButton=0x7f07000a;
-        public static final int textView1=0x7f070015;
-        public static final int wrapper=0x7f070014;
+        public static final int ribbon_menu_home=0x7f070018;
+        public static final int ribbon_menu_home2=0x7f070019;
+        public static final int ribbon_menu_home3=0x7f07001a;
+        public static final int saveButton=0x7f07000b;
+        public static final int stats=0x7f070009;
+        public static final int textView1=0x7f070017;
+        public static final int wrapper=0x7f070016;
     }
     public static final class layout {
         public static final int checklist_item=0x7f030000;
         public static final int checklist_view=0x7f030001;
-        public static final int fly_item=0x7f030002;
-        public static final int fly_menu=0x7f030003;
-        public static final int main=0x7f030004;
-        public static final int task_content_view=0x7f030005;
-        public static final int task_item=0x7f030006;
-        public static final int task_view=0x7f030007;
-        public static final int wrapper=0x7f030008;
+        public static final int checklist_view_dynamic=0x7f030002;
+        public static final int fly_item=0x7f030003;
+        public static final int fly_menu=0x7f030004;
+        public static final int main=0x7f030005;
+        public static final int project_view=0x7f030006;
+        public static final int project_view_dynamic=0x7f030007;
+        public static final int task_content_view=0x7f030008;
+        public static final int task_item=0x7f030009;
+        public static final int task_view=0x7f03000a;
+        public static final int task_view_dynamic=0x7f03000b;
+        public static final int textview=0x7f03000c;
+        public static final int wrapper=0x7f03000d;
     }
     public static final class menu {
         public static final int ribbon_menu=0x7f090000;

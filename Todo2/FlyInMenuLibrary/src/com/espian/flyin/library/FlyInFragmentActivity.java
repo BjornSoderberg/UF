@@ -30,7 +30,6 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	public void onCreate(Bundle saved) {
 		super.onCreate(saved);
 		flyMenuView = new FlyInMenu(this);
-		flyMenuView.setType(FlyInMenu.FLY_IN_WITH_ACTIVITY);
 		flyMenuView.post(new Runnable() {
 			public void run() {
 				flyMenuView.setPadding(0, getStatusBarOffset(), 0, 0);
@@ -56,22 +55,8 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	 * 
 	 * @return the FlyInMenu, or null if there isn't one
 	 */
-	protected FlyInMenu getFlyInMenu() {
+	public FlyInMenu getFlyInMenu() {
 		return flyMenuView;
-	}
-
-	/**
-	 * Set the fly-in animation type of the menu. This can be either
-	 * {@link FlyInMenu#FLY_IN_WITH_ACTIVITY}, where the fly-in menu pushes the
-	 * Activity right; or {@link FlyInMenu#FLY_IN_OVER_ACTIVITY}, where the
-	 * fly-in menu slides over the Activity.
-	 * 
-	 * @param type
-	 *            Either {@link FlyInMenu#FLY_IN_WITH_ACTIVITY} or
-	 *            {@link FlyInMenu#FLY_IN_OVER_ACTIVITY}
-	 */
-	protected void setFlyInType(int type) {
-		flyMenuView.setType(type);
 	}
 
 	/**
@@ -85,21 +70,13 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	 * @param menuId
 	 *            menu resource to load
 	 */
-	protected void loadFlyInMenu() {
+	protected void loadFlyInMenu(int menuWidth) {
 		flyMenuView.setMenuItems();
+		flyMenuView.setMenuWidth(menuWidth);
 		flyMenuView.setOnFlyInItemClickListener(this);
 		((ViewGroup) getWindow().getDecorView()).removeView(flyMenuView);
 		((ViewGroup) getWindow().getDecorView()).addView(flyMenuView);
 		hasFlyMenu = true;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			try {
-				// getActionBar().setDisplayHomeAsUpEnabled(false);
-			} catch (NullPointerException npe) {
-				throw new RuntimeException("SherlockActivity has no Support ActionBar. Ensure you are not using " + "a NoActionBarTheme");
-			} catch (Exception ex) {
-				Log.w(FlyInFragmentActivity.class.getName(), ex.getClass().getName() + " : Likely running an API lower than 11");
-			}
-		}
 	}
 
 	protected void updateMenuItems() {
