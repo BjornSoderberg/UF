@@ -1,16 +1,11 @@
 package com.todo.code3.xml;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.misc.App;
@@ -46,8 +41,8 @@ public class Wrapper extends LinearLayout {
 		if (activity == null) return true;
 
 		if (e.getAction() == MotionEvent.ACTION_DOWN) {
-			startX = x = lastX = (int) e.getRawX();
-			startY = y = (int) e.getRawY();
+			startX = x = lastX = (int) e.getX();
+			startY = y = (int) e.getY();
 
 			startTime = System.currentTimeMillis();
 
@@ -57,11 +52,11 @@ public class Wrapper extends LinearLayout {
 			// the correct location to be able to
 			// open the menu
 			if (x <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources()) && x >= 0) dragStartLocation = MENU_CLOSED;
-			if (activity.getMenuWidth() < e.getRawX()) dragStartLocation = MENU_OPEN;
+			if (activity.getMenuWidth() < e.getX()) dragStartLocation = MENU_OPEN;
 
 		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-			x = (int) e.getRawX();
-			y = (int) e.getRawY();
+			x = (int) e.getX();
+			y = (int) e.getY();
 
 			if (dragStartLocation != -1) {
 				// If the swipe is long enough to be considered a scroll
@@ -86,7 +81,14 @@ public class Wrapper extends LinearLayout {
 					else activity.getFlyInMenu().hideMenu();
 				}
 			}
-			if (!isDragging && dragStartLocation == MENU_OPEN) activity.getFlyInMenu().hideMenu();
+			if (!isDragging) {
+				Button b = activity.getDragButton();
+
+				if (dragStartLocation == MENU_OPEN) activity.getFlyInMenu().hideMenu();
+				else if (b.getLeft() < startX && startX < b.getRight() //
+						&& b.getTop() < startY && startY < b.getBottom()) activity.getFlyInMenu().toggleMenu();
+
+			}
 
 			isDragging = false;
 			dragStartLocation = -1;
@@ -96,19 +98,23 @@ public class Wrapper extends LinearLayout {
 	}
 
 	public boolean onInterceptTouchEvent(MotionEvent e) {
-		Button b = activity.getDragButton();
-
-		// The user will not be able to drag the menu if he tries
-		// to touch where the drag button is (the button that opens
-		// the menu. This prevents the buttons onClick method from being
-		// overridden.
-		if (b.getLeft() < e.getRawX() && e.getRawX() < b.getRight() && b.getTop() < e.getRawY() && e.getRawY() < b.getBottom()) return false;
-
+		// If the menu is visible, the user is able to drag,
+		// as long as he does not drag on the menu
 		if (!isDragging && activity.getFlyInMenu().isMenuVisible()) {
 			return true;
 		}
 
-		if (e.getRawX() > App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return false;
+		Button b = activity.getDragButton();
+		// if the back button is visible and the user touches
+		// the button, the menu should not open
+		if (e.getX() < b.getRight() && e.getY() < b.getBottom()) {
+			if (activity.getPosInWrapper() != 0) return false;
+			else return true;
+		}
+
+		// If the touch is outside the touch area for the drag, the user should
+		// not be able to drag
+		if (e.getX() > App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return false;
 
 		return true;
 	}

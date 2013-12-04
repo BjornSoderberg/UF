@@ -95,7 +95,11 @@ public class TaskView extends ContentView {
 				isChecklistChild = true;
 			}
 
-			String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
+			String childrenIds[];
+			
+			if(parent.has(App.CHILDREN_IDS))
+			childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+			else childrenIds = new String[0];
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];

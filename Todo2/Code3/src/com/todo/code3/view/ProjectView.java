@@ -67,7 +67,7 @@ public class ProjectView extends ContentView {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				try {
 					JSONObject project = new JSONObject(activity.getData().getString(App.FOLDER + currentProject));
-					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + checklistItems.get(view.getId()).getId()));
+					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + view.getId()));
 
 					if (checklistItems.get(view.getId()).isEnabled()) activity.openChecklist(checklist);
 				} catch (JSONException e) {

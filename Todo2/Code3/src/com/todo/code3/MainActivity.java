@@ -21,7 +21,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -81,7 +81,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		// this makes the app go fullscreen
 		// this solved the issue about the wrapper being to big
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		// scroller = new Scroller(this, new SmoothInterpolator());
 		scroller = new Scroller(this, AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
@@ -90,8 +90,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		width = dm.widthPixels;
-		height = dm.heightPixels;
+		height = dm.heightPixels - App.getStatusBarHeight(getResources());
 		menuWidth = (int) (width * 0.8);
+		
+		Log.i("asdasdsa", height + ", " + dm.heightPixels);
 
 		setContentView(R.layout.wrapper);
 
@@ -145,7 +147,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void initXML() {
 		// Gives the wrapper (which makes swiping the menu open) possible
 		((Wrapper) findViewById(R.id.bigWrapper)).setActivity(this);
-		
+
 		wrapper = (LinearLayout) findViewById(R.id.wrapper);
 
 		nameTV = (TextView) findViewById(R.id.name);
@@ -260,7 +262,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		menu.clearMenuItems();
 
 		try {
-			String[] childrenIds = data.getString(App.CHILDREN_IDS).split(",");
+			String[] childrenIds;
+			
+			if (data.has(App.CHILDREN_IDS)) childrenIds = data.getString(App.CHILDREN_IDS).split(",");
+			else childrenIds = new String[0];
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
@@ -336,77 +341,19 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void addTask(String name) {
 		Log.i("Main Activity", "Added task " + name);
 
-		try {
-			JSONObject task = new JSONObject();
-			task.put(App.NAME, name);
-			// It needs to be checked if the number of tasks is correct
-			task.put(App.ID, data.getInt(App.NUM_TASKS));
+		data = App.addTask(name, currentChecklist, currentFolder, data);
 
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
-
-			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
-
-				task.put(App.PARENT_CONTENT_TYPE, App.CHECKLIST);
-				task.put(App.PARENT_ID, currentChecklist);
-
-				checklist.put(App.TASK + task.getInt(App.ID), task.toString());
-
-				String children = addToChildrenString(checklist, task.getInt(App.ID));
-				checklist.put(App.CHILDREN_IDS, children);
-
-				folder.put(App.CHECKLIST + currentChecklist, checklist.toString());
-			} else if (folder.getString(App.CONTENT_TYPE).equals(App.TASK)) {
-				task.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
-				task.put(App.PARENT_ID, currentFolder);
-
-				String children = addToChildrenString(folder, task.getInt(App.ID));
-				folder.put(App.CHILDREN_IDS, children);
-
-				folder.put(App.TASK + task.getInt(App.ID), task.toString());
-			}
-
-			data.put(App.NUM_TASKS, data.getInt(App.NUM_TASKS) + 1);
-			data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
-			editor.put(App.DATA, data.toString());
-
-			updateData();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		editor.put(App.DATA, data.toString());
+		updateData();
 	}
 
 	private void addChecklist(String name) {
 		Log.i("Main Activity", "Added checklist " + name);
 
-		try {
-			JSONObject checklist = new JSONObject();
-			checklist.put(App.NAME, name);
-			checklist.put(App.PARENT_ID, currentFolder);
-			checklist.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
+		data = App.addChecklist(name, currentFolder, data);
+		editor.put(App.DATA, data.toString());
 
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
-
-			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				// It needs to be checked if the number of checklists is correct
-
-				checklist.put(App.ID, data.getInt(App.NUM_CHECKLISTS));
-
-				folder.put(App.CHECKLIST + checklist.getInt(App.ID), checklist.toString());
-
-				String children = addToChildrenString(folder, checklist.getInt(App.ID));
-				folder.put(App.CHILDREN_IDS, children);
-
-				data.put(App.NUM_CHECKLISTS, data.getInt(App.NUM_CHECKLISTS) + 1);
-				data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
-
-				editor.put(App.DATA, data.toString());
-			}
-
-			updateData();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		updateData();
 	}
 
 	public void addFolder(String name, String type) {
@@ -414,101 +361,23 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void addFolder(String name, String contentType, String type, boolean removable) {
-		try {
-			JSONObject folder = new JSONObject();
-			folder.put(App.NAME, name);
-			folder.put(App.CONTENT_TYPE, contentType);
-			folder.put(App.ID, data.getInt(App.NUM_FOLDERS));
-			folder.put(App.REMOVABLE, removable);
-			folder.put(App.TYPE, type);
+		data = App.addFolder(name, contentType, type, removable, data);
+		editor.put(App.DATA, data.toString());
 
-			// folder.put(App.NUM_CHILDREN, 0);
-			folder.put(App.CHILDREN_IDS, "");
-			// if (contentType == App.CHECKLIST)
-			// folderData.put(App.NUM_CHILDREN, 0);
-			// if (contentType == App.TASK) folderData.put(App.NUM_CHILDREN, 0);
-
-			// This makes the project non-visible
-			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
-			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
-
-			String children = addToChildrenString(data, folder.getInt(App.ID), true);
-			Log.i("asdsadsadsads c", children);
-			data.put(App.CHILDREN_IDS, children);
-
-			// data.put(App.NUM_CHILDREN, data.getInt(App.NUM_CHILDREN) + 1);
-
-			editor.put(App.DATA, data.toString());
-
-			Log.i("Main Activity", "Added folder " + name);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} finally {
-			updateMenu();
-		}
+		updateMenu();
 	}
 
 	public void checkTask(int taskId, int checklistId, int folderId, boolean isChecked) {
 		Log.i("completeTask", taskId + ", " + checklistId + ", " + folderId);
 
-		try {
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + folderId));
+		data = App.checkTask(taskId, checklistId, folderId, isChecked, data);
 
-			if (checklistId != -1 /* && folder.has(App.CHECKLIST + checklistId) */) {
-				JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + checklistId));
-				JSONObject task = new JSONObject(checklist.getString(App.TASK + taskId));
-
-				task.put(App.COMPLETED, isChecked);
-
-				checklist.put(App.TASK + taskId, task.toString());
-				folder.put(App.CHECKLIST + checklistId, checklist.toString());
-				data.put(App.FOLDER + folderId, folder.toString());
-			} else if (folder.has(App.TASK + taskId)) {
-				JSONObject task = new JSONObject(folder.getString(App.TASK + taskId));
-
-				task.put(App.COMPLETED, isChecked);
-
-				folder.put(App.TASK + taskId, task.toString());
-				data.put(App.FOLDER + folderId, folder.toString());
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} finally {
-			editor.put(App.DATA, data.toString());
-			updateData();
-
-			Log.i("Compelted Task", "Completed Task");
-		}
+		editor.put(App.DATA, data.toString());
+		updateData();
 	}
 
 	public void setTaskDescription(String desc, int taskId, int checklistId, int folderId) {
-		try {
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + folderId));
-
-			if (checklistId != -1) {
-				JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + checklistId));
-				JSONObject task = new JSONObject(checklist.getString(App.TASK + taskId));
-
-				task.put(App.DESCRIPTION, desc);
-
-				checklist.put(App.TASK + taskId, task.toString());
-				folder.put(App.CHECKLIST + checklistId, checklist.toString());
-				data.put(App.FOLDER + folderId, folder.toString());
-			} else if (folder.has(App.TASK + taskId)) {
-				JSONObject task = new JSONObject(folder.getString(App.TASK + taskId));
-
-				task.put(App.DESCRIPTION, desc);
-
-				folder.put(App.TASK + taskId, task.toString());
-				data.put(App.FOLDER + folderId, folder.toString());
-			}
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} finally {
-			editor.put(App.DATA, data.toString());
-			updateData();
-		}
+		data = App.setTaskDescription(desc, taskId, checklistId, folderId, data);
 	}
 
 	// previously known as setCurrentFolder
@@ -600,13 +469,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			posInWrapper++;
 
-			/*
-			 * if (contentViews.size() - 1 > posInWrapper &&
-			 * contentViews.get(posInWrapper) instanceof TaskContentView) //
-			 * ((TaskContentView)
-			 * contentViews.get(posInWrapper)).setFolderAndChecklistAndTask
-			 * (currentFolder, currentChecklist, currentTask); else
-			 */
 			if (contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
 			contentViews.add(posInWrapper, new TaskContentView(this, currentFolder, currentChecklist, currentTask));
 
@@ -621,12 +483,17 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void goBack(View v) {
 		goBack();
+		
+		//hides the keyboard if it is open
+		((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
 
 	public void goBack() {
 		if (isMoving) return;
+		
+		Log.i("asdasdas", posInWrapper + ", ");
 
-		// this means that it is not in anything
+		// this means that it is not in any checklist or task
 		if (currentChecklist == -1 && currentTask == -1) return;
 
 		try {
@@ -723,67 +590,11 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
-	private String addToChildrenString(JSONObject parent, int newChildId) {
-		return addToChildrenString(parent, newChildId, false);
-	}
-
-	private String addToChildrenString(JSONObject parent, int newChildId, boolean atBeginning) {
-		String[] s;
-		Log.i("Adding to child string", newChildId + "");
-
-		try {
-			if (parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
-			else s = new String[0];
-
-			String children = "";
-			if (atBeginning) {
-				for (String string : s)
-					children += string + ",";
-				children += newChildId;
-			} else {
-				children += newChildId;
-				for (String string : s)
-					children += "," + string;
-			}
-			return children;
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return "";
-	}
-
 	public void updateChilrenOrder(String children, int checklistId, int folderId) {
-		try {
-			JSONObject folder, checklist;
+		data = App.updateChildrenOrder(children, checklistId, folderId, data);
 
-			children = children.replaceAll(" ", "");
-
-			if (folderId != -1) {
-				if (data.has(App.FOLDER + folderId)) {
-					folder = new JSONObject(data.getString(App.FOLDER + folderId));
-
-					if (checklistId == -1) {
-						folder.put(App.CHILDREN_IDS, children);
-					} else if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-						if (folder.has(App.CHECKLIST + checklistId)) {
-							checklist = new JSONObject(folder.getString(App.CHECKLIST + checklistId));
-							checklist.put(App.CHILDREN_IDS, children);
-
-							folder.put(App.CHECKLIST + checklistId, checklist.toString());
-						}
-					}
-
-					data.put(App.FOLDER + folderId, folder.toString());
-
-					editor.put(App.DATA, data.toString());
-					updateData();
-				}
-			}
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		editor.put(App.DATA, data.toString());
+		updateData();
 	}
 
 	public void onBackPressed() {
@@ -806,12 +617,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		return menuWidth;
 	}
 
-	protected class SmoothInterpolator implements Interpolator {
-		public float getInterpolation(float t) {
-			return (float) Math.pow(t - 1, 5) + 1;
-		}
-	}
-
 	protected class AnimationRunnable implements Runnable {
 		public void run() {
 			isMoving = true;
@@ -821,6 +626,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 	
+	public int getPosInWrapper() {
+		return posInWrapper;
+	}
+
 	public Button getDragButton() {
 		return dragButton;
 	}

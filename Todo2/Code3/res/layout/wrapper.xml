@@ -10,7 +10,7 @@
         android:id="@+id/bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#7ACD99" >
+        android:background="#35ADCF" >
 
         <Button
             android:id="@+id/dragButton"
@@ -18,7 +18,7 @@
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:background="#8ADDA9"
+            android:background="#5DC6E5"
             android:onClick="toggleMenu" />
 
         <Button
@@ -27,7 +27,7 @@
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:background="#9AEDB9"
+            android:background="#5DC6E5"
             android:onClick="goBack"
             android:visibility="gone" />
 
@@ -37,7 +37,7 @@
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="#6ABD89"
+            android:background="#5DC6E5"
             android:onClick="viewAddTaskDialog"
             android:text="+"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -59,7 +59,7 @@
         android:id="@+id/barBorder"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:background="#70BC8E"
+        android:background="#298DA9"
         android:orientation="horizontal" >
     </LinearLayout>
 

@@ -49,6 +49,7 @@ public class FlyInMenu extends LinearLayout {
 
 	private int contentOffset = 0;
 	private int width;
+	private int animationDuration = 300;
 
 	private OnFlyInItemClickListener callback;
 
@@ -107,7 +108,7 @@ public class FlyInMenu extends LinearLayout {
 				hideMenu();
 			}
 		});
-		
+
 		mOutsideView.setBackgroundColor(0x88ffff00);
 
 		mListView.setOnItemClickListener(new OnItemClickListener() {
@@ -225,7 +226,7 @@ public class FlyInMenu extends LinearLayout {
 	}
 
 	public void showMenu() {
-//		mOutsideView.setVisibility(View.VISIBLE);
+		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
 			mCustomView.setVisibility(View.VISIBLE);
@@ -241,18 +242,12 @@ public class FlyInMenu extends LinearLayout {
 		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX", contentOffset - width, 0);
 		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX", contentOffset, width);
 
-		// ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX",
-		// getResources().getDimension(R.dimen.rbm_menu_width) * -1,
-		// getResources().getDimension(R.dimen.rbm_menu_width) * -1 + 100);
-		// ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX",
-		// 0, 100);
-
 		flyIn.setInterpolator(decel);
 		activity.setInterpolator(decel);
 
 		AnimatorSet showFlyIn = new AnimatorSet();
 		showFlyIn.playTogether(flyIn, activity);
-		showFlyIn.setDuration(300).start();
+		showFlyIn.setDuration(animationDuration).start();
 
 		contentOffset = width;
 	}
@@ -274,17 +269,41 @@ public class FlyInMenu extends LinearLayout {
 		AnimatorSet showFlyIn = new AnimatorSet();
 		showFlyIn.playTogether(flyIn, activity);
 		showFlyIn.addListener(new VisibilityHelper());
-		showFlyIn.setDuration(300).start();
+		showFlyIn.setDuration(animationDuration).start();
+
+		// Makes a new thread that waits for the animation duration
+		// and then hides the menu views. If this is not done,
+		// older Android devices will try to render the views
+		// that are no longer visible.
+		Thread t = new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(animationDuration);
+					mAct.runOnUiThread(new Runnable() {
+						public void run() {
+							mOutsideView.setVisibility(View.GONE);
+							mMenuHolder.setVisibility(View.GONE);
+							if (mCustomView != null) {
+								mCustomView.setVisibility(View.GONE);
+							}
+						}
+					});
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		t.start();
 
 		contentOffset = 0;
 	}
 
 	public void moveMenu(int dx) {
 		if (contentOffset + dx < 0) dx = 0 - contentOffset;
-		if(contentOffset + dx > width) dx = width - contentOffset;
+		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
 
-//		mOutsideView.setVisibility(View.VISIBLE);
+		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
 			mCustomView.setVisibility(View.VISIBLE);
@@ -324,7 +343,7 @@ public class FlyInMenu extends LinearLayout {
 	public boolean isMenuVisible() {
 		return contentOffset != 0;
 	}
-	
+
 	public int getContentOffset() {
 		return contentOffset;
 	}
@@ -429,16 +448,13 @@ public class FlyInMenu extends LinearLayout {
 
 		@Override
 		public void onAnimationEnd(Animator animation) {
-			if (contentOffset == 0) {
-				mOutsideView.setVisibility(View.GONE);
-				mMenuHolder.setVisibility(View.GONE);
-				if (mCustomView != null) {
-					mCustomView.setVisibility(View.GONE);
-				}
-				
-
-				((ViewGroup) mAct.getWindow().getDecorView()).getChildAt(0).setVisibility(View.INVISIBLE);
-			}
+			// if (contentOffset == 0) {
+			// mOutsideView.setVisibility(View.GONE);
+			// mMenuHolder.setVisibility(View.GONE);
+			// if (mCustomView != null) {
+			// mCustomView.setVisibility(View.GONE);
+			// }
+			// }
 		}
 
 		@Override

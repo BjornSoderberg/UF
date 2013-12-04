@@ -265,56 +265,6 @@ public class DynamicListView extends ListView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-//		ViewConfiguration v = ViewConfiguration.get(contentView.getActivity());
-//
-//		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//			startX = x = (int) event.getRawX();
-//			startY = y = (int) event.getRawY();
-//
-//			time = System.currentTimeMillis();
-//
-//			if (x <= App.dpToPx(30, contentView.getActivity().getResources())) startedAtEdge = true;
-//
-//			Log.i("Action down", startedAtEdge + " : " + x + " (needs to be " + App.dpToPx(30, contentView.getActivity().getResources()) + ")");
-//		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-//
-//			x = (int) event.getRawX();
-//			y = (int) event.getRawY();
-//
-//			if (startedAtEdge) {
-//				if (Math.hypot(x - startX, y - startY) > v.getScaledTouchSlop()) {
-//					isDragging = true;
-//				}
-//				if (isDragging) {
-//					int dx = x - ox;
-//					((FlyInMenu) contentView.getActivity().getFlyInMenu()).moveMenu(dx);
-//					ox = x;
-//				}
-//
-//				Log.i("touch slop", v.getScaledTouchSlop() + " : " + Math.hypot(x - startX, y - startY));
-//			}
-//
-//		} else if (event.getAction() == MotionEvent.ACTION_UP) {
-//			startedAtEdge = false;
-//			isDragging = false;
-//
-//			long dt = System.currentTimeMillis() - time;
-//
-//			if (Math.hypot(x - startX, y - startY) / dt > v.getScaledMinimumFlingVelocity()) {
-//				if (x - startX > 0) contentView.getActivity().getFlyInMenu().showMenu();
-//				else contentView.getActivity().getFlyInMenu().hideMenu();
-//			} else {
-//				if(x - startX > contentView.getActivity().getContentWidth()/2) contentView.getActivity().getFlyInMenu().showMenu();
-//				else contentView.getActivity().getFlyInMenu().hideMenu();
-//			}
-//
-//			Log.i("asdsadsa", dt + "");
-//			Log.i("asdasdsad", Math.hypot(x - startX, y - startY) / (dt*1.0 / 1000*1.0) + " px / s ...... " + v.getScaledMinimumFlingVelocity() + " px / s");
-//
-//			Log.i("Action up", "stopped dragging");
-//		}
-//
-//		return super.onTouchEvent(event);
 		 switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		 case MotionEvent.ACTION_DOWN:
 		 mDownX = (int) event.getX();
