@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -62,6 +63,8 @@ public class ChecklistView extends ContentView {
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(activity.isMoving()) return;
+				
 				try {
 					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
 					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + view.getId()));
@@ -128,6 +131,19 @@ public class ChecklistView extends ContentView {
 			public void run() {
 				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
 
+				AnimationListener al = new AnimationListener() {
+					public void onAnimationEnd(Animation animation) {
+						activity.isMoving(false);
+					}
+
+					public void onAnimationRepeat(Animation animation) {
+					}
+
+					public void onAnimationStart(Animation animation) {
+						activity.isMoving(true);
+					}
+				};
+				
 				Animation animation = new Animation() {
 					protected void applyTransformation(float time, Transformation t) {
 						if ((int) (listViewItemHeight * time) != 0) {
@@ -140,6 +156,7 @@ public class ChecklistView extends ContentView {
 					}
 				};
 				
+				animation.setAnimationListener(al);
 				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}

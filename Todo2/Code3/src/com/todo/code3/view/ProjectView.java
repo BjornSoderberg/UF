@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -70,6 +71,8 @@ public class ProjectView extends ContentView {
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(activity.isMoving()) return;
+				
 				try {
 					JSONObject project = new JSONObject(activity.getData().getString(App.FOLDER + currentProject));
 					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + view.getId()));
@@ -148,6 +151,19 @@ public class ProjectView extends ContentView {
 			public void run() {
 				if(view.getLayoutParams() !=null)view.getLayoutParams().height = 1;
 				
+				AnimationListener al = new AnimationListener() {
+					public void onAnimationEnd(Animation animation) {
+						activity.isMoving(false);
+					}
+
+					public void onAnimationRepeat(Animation animation) {
+					}
+
+					public void onAnimationStart(Animation animation) {
+						activity.isMoving(true);
+					}
+				};
+				
 				Animation animation = new Animation() {
 					protected void applyTransformation(float time, Transformation t) {
 						if((int) (listViewItemHeight * time) != 0) {
@@ -160,6 +176,7 @@ public class ProjectView extends ContentView {
 					}
 				};
 				
+				animation.setAnimationListener(al);
 				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}

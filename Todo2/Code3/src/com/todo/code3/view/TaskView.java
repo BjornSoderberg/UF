@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -66,6 +67,8 @@ public class TaskView extends ContentView {
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if (activity.isMoving()) return;
+				
 				try {
 					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
 					JSONObject task;
@@ -167,6 +170,19 @@ public class TaskView extends ContentView {
 	}
 
 	public void collapseView(final View view, final int id) {
+		AnimationListener al = new AnimationListener() {
+			public void onAnimationEnd(Animation animation) {
+				activity.isMoving(false);
+			}
+
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			public void onAnimationStart(Animation animation) {
+				activity.isMoving(true);
+			}
+		};
+
 		Animation animation = new Animation() {
 			protected void applyTransformation(float time, Transformation t) {
 				if (time == 0) {
@@ -182,16 +198,30 @@ public class TaskView extends ContentView {
 			}
 		};
 
+		animation.setAnimationListener(al);
 		animation.setDuration(App.COLLAPSE_ANIMATION_DURATION);
 		view.startAnimation(animation);
 
 		expandingItemId = id;
 	}
 
-	public void expandView(final View view) {		
+	public void expandView(final View view) {
 		Runnable expandRunnable = new Runnable() {
 			public void run() {
 				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+
+				AnimationListener al = new AnimationListener() {
+					public void onAnimationEnd(Animation animation) {
+						activity.isMoving(false);
+					}
+
+					public void onAnimationRepeat(Animation animation) {
+					}
+
+					public void onAnimationStart(Animation animation) {
+						activity.isMoving(true);
+					}
+				};
 
 				Animation animation = new Animation() {
 					protected void applyTransformation(float time, Transformation t) {
@@ -205,6 +235,7 @@ public class TaskView extends ContentView {
 					}
 				};
 
+				animation.setAnimationListener(al);
 				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}

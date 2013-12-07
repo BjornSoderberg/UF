@@ -9,8 +9,8 @@ public class SPEditor {
 	
 	public SPEditor(SharedPreferences prefs) {
 		editor = prefs.edit();
-		editor.clear();
-		editor.commit();
+//		editor.clear();
+//		editor.commit();
 	}
 	
 	public void put(String key, String value) {

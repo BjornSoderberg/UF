@@ -64,40 +64,41 @@ public class TaskAdapter extends BaseAdapter {
 		if (item instanceof TaskItem) {
 			button.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					if (!item.isCompleted()) {
+					if (taskView.getActivity().isMoving()) return;
+					if (item.isCompleted()) return;
+					
+					boolean shouldCollapse = true;
 
-						boolean shouldCollapse = true;
-
-						if (taskView.getTaskItems().size() > position + 1) {
-							if (taskView.getTaskItems().get(position + 1).isCompleted()) {
-								shouldCollapse = false;
-							}
-						} else shouldCollapse = false;
-						if (shouldCollapse) {
-							taskView.collapseView(view, item.getId());
-
-							// This thread waits the time it takes for the view
-							// to collapse. Then it checks the task, which
-							// makes the list view update its content
-							new Thread() {
-								public void run() {
-									try {
-										Thread.sleep(App.COLLAPSE_ANIMATION_DURATION);
-									} catch (InterruptedException e) {
-										e.printStackTrace();
-									}
-									taskView.getActivity().runOnUiThread(new Runnable() {
-										public void run() {
-											activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
-										}
-									});
-								}
-							}.start();
-						} else {
-							activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
+					if (taskView.getTaskItems().size() > position + 1) {
+						if (taskView.getTaskItems().get(position + 1).isCompleted()) {
+							shouldCollapse = false;
 						}
+					} else shouldCollapse = false;
+					if (shouldCollapse) {
+						taskView.collapseView(view, item.getId());
 
+						// This thread waits the time it takes for the
+						// view
+						// to collapse. Then it checks the task, which
+						// makes the list view update its content
+						new Thread() {
+							public void run() {
+								try {
+									Thread.sleep(App.COLLAPSE_ANIMATION_DURATION);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+								taskView.getActivity().runOnUiThread(new Runnable() {
+									public void run() {
+										activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
+									}
+								});
+							}
+						}.start();
+					} else {
+						activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
 					}
+
 				}
 			});
 

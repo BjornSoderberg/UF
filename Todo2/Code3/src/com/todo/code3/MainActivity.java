@@ -639,6 +639,14 @@ public class MainActivity extends FlyInFragmentActivity {
 			adjustContentPosition(isAnimationOngoing);
 		}
 	}
+	
+	public boolean isMoving() {
+		return isMoving;
+	}
+	
+	public void isMoving(boolean b) {
+		isMoving = b;
+	}
 
 	public int getPosInWrapper() {
 		return posInWrapper;
