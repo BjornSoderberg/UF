@@ -53,6 +53,11 @@ public class ProjectAdapter extends BaseAdapter {
 		view.setEnabled(item.isEnabled());
 		Log.i("checklist adapter", item.getTitle() + " - " + item.getId());
 
+		if(item.getId() == projectView.getExpandingItemId()) {
+			projectView.invalidateExpandingItemId();
+			projectView.expandView(view);
+		}
+		
 		view.setId(item.getId());
 
 		return view;

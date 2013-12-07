@@ -2,6 +2,7 @@ package com.todo.code3.xml;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.Button;
@@ -41,8 +42,8 @@ public class Wrapper extends LinearLayout {
 		if (activity == null) return true;
 
 		if (e.getAction() == MotionEvent.ACTION_DOWN) {
-			startX = x = lastX = (int) e.getX();
-			startY = y = (int) e.getY();
+			startX = x = lastX = (int) e.getRawX();
+			startY = y = (int) e.getRawY()  - App.getStatusBarHeight(activity.getResources());
 
 			startTime = System.currentTimeMillis();
 
@@ -52,11 +53,11 @@ public class Wrapper extends LinearLayout {
 			// the correct location to be able to
 			// open the menu
 			if (x <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources()) && x >= 0) dragStartLocation = MENU_CLOSED;
-			if (activity.getMenuWidth() < e.getX()) dragStartLocation = MENU_OPEN;
+			if (activity.getMenuWidth()< e.getRawX()) dragStartLocation = MENU_OPEN;
 
 		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-			x = (int) e.getX();
-			y = (int) e.getY();
+			x = (int) e.getRawX();
+			y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
 
 			if (dragStartLocation != -1) {
 				// If the swipe is long enough to be considered a scroll
@@ -97,7 +98,7 @@ public class Wrapper extends LinearLayout {
 		return true;
 	}
 
-	public boolean onInterceptTouchEvent(MotionEvent e) {
+	public boolean onInterceptTouchEvent(MotionEvent e) {		
 		// If the menu is visible, the user is able to drag,
 		// as long as he does not drag on the menu
 		if (!isDragging && activity.getFlyInMenu().isMenuVisible()) {
@@ -107,14 +108,14 @@ public class Wrapper extends LinearLayout {
 		Button b = activity.getDragButton();
 		// if the back button is visible and the user touches
 		// the button, the menu should not open
-		if (e.getX() < b.getRight() && e.getY() < b.getBottom()) {
+		if (e.getRawX() < b.getRight() && e.getRawY() - App.getStatusBarHeight(activity.getResources()) < b.getBottom()) {
 			if (activity.getPosInWrapper() != 0) return false;
 			else return true;
 		}
 
 		// If the touch is outside the touch area for the drag, the user should
 		// not be able to drag
-		if (e.getX() > App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return false;
+		if (e.getRawX() > App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return false;
 
 		return true;
 	}

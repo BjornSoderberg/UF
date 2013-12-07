@@ -21,7 +21,6 @@ public class ChecklistAdapter extends BaseAdapter {
 	private MainActivity activity;
 	private ChecklistView checklistView;
 	
-	
 	public ChecklistAdapter(MainActivity activity, ChecklistView checklistView) {
 		inflater = LayoutInflater.from(activity);
 		this.activity = activity;
@@ -55,6 +54,11 @@ public class ChecklistAdapter extends BaseAdapter {
 		view.setEnabled(item.isEnabled());
 		Log.i("checklist adapter", item.getTitle() + " - " + item.getId());
 
+		if(item.getId() == checklistView.getExpandingItemId()) {
+			checklistView.invalidateExpandingItemId();
+			checklistView.expandView(view);
+		}
+		
 		view.setId(item.getId());
 
 		return view;

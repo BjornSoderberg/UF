@@ -1,13 +1,13 @@
 package com.todo.code3.misc;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 
 public class App {
 
@@ -48,6 +48,9 @@ public class App {
 	public static final int MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS = 11;
 	public static final int BEZEL_AREA_DP = 30;
 
+	public static final int COLLAPSE_ANIMATION_DURATION = 300;
+	public static final int EXPAND_ANIMATION_DURATION = 300;
+
 	// converting dp to pixels and vice versa
 	public static int dpToPx(int dp, Resources r) {
 		DisplayMetrics displayMetrics = r.getDisplayMetrics();
@@ -71,8 +74,6 @@ public class App {
 
 	// static methods originally from the MainActivity
 	public static JSONObject addTask(String name, int currentChecklist, int currentFolder, JSONObject data) {
-		Log.i("Main Activity", "Added task " + name);
-
 		try {
 			JSONObject task = new JSONObject();
 			task.put(App.NAME, name);
@@ -179,6 +180,10 @@ public class App {
 				task.put(App.COMPLETED, isChecked);
 
 				checklist.put(App.TASK + taskId, task.toString());
+
+				String childrenOrder = putTaskBeforeCheckedTasks(taskId, checklist);
+				checklist.put(App.CHILDREN_IDS, childrenOrder);
+
 				folder.put(App.CHECKLIST + checklistId, checklist.toString());
 				data.put(App.FOLDER + folderId, folder.toString());
 			} else if (folder.has(App.TASK + taskId)) {
@@ -187,6 +192,10 @@ public class App {
 				task.put(App.COMPLETED, isChecked);
 
 				folder.put(App.TASK + taskId, task.toString());
+
+				String childrenOrder = putTaskBeforeCheckedTasks(taskId, folder);
+				folder.put(App.CHILDREN_IDS, childrenOrder);
+
 				data.put(App.FOLDER + folderId, folder.toString());
 			}
 
@@ -286,5 +295,41 @@ public class App {
 		}
 
 		return "";
+	}
+
+	public static String putTaskBeforeCheckedTasks(int taskId, JSONObject parent) {
+		try {
+			String order = "";
+			boolean hasUsedTaskId = false;
+
+			String[] childrenIds;
+			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+			else childrenIds = new String[0];
+
+			if (childrenIds.length == 0) return taskId + "";
+
+			for (int i = 0; i < childrenIds.length; i++) {
+				if (!childrenIds[i].equals(taskId + "")) {
+
+					JSONObject task = new JSONObject(parent.getString(App.TASK + childrenIds[i]));
+
+					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED) && !hasUsedTaskId) {
+						order += taskId + ",";
+						hasUsedTaskId = true;
+					}
+
+					order += task.getInt(App.ID) + ",";
+				}
+			}
+
+			if (!hasUsedTaskId) order += taskId + "";
+			
+			if (order.charAt(order.length() - 1) == ',' && order.length() > 1) return order.substring(0, order.length() - 1);
+			else return order;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return taskId + "";
 	}
 }

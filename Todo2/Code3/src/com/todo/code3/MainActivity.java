@@ -81,7 +81,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		// this makes the app go fullscreen
 		// this solved the issue about the wrapper being to big
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		// WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		// scroller = new Scroller(this, new SmoothInterpolator());
 		scroller = new Scroller(this, AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
@@ -92,7 +93,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		width = dm.widthPixels;
 		height = dm.heightPixels - App.getStatusBarHeight(getResources());
 		menuWidth = (int) (width * 0.8);
-		
+
 		Log.i("asdasdsa", height + ", " + dm.heightPixels);
 
 		setContentView(R.layout.wrapper);
@@ -166,7 +167,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		Button addFolderButton = new Button(this);
 		addFolderButton.setText("+  Add new folder");
 		addFolderButton.setBackgroundColor(0);
-		addFolderButton.setTextColor(0xff888888);
+		addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.rbm_item_text_color));
 		addFolderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
@@ -239,7 +240,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-		Log.i("Updating data...", data.toString());
+		// Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
@@ -263,7 +264,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		try {
 			String[] childrenIds;
-			
+
 			if (data.has(App.CHILDREN_IDS)) childrenIds = data.getString(App.CHILDREN_IDS).split(",");
 			else childrenIds = new String[0];
 
@@ -279,18 +280,6 @@ public class MainActivity extends FlyInFragmentActivity {
 					// mi.setIcon(res id);
 					menu.addMenuItem(mi);
 				}
-				// if(data.has(App.PROJECT + i)) {
-				// JSONObject project = new
-				// JSONObject(data.getString(App.PROJECT + i));
-				// FlyInMenuItem mi = new FlyInMenuItem();
-				// mi.setTitle(project.getString(App.NAME) + " - " +
-				// project.getInt(App.NUM_CHILDREN) + " (" +
-				// project.getString(App.TYPE)+")");
-				// mi.setId(project.getInt(App.ID));
-				// mi.setType(project.getString(App.TYPE));
-				// // mi.setIcon(res id);
-				// menu.addMenuItem(mi);
-				// }
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -343,6 +332,18 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		data = App.addTask(name, currentChecklist, currentFolder, data);
 
+		// this should be the id of the new task
+		int id = -1;
+		try {
+			id = data.getInt(App.NUM_TASKS) - 1;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		if (contentViews.get(posInWrapper) instanceof TaskView) {
+			((TaskView) contentViews.get(posInWrapper)).setExpandingItemId(id);
+		}
+
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
@@ -352,6 +353,19 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		data = App.addChecklist(name, currentFolder, data);
 		editor.put(App.DATA, data.toString());
+		
+		int id = -1;
+		try {
+			id = data.getInt(App.NUM_CHECKLISTS) -1;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		if(contentViews.get(posInWrapper) instanceof ChecklistView ) {
+			((ChecklistView)contentViews.get(posInWrapper)).setExpandingItemId(id);
+		} else if(contentViews.get(posInWrapper) instanceof ProjectView) {
+			((ProjectView)contentViews.get(posInWrapper)).setExpandingItemId(id);
+		}
 
 		updateData();
 	}
@@ -483,14 +497,14 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void goBack(View v) {
 		goBack();
-		
-		//hides the keyboard if it is open
+
+		// hides the keyboard if it is open
 		((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
 
 	public void goBack() {
 		if (isMoving) return;
-		
+
 		Log.i("asdasdas", posInWrapper + ", ");
 
 		// this means that it is not in any checklist or task
@@ -625,7 +639,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			adjustContentPosition(isAnimationOngoing);
 		}
 	}
-	
+
 	public int getPosInWrapper() {
 		return posInWrapper;
 	}

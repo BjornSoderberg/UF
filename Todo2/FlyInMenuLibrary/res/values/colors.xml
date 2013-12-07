@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="rbm_menu_background">#393C3B</color>
-    <color name="rbm_item_text_color">#747675</color>
-    
+    <color name="rbm_item_text_color">#888888</color>
 </resources>

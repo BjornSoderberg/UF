@@ -7,9 +7,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,7 +18,6 @@ import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.TaskAdapter;
 import com.todo.code3.misc.App;
-import com.todo.code3.xml.ContentItem;
 import com.todo.code3.xml.DynamicListView;
 import com.todo.code3.xml.TaskItem;
 
@@ -30,8 +30,13 @@ public class TaskView extends ContentView {
 
 	private ArrayList<TaskItem> taskItems;
 
-	int currentFolder = -1;
-	int currentChecklist = -1;
+	private TaskAdapter adapter;
+
+	private int currentFolder = -1;
+	private int currentChecklist = -1;
+
+	private int listViewItemHeight;
+	private int expandingItemId = -1;
 
 	public TaskView(MainActivity activity, int currentFolder, int currentChecklist) {
 		super(activity);
@@ -54,7 +59,7 @@ public class TaskView extends ContentView {
 
 		listView = (ListView) v.findViewById(R.id.listview);
 
-		TaskAdapter adapter = new TaskAdapter(activity, this);
+		adapter = new TaskAdapter(activity, this);
 		listView.setAdapter(adapter);
 
 		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
@@ -81,6 +86,8 @@ public class TaskView extends ContentView {
 
 		empty = (TextView) findViewById(R.id.empty);
 		empty.setText("This checklist is empty. Tap the + in the upper right corner to add a new task");
+
+		listViewItemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
 	}
 
 	public void update(JSONObject data) {
@@ -96,9 +103,8 @@ public class TaskView extends ContentView {
 			}
 
 			String childrenIds[];
-			
-			if(parent.has(App.CHILDREN_IDS))
-			childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+
+			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
 			else childrenIds = new String[0];
 
 			for (int i = 0; i < childrenIds.length; i++) {
@@ -123,7 +129,7 @@ public class TaskView extends ContentView {
 
 			sortTaskItems();
 
-			((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+			adapter.notifyDataSetChanged();
 
 			if (hasDynamicListView) ((DynamicListView) listView).setTaskItems(taskItems);
 		} catch (JSONException e) {
@@ -160,12 +166,69 @@ public class TaskView extends ContentView {
 		taskItems.addAll(checked);
 	}
 
+	public void collapseView(final View view, final int id) {
+		Animation animation = new Animation() {
+			protected void applyTransformation(float time, Transformation t) {
+				if (time == 0) {
+					view.getLayoutParams().height = listViewItemHeight;
+				} else {
+					view.getLayoutParams().height = listViewItemHeight - (int) (listViewItemHeight * time);
+					view.requestLayout();
+				}
+			}
+
+			public boolean willChangeBounds() {
+				return true;
+			}
+		};
+
+		animation.setDuration(App.COLLAPSE_ANIMATION_DURATION);
+		view.startAnimation(animation);
+
+		expandingItemId = id;
+	}
+
+	public void expandView(final View view) {		
+		Runnable expandRunnable = new Runnable() {
+			public void run() {
+				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+
+				Animation animation = new Animation() {
+					protected void applyTransformation(float time, Transformation t) {
+						if ((int) (listViewItemHeight * time) != 0) {
+							view.getLayoutParams().height = (int) (listViewItemHeight * time);
+						} else {
+							view.getLayoutParams().height = 1;
+						}
+
+						view.requestLayout();
+					}
+				};
+
+				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
+				view.startAnimation(animation);
+			}
+		};
+
+		activity.runOnUiThread(expandRunnable);
+	}
+
 	public ArrayList<TaskItem> getTaskItems() {
 		return taskItems;
 	}
 
-	public void leave() {
-
+	public void setExpandingItemId(int id) {
+		expandingItemId = id;
 	}
 
+	public int getExpandingItemId() {
+		return expandingItemId;
+	}
+
+	public void invalidateExpandingItemId() {
+		expandingItemId = -1;
+	}
+
+	public void leave() {
+	}
 }

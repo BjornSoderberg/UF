@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -27,7 +29,10 @@ public class ChecklistView extends ContentView {
 
 	private boolean hasDynamicListView;
 
-	protected int currentFolder = -1;
+	private int currentFolder = -1;
+
+	private int expandingItemId = -1;
+	private int listViewItemHeight;
 
 	protected ArrayList<ChecklistItem> checklistItems;
 
@@ -61,7 +66,7 @@ public class ChecklistView extends ContentView {
 					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
 					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + view.getId()));
 
-					if (checklistItems.get(view.getId()).isEnabled()) activity.openChecklist(checklist);
+					activity.openChecklist(checklist);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -70,6 +75,8 @@ public class ChecklistView extends ContentView {
 
 		empty = (TextView) findViewById(R.id.empty);
 		empty.setText("This folder is empty. Tap the + in the upper right corner to add a new checklist");
+
+		listViewItemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
 	}
 
 	public void update(JSONObject data) {
@@ -116,8 +123,45 @@ public class ChecklistView extends ContentView {
 		activity.updateChilrenOrder(order, -1, currentFolder);
 	}
 
+	public void expandView(final View view) {
+		Runnable expandRunnable = new Runnable() {
+			public void run() {
+				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+
+				Animation animation = new Animation() {
+					protected void applyTransformation(float time, Transformation t) {
+						if ((int) (listViewItemHeight * time) != 0) {
+							view.getLayoutParams().height = (int) (listViewItemHeight * time);
+						} else {
+							view.getLayoutParams().height = 1;
+						}
+						
+						view.requestLayout();
+					}
+				};
+				
+				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
+				view.startAnimation(animation);
+			}
+		};
+		
+		activity.runOnUiThread(expandRunnable);
+	}
+
 	public ArrayList<ChecklistItem> getChecklistItems() {
 		return checklistItems;
+	}
+
+	public void setExpandingItemId(int id) {
+		expandingItemId = id;
+	}
+
+	public int getExpandingItemId() {
+		return expandingItemId;
+	}
+
+	public void invalidateExpandingItemId() {
+		expandingItemId = -1;
 	}
 
 	public void leave() {

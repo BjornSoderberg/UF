@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -23,10 +22,10 @@
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#cccccc"
+        android:fadingEdgeLength="0dp"
         android:cacheColorHint="#00000000"
-        android:divider="#88000000"
-        android:dividerHeight="1px"
+        android:divider="@color/divider_color"
+        android:dividerHeight="@dimen/divider_height"
         android:visibility="visible" >
     </com.todo.code3.xml.DynamicListView>
 

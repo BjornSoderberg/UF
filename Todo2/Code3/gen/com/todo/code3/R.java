@@ -16,10 +16,19 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
+        public static final int divider_color=0x7f050002;
         public static final int rbm_item_text_color=0x7f050001;
         public static final int rbm_menu_background=0x7f050000;
     }
     public static final class dimen {
+        public static final int divider_height=0x7f06000d;
+        public static final int item_height=0x7f06000c;
+        public static final int item_image_height=0x7f060008;
+        public static final int item_image_width=0x7f060009;
+        public static final int item_padding_leftright=0x7f060007;
+        public static final int item_padding_topbottom=0x7f060006;
+        public static final int item_text_padding_left=0x7f06000b;
+        public static final int item_text_size=0x7f06000a;
         public static final int rbm_item_image_height=0x7f060002;
         public static final int rbm_item_image_width=0x7f060003;
         public static final int rbm_item_padding_leftright=0x7f060001;

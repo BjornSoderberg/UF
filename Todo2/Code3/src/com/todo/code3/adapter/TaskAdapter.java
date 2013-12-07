@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.misc.App;
 import com.todo.code3.view.TaskView;
 import com.todo.code3.xml.TaskItem;
 
@@ -37,28 +38,66 @@ public class TaskAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-        if (position < 0 || position >= taskView.getTaskItems().size()) {
-            return -1;
-        }
-        TaskItem item = getItem(position);
-        return item.getId();
-    }
+		if (position < 0 || position >= taskView.getTaskItems().size()) {
+			return -1;
+		}
+		TaskItem item = getItem(position);
+		return item.getId();
+	}
 
-	public View getView(int position, View view, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		final TaskItem item = taskView.getTaskItems().get(position);
+		final View view;
 
-		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.task_item, null);
+		if (convertView == null || convertView instanceof TextView) view = inflater.inflate(R.layout.task_item, null);
+		else view = convertView;
 
 		ImageView button = (ImageView) view.findViewById(R.id.rbm_item_checkbox);
-		TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
+		final TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
 		text.setText(item.getTitle());
 
-		if (item instanceof TaskItem) {
+		if (item.getId() == taskView.getExpandingItemId()) {
+			taskView.invalidateExpandingItemId();
+			taskView.expandView(view);
+		}
 
+		if (item instanceof TaskItem) {
 			button.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
-					Log.i("complete task task adapter", ((TaskItem) item).getId() + ", " + ((TaskItem) item).getChecklistId() + ", " + ((TaskItem) item).getFolderId());
+					if (!item.isCompleted()) {
+
+						boolean shouldCollapse = true;
+
+						if (taskView.getTaskItems().size() > position + 1) {
+							if (taskView.getTaskItems().get(position + 1).isCompleted()) {
+								shouldCollapse = false;
+							}
+						} else shouldCollapse = false;
+						if (shouldCollapse) {
+							taskView.collapseView(view, item.getId());
+
+							// This thread waits the time it takes for the view
+							// to collapse. Then it checks the task, which
+							// makes the list view update its content
+							new Thread() {
+								public void run() {
+									try {
+										Thread.sleep(App.COLLAPSE_ANIMATION_DURATION);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+									taskView.getActivity().runOnUiThread(new Runnable() {
+										public void run() {
+											activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
+										}
+									});
+								}
+							}.start();
+						} else {
+							activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
+						}
+
+					}
 				}
 			});
 
@@ -74,7 +113,6 @@ public class TaskAdapter extends BaseAdapter {
 				text.setPaintFlags(257);
 			}
 		}
-
 		view.setId(item.getId());
 
 		return view;
