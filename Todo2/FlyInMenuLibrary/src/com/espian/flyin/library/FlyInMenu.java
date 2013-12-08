@@ -2,15 +2,12 @@ package com.espian.flyin.library;
 
 import java.util.ArrayList;
 
-import org.xmlpull.v1.XmlPullParser;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.XmlResourceParser;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +27,6 @@ import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
-
-import com.espian.flyin.library.R;
 
 public class FlyInMenu extends LinearLayout {
 
@@ -275,30 +270,17 @@ public class FlyInMenu extends LinearLayout {
 		showFlyIn.playTogether(flyIn, activity);
 		showFlyIn.addListener(new VisibilityHelper());
 		showFlyIn.setDuration(animationDuration).start();
-
-		// Makes a new thread that waits for the animation duration
-		// and then hides the menu views. If this is not done,
-		// older Android devices will try to render the views
-		// that are no longer visible.
-		Thread t = new Thread() {
+		
+		// Hides the menu views when the animation has ended
+		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				try {
-					Thread.sleep(animationDuration);
-					mAct.runOnUiThread(new Runnable() {
-						public void run() {
-							mOutsideView.setVisibility(View.GONE);
-							mMenuHolder.setVisibility(View.GONE);
-							if (mCustomView != null) {
-								mCustomView.setVisibility(View.GONE);
-							}
-						}
-					});
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				mOutsideView.setVisibility(View.GONE);
+				mMenuHolder.setVisibility(View.GONE);
+				if (mCustomView != null) {
+					mCustomView.setVisibility(View.GONE);
 				}
 			}
-		};
-		t.start();
+		}, animationDuration);
 
 		contentOffset = 0;
 	}
@@ -337,7 +319,6 @@ public class FlyInMenu extends LinearLayout {
 	 * shown.
 	 */
 	public void toggleMenu() {
-
 		if (contentOffset == 0) {
 			showMenu();
 		} else {

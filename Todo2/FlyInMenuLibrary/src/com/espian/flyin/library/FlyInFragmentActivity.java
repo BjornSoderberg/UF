@@ -102,12 +102,12 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
                 if (flyMenuView != null) flyMenuView.toggleMenu();
         }
 
-        @Override
-        public void onBackPressed() {
-                if (flyMenuView.isMenuVisible()) {
-                        flyMenuView.toggleMenu();
-                } else super.onBackPressed();
-        }
+//        @Override
+//        public void onBackPressed() {
+//                if (flyMenuView.isMenuVisible()) {
+//                        flyMenuView.toggleMenu();
+//                } else super.onBackPressed();
+//        }
 
         @Override
         public boolean onFlyInItemClick(FlyInMenuItem flyInMenuItem, int position) {

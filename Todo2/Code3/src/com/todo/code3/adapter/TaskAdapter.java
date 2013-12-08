@@ -1,6 +1,7 @@
 package com.todo.code3.adapter;
 
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,25 +77,13 @@ public class TaskAdapter extends BaseAdapter {
 					} else shouldCollapse = false;
 					if (shouldCollapse) {
 						taskView.collapseView(view, item.getId());
-
-						// This thread waits the time it takes for the
-						// view
-						// to collapse. Then it checks the task, which
-						// makes the list view update its content
-						new Thread() {
+						
+						// This runs the code inside with a delay
+						new Handler().postDelayed(new Runnable() {
 							public void run() {
-								try {
-									Thread.sleep(App.COLLAPSE_ANIMATION_DURATION);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-								taskView.getActivity().runOnUiThread(new Runnable() {
-									public void run() {
-										activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
-									}
-								});
+								activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
 							}
-						}.start();
+						}, App.COLLAPSE_ANIMATION_DURATION);
 					} else {
 						activity.checkTask(((TaskItem) item).getId(), ((TaskItem) item).getChecklistId(), ((TaskItem) item).getFolderId(), true);
 					}

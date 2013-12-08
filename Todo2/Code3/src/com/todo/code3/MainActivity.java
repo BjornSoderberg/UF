@@ -302,7 +302,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void toggleMenu(View v) {
-		getFlyInMenu().toggleMenu();
+		if (!isMoving) getFlyInMenu().toggleMenu();
 	}
 
 	public void viewAddTaskDialog(View v) {
@@ -353,18 +353,18 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		data = App.addChecklist(name, currentFolder, data);
 		editor.put(App.DATA, data.toString());
-		
+
 		int id = -1;
 		try {
-			id = data.getInt(App.NUM_CHECKLISTS) -1;
+			id = data.getInt(App.NUM_CHECKLISTS) - 1;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
-		if(contentViews.get(posInWrapper) instanceof ChecklistView ) {
-			((ChecklistView)contentViews.get(posInWrapper)).setExpandingItemId(id);
-		} else if(contentViews.get(posInWrapper) instanceof ProjectView) {
-			((ProjectView)contentViews.get(posInWrapper)).setExpandingItemId(id);
+
+		if (contentViews.get(posInWrapper) instanceof ChecklistView) {
+			((ChecklistView) contentViews.get(posInWrapper)).setExpandingItemId(id);
+		} else if (contentViews.get(posInWrapper) instanceof ProjectView) {
+			((ProjectView) contentViews.get(posInWrapper)).setExpandingItemId(id);
 		}
 
 		updateData();
@@ -613,7 +613,8 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void onBackPressed() {
 		if (posInWrapper == 0) {
-			getFlyInMenu().toggleMenu();
+			if (getFlyInMenu().isMenuVisible()) getFlyInMenu().hideMenu();
+			else super.onBackPressed();
 		} else {
 			goBack();
 		}
@@ -639,11 +640,11 @@ public class MainActivity extends FlyInFragmentActivity {
 			adjustContentPosition(isAnimationOngoing);
 		}
 	}
-	
+
 	public boolean isMoving() {
 		return isMoving;
 	}
-	
+
 	public void isMoving(boolean b) {
 		isMoving = b;
 	}
