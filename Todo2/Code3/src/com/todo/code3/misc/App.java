@@ -1,11 +1,12 @@
 package com.todo.code3.misc;
 
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -50,6 +51,8 @@ public class App {
 
 	public static final int COLLAPSE_ANIMATION_DURATION = 300;
 	public static final int EXPAND_ANIMATION_DURATION = 300;
+
+	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1337;
 
 	// converting dp to pixels and vice versa
 	public static int dpToPx(int dp, Resources r) {
@@ -323,7 +326,7 @@ public class App {
 			}
 
 			if (!hasUsedTaskId) order += taskId + "";
-			
+
 			if (order.charAt(order.length() - 1) == ',' && order.length() > 1) return order.substring(0, order.length() - 1);
 			else return order;
 		} catch (JSONException e) {
@@ -331,5 +334,11 @@ public class App {
 		}
 
 		return taskId + "";
+	}
+
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo ni = cm.getActiveNetworkInfo();
+		return ni != null && ni.isConnected();
 	}
 }

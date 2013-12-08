@@ -52,6 +52,8 @@ public class TaskAdapter extends BaseAdapter {
 
 		if (convertView == null || convertView instanceof TextView) view = inflater.inflate(R.layout.task_item, null);
 		else view = convertView;
+		
+		if(view.getLayoutParams() != null) view.getLayoutParams().height = taskView.getListViewItemHeight();
 
 		ImageView button = (ImageView) view.findViewById(R.id.rbm_item_checkbox);
 		final TextView text = (TextView) view.findViewById(R.id.rbm_item_text);

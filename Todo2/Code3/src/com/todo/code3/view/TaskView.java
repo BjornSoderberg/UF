@@ -68,7 +68,7 @@ public class TaskView extends ContentView {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (activity.isMoving()) return;
-				
+
 				try {
 					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
 					JSONObject task;
@@ -258,6 +258,10 @@ public class TaskView extends ContentView {
 
 	public void invalidateExpandingItemId() {
 		expandingItemId = -1;
+	}
+	
+	public int getListViewItemHeight() {
+		return listViewItemHeight;
 	}
 
 	public void leave() {

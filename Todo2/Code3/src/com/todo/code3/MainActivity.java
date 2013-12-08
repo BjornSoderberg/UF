@@ -1,6 +1,7 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,18 +9,21 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -29,6 +33,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
@@ -49,6 +54,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private LinearLayout wrapper;
 	private TextView nameTV;
+	private EditText inputInAddDialog;
 
 	private Button dragButton, backButton;
 
@@ -173,13 +179,46 @@ public class MainActivity extends FlyInFragmentActivity {
 				AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 				alert.setTitle("Add new folder");
 
-				// Set edit text to get user input
-				final EditText input = new EditText(MainActivity.this);
-				alert.setView(input);
+				// Set the views in the alert dialog
+				LinearLayout l = new LinearLayout(MainActivity.this);
+				Button button = new Button(MainActivity.this);
+				button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+				inputInAddDialog = new EditText(MainActivity.this);
+
+				// Checks if voice recognition is present
+				PackageManager pm = getPackageManager();
+				List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+				if (activities.size() == 0 && App.isNetworkAvailable(MainActivity.this)) {
+					button.setEnabled(false);
+
+					button.setText("Press me to speak");
+					button.setOnClickListener(new OnClickListener() {
+						public void onClick(View v) {
+							try {
+								Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+								i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+								i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Add a new folder.");
+
+								startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
+							} catch (Exception e) {
+								Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recongizer.", Toast.LENGTH_LONG).show();
+							}
+						}
+					});
+
+					l.addView(button);
+				}
+
+				l.setOrientation(LinearLayout.VERTICAL);
+				l.addView(inputInAddDialog);
+
+				alert.setView(l);
 				alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						String name = input.getText().toString();
+						String name = inputInAddDialog.getText().toString();
 						addFolder(name, App.FOLDER);
+
+						inputInAddDialog = null;
 					}
 				});
 
@@ -198,13 +237,43 @@ public class MainActivity extends FlyInFragmentActivity {
 				AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 				alert.setTitle("Add new project");
 
-				// Set edit text to get user input
-				final EditText input = new EditText(MainActivity.this);
-				alert.setView(input);
+				// Set the views in the alert dialog
+				LinearLayout l = new LinearLayout(MainActivity.this);
+				Button button = new Button(MainActivity.this);
+				button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+				inputInAddDialog = new EditText(MainActivity.this);
+
+				// Checks if voice recognition is present
+				PackageManager pm = getPackageManager();
+				List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+				if (activities.size() == 0 && App.isNetworkAvailable(MainActivity.this)) {
+					button.setText("Press me to speak");
+					button.setOnClickListener(new OnClickListener() {
+						public void onClick(View v) {
+							try {
+								Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+								i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+								i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Add a new project.");
+
+								startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
+							} catch (Exception e) {
+								Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recongizer.", Toast.LENGTH_LONG).show();
+							}
+						}
+					});
+					l.addView(button);
+				}
+
+				l.setOrientation(LinearLayout.VERTICAL);
+				l.addView(inputInAddDialog);
+
+				alert.setView(l);
 				alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						String name = input.getText().toString();
+						String name = inputInAddDialog.getText().toString();
 						addFolder(name, App.PROJECT);
+
+						inputInAddDialog = null;
 					}
 				});
 
@@ -310,21 +379,60 @@ public class MainActivity extends FlyInFragmentActivity {
 		alert.setTitle("Add new task");
 		alert.setMessage("What to you have to do?");
 
-		// Set edit text to get user input
-		final EditText input = new EditText(this);
-		alert.setView(input);
+		// Set the views in the alert dialog
+		LinearLayout l = new LinearLayout(this);
+		Button button = new Button(this);
+		button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+		inputInAddDialog = new EditText(this);
+		
+		// Checks if voice recognition is present
+		PackageManager pm = getPackageManager();
+		List activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+		if (activities.size() != 0 && App.isNetworkAvailable(this)) {
+			button.setText("Press me to speak");
+			button.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					try {
+						Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+						i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+						i.putExtra(RecognizerIntent.EXTRA_PROMPT, "What do you have to do?");
+
+						startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recognizer.", Toast.LENGTH_LONG).show();
+					}
+				}
+			});
+			l.addView(button);
+		}
+
+		l.setOrientation(LinearLayout.VERTICAL);
+		l.addView(inputInAddDialog);
+
+		alert.setView(l);
 		alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				String name = input.getText().toString();
+				String name = inputInAddDialog.getText().toString();
 				if (folderContentType.equals(App.TASK) || currentChecklist != -1) {
 					addTask(name);
 				} else if (folderContentType.equals(App.CHECKLIST)) addChecklist(name);
+
+				inputInAddDialog = null;
 			}
 		});
 
 		alert.setNegativeButton("Cancel", null);
 
 		alert.show();
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == App.VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+			ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+			inputInAddDialog.setText(results.get(0));
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void addTask(String name) {
