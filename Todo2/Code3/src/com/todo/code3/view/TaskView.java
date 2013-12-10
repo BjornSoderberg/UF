@@ -67,6 +67,7 @@ public class TaskView extends ContentView {
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(true) return;
 				if (activity.isMoving()) return;
 
 				try {
@@ -139,11 +140,11 @@ public class TaskView extends ContentView {
 			e.printStackTrace();
 		}
 
-		if (taskItems.size() == 0) {
-			empty.setVisibility(View.VISIBLE);
-		} else {
-			empty.setVisibility(View.GONE);
-		}
+//		if (taskItems.size() == 0) {
+//			empty.setVisibility(View.VISIBLE);
+//		} else {
+//			empty.setVisibility(View.GONE);
+//		}
 	}
 
 	public void updateContentItemsOrder() {

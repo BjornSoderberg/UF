@@ -11,9 +11,9 @@
 
     <ImageView
         android:id="@+id/rbm_item_checkbox"
+        android:src="@drawable/box"
         android:layout_width="@dimen/item_image_width"
         android:layout_height="@dimen/item_image_height"
-        android:background="#888888"
         android:scaleType="fitCenter" />
 
     <TextView

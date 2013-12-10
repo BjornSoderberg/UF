@@ -12,35 +12,58 @@
         android:layout_height="wrap_content"
         android:background="#35ADCF" >
 
-        <Button
-            android:id="@+id/dragButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:background="#5DC6E5"
-            android:onClick="toggleMenu" />
+        <LinearLayout
+            android:id="@+id/l"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" >
 
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:background="#5DC6E5"
-            android:onClick="goBack"
-            android:visibility="gone" />
+            <Button
+                android:id="@+id/dragButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/menu"
+                android:onClick="toggleMenu" />
 
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="#5DC6E5"
+                android:onClick="goBack"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Border lines for buttons -->
+        <LinearLayout
+            android:id="@+id/line1"
+            android:orientation="horizontal"
+            android:layout_width="2px"
+            android:layout_height="40dp"
+            android:layout_alignRight="@+id/l"
+            android:background="#298DA9"
+            android:enabled="false" />
+
+        <LinearLayout
+            android:id="@+id/line2"
+            android:orientation="horizontal"
+            android:layout_width="2px"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/addButton"
+            android:background="#298DA9"
+            android:enabled="false" />
+		<!-- End of border lines for buttons -->
+        
         <Button
             android:id="@+id/addButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="#5DC6E5"
+            android:background="@drawable/plus"
             android:onClick="viewAddTaskDialog"
-            android:text="+"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#ffffff" />
 
         <TextView
@@ -69,13 +92,6 @@
         android:layout_height="match_parent"
         android:background="#cccccc"
         android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:visibility="gone" />
     </LinearLayout>
 
 </com.todo.code3.xml.Wrapper>

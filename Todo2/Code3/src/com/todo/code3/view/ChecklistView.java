@@ -110,11 +110,11 @@ public class ChecklistView extends ContentView {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		if (checklistItems.size() == 0) {
-			empty.setVisibility(View.VISIBLE);
-		} else {
-			empty.setVisibility(View.GONE);
-		}
+//		if (checklistItems.size() == 0) {
+//			empty.setVisibility(View.VISIBLE);
+//		} else {
+//			empty.setVisibility(View.GONE);
+//		}
 	}
 
 	public void updateContentItemsOrder() {

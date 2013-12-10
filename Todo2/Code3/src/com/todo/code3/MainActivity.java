@@ -182,15 +182,14 @@ public class MainActivity extends FlyInFragmentActivity {
 				// Set the views in the alert dialog
 				LinearLayout l = new LinearLayout(MainActivity.this);
 				Button button = new Button(MainActivity.this);
-				button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+				if (button.getLayoutParams() != null) button.getLayoutParams().width = LayoutParams.FILL_PARENT;
 				inputInAddDialog = new EditText(MainActivity.this);
 
 				// Checks if voice recognition is present
 				PackageManager pm = getPackageManager();
 				List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-				if (activities.size() == 0 && App.isNetworkAvailable(MainActivity.this)) {
-					button.setEnabled(false);
 
+				if (activities.size() != 0 && App.isNetworkAvailable(MainActivity.this)) {
 					button.setText("Press me to speak");
 					button.setOnClickListener(new OnClickListener() {
 						public void onClick(View v) {
@@ -240,13 +239,14 @@ public class MainActivity extends FlyInFragmentActivity {
 				// Set the views in the alert dialog
 				LinearLayout l = new LinearLayout(MainActivity.this);
 				Button button = new Button(MainActivity.this);
-				button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+				if (button.getLayoutParams() != null) button.getLayoutParams().width = LayoutParams.FILL_PARENT;
 				inputInAddDialog = new EditText(MainActivity.this);
 
 				// Checks if voice recognition is present
 				PackageManager pm = getPackageManager();
 				List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-				if (activities.size() == 0 && App.isNetworkAvailable(MainActivity.this)) {
+
+				if (activities.size() != 0 && App.isNetworkAvailable(MainActivity.this)) {
 					button.setText("Press me to speak");
 					button.setOnClickListener(new OnClickListener() {
 						public void onClick(View v) {
@@ -296,11 +296,12 @@ public class MainActivity extends FlyInFragmentActivity {
 		Button[] buttons = { dragButton, backButton, (Button) findViewById(R.id.addButton) };
 
 		for (int i = 0; i < buttons.length; i++) {
-			RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) buttons[i].getLayoutParams();
-			p.height = buttonSize;
-			p.width = buttonSize;
-			buttons[i].setLayoutParams(p);
+			buttons[i].getLayoutParams().height = buttonSize;
+			buttons[i].getLayoutParams().width = buttonSize;
 		}
+
+		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = buttonSize;
+		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = buttonSize;
 
 		LinearLayout l = (LinearLayout) findViewById(R.id.barBorder);
 		LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) l.getLayoutParams();
@@ -377,14 +378,14 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void viewAddTaskDialog(View v) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add new task");
-		alert.setMessage("What to you have to do?");
+		alert.setMessage("What do you have to do?");
 
 		// Set the views in the alert dialog
 		LinearLayout l = new LinearLayout(this);
 		Button button = new Button(this);
-		button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+		if (button.getLayoutParams() != null) button.getLayoutParams().width = LayoutParams.FILL_PARENT;
 		inputInAddDialog = new EditText(this);
-		
+
 		// Checks if voice recognition is present
 		PackageManager pm = getPackageManager();
 		List activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
@@ -424,15 +425,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		alert.setNegativeButton("Cancel", null);
 
 		alert.show();
-	}
-
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == App.VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
-			ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-			inputInAddDialog.setText(results.get(0));
-		}
-
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void addTask(String name) {
@@ -479,7 +471,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void addFolder(String name, String type) {
-		addFolder(name, App.CHECKLIST, type, true);
+		if (type.equals(App.PROJECT)) addFolder(name, App.CHECKLIST, type, true);
+		else if(type.equals(App.FOLDER)) addFolder(name, App.TASK, type, true);
 	}
 
 	public void addFolder(String name, String contentType, String type, boolean removable) {
@@ -728,6 +721,24 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
+	protected class AnimationRunnable implements Runnable {
+		public void run() {
+			isMoving = true;
+			boolean isAnimationOngoing = scroller.computeScrollOffset();
+
+			adjustContentPosition(isAnimationOngoing);
+		}
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == App.VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+			ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+			inputInAddDialog.setText(App.capitalizeFirstWordInSentences(results.get(0)));
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
 	public FlyInMenu getFlyInMenu() {
 		return super.getFlyInMenu();
 	}
@@ -738,15 +749,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public int getMenuWidth() {
 		return menuWidth;
-	}
-
-	protected class AnimationRunnable implements Runnable {
-		public void run() {
-			isMoving = true;
-			boolean isAnimationOngoing = scroller.computeScrollOffset();
-
-			adjustContentPosition(isAnimationOngoing);
-		}
 	}
 
 	public boolean isMoving() {

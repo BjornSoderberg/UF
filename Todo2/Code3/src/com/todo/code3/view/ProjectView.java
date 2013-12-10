@@ -129,10 +129,10 @@ public class ProjectView extends ContentView {
 		}
 
 		if (checklistItems.size() == 0) {
-			empty.setVisibility(View.VISIBLE);
+//			empty.setVisibility(View.VISIBLE);
 			listView.setVisibility(View.GONE);
 		} else {
-			empty.setVisibility(View.GONE);
+//			empty.setVisibility(View.GONE);
 			listView.setVisibility(View.VISIBLE);
 		}
 	}

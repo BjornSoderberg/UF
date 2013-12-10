@@ -47,7 +47,7 @@ public class App {
 	public static final String DESCRIPTION = "description";
 
 	public static final int MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS = 11;
-	public static final int BEZEL_AREA_DP = 30;
+	public static final int BEZEL_AREA_DP = 16;
 
 	public static final int COLLAPSE_ANIMATION_DURATION = 300;
 	public static final int EXPAND_ANIMATION_DURATION = 300;
@@ -340,5 +340,22 @@ public class App {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo ni = cm.getActiveNetworkInfo();
 		return ni != null && ni.isConnected();
+	}
+
+	public static String capitalizeFirstWordInSentences(String phrase) {
+		int pos = 0;
+		boolean capitalize = true;
+		StringBuilder sb = new StringBuilder(phrase);
+		while (pos < sb.length()) {
+			if (sb.charAt(pos) == '.' || sb.charAt(pos) == '!' || sb.charAt(pos) == '?') {
+				capitalize = true;
+			} else if (capitalize && !Character.isWhitespace(sb.charAt(pos))) {
+				sb.setCharAt(pos, Character.toUpperCase(sb.charAt(pos)));
+				capitalize = false;
+			}
+			pos++;
+		}
+
+		return sb.toString();
 	}
 }
