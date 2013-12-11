@@ -74,8 +74,7 @@ public class ProjectView extends ContentView {
 				if(activity.isMoving()) return;
 				
 				try {
-					JSONObject project = new JSONObject(activity.getData().getString(App.FOLDER + currentProject));
-					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + view.getId()));
+					JSONObject checklist = new JSONObject(activity.getData().getString(App.CHECKLIST + view.getId()));
 
 					activity.openChecklist(checklist);
 				} catch (JSONException e) {
@@ -109,8 +108,8 @@ public class ProjectView extends ContentView {
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (project.has(App.CHECKLIST + id)) {
-					JSONObject checklist = new JSONObject(project.getString(App.CHECKLIST + id));
+				if (data.has(App.CHECKLIST + id)) {
+					JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + id));
 
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));
