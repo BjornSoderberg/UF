@@ -67,10 +67,19 @@ public class TaskView extends ContentView {
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(true) return;
 				if (activity.isMoving()) return;
 
 				try {
-					JSONObject task = new JSONObject(activity.getData().getString(App.TASK + view.getId()));
+					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
+					JSONObject task;
+					if (currentChecklist != -1) {
+						JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
+
+						task = new JSONObject(checklist.getString(App.TASK + view.getId()));
+					} else {
+						task = new JSONObject(folder.getString(App.TASK + view.getId()));
+					}
 
 					activity.openTask(task);
 				} catch (JSONException e) {
@@ -93,7 +102,7 @@ public class TaskView extends ContentView {
 
 			JSONObject parent = new JSONObject(data.getString(App.FOLDER + currentFolder));
 			if (parent.getString(App.CONTENT_TYPE).equals(App.CHECKLIST) && currentChecklist != -1) {
-				parent = new JSONObject(data.getString(App.CHECKLIST + currentChecklist));
+				parent = new JSONObject(parent.getString(App.CHECKLIST + currentChecklist));
 				isChecklistChild = true;
 			}
 
@@ -104,8 +113,8 @@ public class TaskView extends ContentView {
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (data.has(App.TASK + id)) {
-					JSONObject task = new JSONObject(data.getString(App.TASK + id));
+				if (parent.has(App.TASK + id)) {
+					JSONObject task = new JSONObject(parent.getString(App.TASK + id));
 
 					TaskItem ti = new TaskItem();
 					ti.setTitle(task.getString(App.NAME));
@@ -131,11 +140,11 @@ public class TaskView extends ContentView {
 			e.printStackTrace();
 		}
 
-		// if (taskItems.size() == 0) {
-		// empty.setVisibility(View.VISIBLE);
-		// } else {
-		// empty.setVisibility(View.GONE);
-		// }
+//		if (taskItems.size() == 0) {
+//			empty.setVisibility(View.VISIBLE);
+//		} else {
+//			empty.setVisibility(View.GONE);
+//		}
 	}
 
 	public void updateContentItemsOrder() {
@@ -251,7 +260,7 @@ public class TaskView extends ContentView {
 	public void invalidateExpandingItemId() {
 		expandingItemId = -1;
 	}
-
+	
 	public int getListViewItemHeight() {
 		return listViewItemHeight;
 	}

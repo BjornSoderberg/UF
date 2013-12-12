@@ -66,7 +66,8 @@ public class ChecklistView extends ContentView {
 				if(activity.isMoving()) return;
 				
 				try {
-					JSONObject checklist = new JSONObject(activity.getData().getString(App.CHECKLIST + view.getId()));
+					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
+					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + view.getId()));
 
 					activity.openChecklist(checklist);
 				} catch (JSONException e) {
@@ -91,8 +92,8 @@ public class ChecklistView extends ContentView {
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (data.has(App.CHECKLIST + id)) {
-					JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + id));
+				if (folder.has(App.CHECKLIST + id)) {
+					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + id));
 
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));

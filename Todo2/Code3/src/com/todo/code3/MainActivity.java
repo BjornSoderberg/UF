@@ -134,13 +134,12 @@ public class MainActivity extends FlyInFragmentActivity {
 				data = new JSONObject(d);
 			}
 
-			String[] childrenIds = data.getString(App.CHILDREN_IDS).split(",");
-			for (int i = 0; i < childrenIds.length; i++) {
-				if (data.has(App.FOLDER + childrenIds[i])) {
-					JSONObject o = new JSONObject(data.getString(App.FOLDER + childrenIds[i]));
+			for (int i = 0; i < data.getInt(App.NUM_FOLDERS); i++) {
+				if (data.has(App.FOLDER + i)) {
+					JSONObject o = new JSONObject(data.getString(App.FOLDER + i));
 
 					if (o.getString(App.NAME).equalsIgnoreCase("Inbox")) {
-						openFolder(Integer.parseInt(childrenIds[i]), o.getString(App.TYPE));
+						openFolder(i, o.getString(App.TYPE));
 						break;
 					}
 				}
@@ -311,7 +310,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-		 Log.i("Updating data...", data.toString());
+		// Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
