@@ -6,10 +6,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -66,8 +67,7 @@ public class ChecklistView extends ContentView {
 				if(activity.isMoving()) return;
 				
 				try {
-					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
-					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + view.getId()));
+					JSONObject checklist = new JSONObject(activity.getData().getString(App.CHECKLIST + view.getId()));
 
 					activity.openChecklist(checklist);
 				} catch (JSONException e) {
@@ -92,13 +92,14 @@ public class ChecklistView extends ContentView {
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (folder.has(App.CHECKLIST + id)) {
-					JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + id));
+				if (data.has(App.CHECKLIST + id)) {
+					JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + id));
 
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));
 					ci.setFolderId(currentFolder);
 					ci.setId(checklist.getInt(App.ID));
+					if (checklist.has(App.TIMESTAMP_CREATED)) ci.setTimestampCreated(checklist.getInt(App.TIMESTAMP_CREATED));
 
 					checklistItems.add(ci);
 				}
@@ -127,7 +128,10 @@ public class ChecklistView extends ContentView {
 	}
 
 	public void expandView(final View view) {
-		Runnable expandRunnable = new Runnable() {
+		if(view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+		else view.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
+		
+		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
 
@@ -160,9 +164,7 @@ public class ChecklistView extends ContentView {
 				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}
-		};
-		
-		activity.runOnUiThread(expandRunnable);
+		}, 0);
 	}
 
 	public ArrayList<ChecklistItem> getChecklistItems() {

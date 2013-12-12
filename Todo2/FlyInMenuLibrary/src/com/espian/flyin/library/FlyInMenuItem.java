@@ -11,6 +11,7 @@ public class FlyInMenuItem {
 	private CharSequence mCondText;
 	private int id;
 	private String contentType;
+	private long timestampCreated = -1;
 
 	private boolean mEnabled;
 
@@ -36,6 +37,10 @@ public class FlyInMenuItem {
 
 	public CharSequence getTitleCondensed() {
 		return mCondText;
+	}
+	
+	public long getTimestampCreated() {
+		return timestampCreated;
 	}
 
 	public boolean isEnabled() {
@@ -79,6 +84,11 @@ public class FlyInMenuItem {
 
 	public FlyInMenuItem setId(int id) {
 		this.id = id;
+		return this;
+	}
+	
+	public FlyInMenuItem setTimestampCreated(int i) {
+		timestampCreated = i;
 		return this;
 	}
 

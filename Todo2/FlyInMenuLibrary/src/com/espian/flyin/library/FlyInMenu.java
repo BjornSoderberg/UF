@@ -2,19 +2,21 @@ package com.espian.flyin.library;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -28,19 +30,29 @@ import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
+import com.espian.flyin.library.DynamicListView;
+
 public class FlyInMenu extends LinearLayout {
 
 	public static final int FLY_IN_WITH_ACTIVITY = 0;
 	public static final int FLY_IN_OVER_ACTIVITY = 1;
 
-	private ListView mListView;
+	private ListView listView;
 	private View mOutsideView;
 	private LinearLayout mMenuHolder;
 	private ViewStub mCustomStub;
 	private View mCustomView;
 	// private View mWrappedSearchView;
 	// private boolean hasSearchView = false;
-	private Activity mAct;
+	private FlyInFragmentActivity activity;
+
+	private Adapter adapter;
+
+	private final int EXPAND_ANIMATION_DURATION = 300;
+	private int flyInMenuItemHeight;
+	private int expandingItemId = -1;
+
+	private boolean hasDynamicListView = false;
 
 	private int contentOffset = 0;
 	private int width;
@@ -60,13 +72,13 @@ public class FlyInMenu extends LinearLayout {
 
 	public FlyInMenu(Context context) {
 		super(context);
-		mAct = (Activity) context;
+		activity = (FlyInFragmentActivity) context;
 		load();
 	}
 
 	public FlyInMenu(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mAct = (Activity) context;
+		activity = (FlyInFragmentActivity) context;
 		load();
 	}
 
@@ -81,9 +93,13 @@ public class FlyInMenu extends LinearLayout {
 	}
 
 	private void inflateLayout() {
+		hasDynamicListView = activity.getSDKVersion() >= 11;
+		
+		Log.i("asassad", "a" + activity.getSDKVersion());
 
 		try {
-			LayoutInflater.from(getContext()).inflate(R.layout.fly_menu, this, true);
+			if (hasDynamicListView) LayoutInflater.from(getContext()).inflate(R.layout.fly_menu_dynamic, this, true);
+			else LayoutInflater.from(getContext()).inflate(R.layout.fly_menu, this, true);
 		} catch (Exception e) {
 
 		}
@@ -92,21 +108,18 @@ public class FlyInMenu extends LinearLayout {
 
 	private void initUi() {
 
-		mListView = (ListView) findViewById(R.id.fly_listview);
+		listView = (ListView) findViewById(R.id.fly_listview);
 		mOutsideView = findViewById(R.id.fly_outside);
 		mCustomStub = (ViewStub) findViewById(R.id.fly_custom);
 		mMenuHolder = (LinearLayout) findViewById(R.id.fly_menu_holder);
 
 		mOutsideView.setOnClickListener(new OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				hideMenu();
 			}
 		});
 
-		mOutsideView.setBackgroundColor(0x88ffff00);
-
-		mListView.setOnItemClickListener(new OnItemClickListener() {
+		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -120,6 +133,9 @@ public class FlyInMenu extends LinearLayout {
 			}
 
 		});
+
+		flyInMenuItemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
+		if (hasDynamicListView) ((DynamicListView) listView).setFlyInFragmentActivity(activity);
 	}
 
 	public void setOnFlyInItemClickListener(OnFlyInItemClickListener callback) {
@@ -203,14 +219,16 @@ public class FlyInMenu extends LinearLayout {
 	 *            resource id of the menu to be inflated
 	 */
 	public void setMenuItems() {
-
 		if (menuItems == null || menuItems.size() <= 0) menuItems = new ArrayList<FlyInMenuItem>();
 
 		if (menuItems != null && menuItems.size() > 0) {
-			mListView.setAdapter(new Adapter());
-
+			if (adapter == null) {
+				adapter = new Adapter();
+				listView.setAdapter(adapter);
+			} else adapter.notifyDataSetChanged();
+			
+			if(hasDynamicListView) ((DynamicListView) listView).setMenuItems(menuItems);
 		}
-
 	}
 
 	/**
@@ -227,7 +245,7 @@ public class FlyInMenu extends LinearLayout {
 			mCustomView.setVisibility(View.VISIBLE);
 		}
 
-		ViewGroup decorView = (ViewGroup) mAct.getWindow().getDecorView();
+		ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
 		View v, x;
 		v = decorView.getChildAt(0);
 		x = decorView.getChildAt(1);
@@ -253,7 +271,7 @@ public class FlyInMenu extends LinearLayout {
 			mCustomView.setVisibility(View.VISIBLE);
 		}
 
-		ViewGroup decorView = (ViewGroup) mAct.getWindow().getDecorView();
+		ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
 		View v, x;
 		v = decorView.getChildAt(0);
 		x = decorView.getChildAt(1);
@@ -270,7 +288,7 @@ public class FlyInMenu extends LinearLayout {
 		showFlyIn.playTogether(flyIn, activity);
 		showFlyIn.addListener(new VisibilityHelper());
 		showFlyIn.setDuration(animationDuration).start();
-		
+
 		// Hides the menu views when the animation has ended
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
@@ -296,7 +314,7 @@ public class FlyInMenu extends LinearLayout {
 			mCustomView.setVisibility(View.VISIBLE);
 		}
 
-		ViewGroup decorView = (ViewGroup) mAct.getWindow().getDecorView();
+		ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
 		View v, x;
 		v = decorView.getChildAt(0);
 		x = decorView.getChildAt(1);
@@ -314,6 +332,31 @@ public class FlyInMenu extends LinearLayout {
 		contentOffset += dx;
 	}
 
+	private void expandView(final View view) {
+		if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+
+				Animation animation = new Animation() {
+					protected void applyTransformation(float time, Transformation t) {
+						if ((int) (flyInMenuItemHeight * time) != 0) {
+							view.getLayoutParams().height = (int) (flyInMenuItemHeight * time);
+						} else {
+							view.getLayoutParams().height = 1;
+						}
+
+						view.requestLayout();
+					}
+				};
+
+				animation.setDuration(EXPAND_ANIMATION_DURATION);
+				view.startAnimation(animation);
+			}
+		}, 0);
+	}
+
 	/**
 	 * Toggle the menu visibility: show it if it is hidden, and hide if it is
 	 * shown.
@@ -326,12 +369,28 @@ public class FlyInMenu extends LinearLayout {
 		}
 	}
 
+	public void setExpandingItemid(int id) {
+		expandingItemId = id;
+	}
+
+	public int getExpandingItemId() {
+		return expandingItemId;
+	}
+
+	public void invalidateExpandingItemId() {
+		expandingItemId = -1;
+	}
+
 	public boolean isMenuVisible() {
 		return contentOffset != 0;
 	}
 
 	public int getContentOffset() {
 		return contentOffset;
+	}
+	
+	public ArrayList<FlyInMenuItem> getMenuItems() {
+		return menuItems;
 	}
 
 	@Override
@@ -392,24 +451,24 @@ public class FlyInMenu extends LinearLayout {
 
 		@Override
 		public int getCount() {
-
 			return menuItems.size();
 		}
 
 		@Override
-		public Object getItem(int position) {
-
-			return null;
+		public FlyInMenuItem getItem(int position) {
+			return menuItems.get(position);
 		}
 
 		@Override
 		public long getItemId(int position) {
-			return 0;
+			if(position < 0 || position >= menuItems.size()) return -1;
+			
+			FlyInMenuItem item = getItem(position);
+			return item.getId();
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-
 			if (convertView == null || convertView instanceof TextView) convertView = inflater.inflate(R.layout.fly_item, null);
 
 			ImageView icon = (ImageView) convertView.findViewById(R.id.rbm_item_icon);
@@ -418,7 +477,16 @@ public class FlyInMenu extends LinearLayout {
 
 			text.setText(item.getTitle());
 			icon.setImageResource(item.getIconId());
-			convertView.setEnabled(item.isEnabled());
+
+			if (item.getId() == getExpandingItemId()) {
+				invalidateExpandingItemId();
+				expandView(convertView);
+
+				if (convertView.getLayoutParams() != null) convertView.getLayoutParams().height = 1;
+				else convertView.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
+			}
+			
+			convertView.setId(item.getId());
 
 			return convertView;
 
@@ -434,11 +502,11 @@ public class FlyInMenu extends LinearLayout {
 
 		@Override
 		public void onAnimationEnd(Animator animation) {
-//			mOutsideView.setVisibility(View.GONE);
-//			mMenuHolder.setVisibility(View.GONE);
-//			if (mCustomView != null) {
-//				mCustomView.setVisibility(View.GONE);
-//			}
+			// mOutsideView.setVisibility(View.GONE);
+			// mMenuHolder.setVisibility(View.GONE);
+			// if (mCustomView != null) {
+			// mCustomView.setVisibility(View.GONE);
+			// }
 		}
 
 		@Override

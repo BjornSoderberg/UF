@@ -134,12 +134,13 @@ public class MainActivity extends FlyInFragmentActivity {
 				data = new JSONObject(d);
 			}
 
-			for (int i = 0; i < data.getInt(App.NUM_FOLDERS); i++) {
-				if (data.has(App.FOLDER + i)) {
-					JSONObject o = new JSONObject(data.getString(App.FOLDER + i));
+			String[] childrenIds = data.getString(App.CHILDREN_IDS).split(",");
+			for (int i = 0; i < childrenIds.length; i++) {
+				if (data.has(App.FOLDER + childrenIds[i])) {
+					JSONObject o = new JSONObject(data.getString(App.FOLDER + childrenIds[i]));
 
 					if (o.getString(App.NAME).equalsIgnoreCase("Inbox")) {
-						openFolder(i, o.getString(App.TYPE));
+						openFolder(Integer.parseInt(childrenIds[i]), o.getString(App.TYPE));
 						break;
 					}
 				}
@@ -310,7 +311,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-		// Log.i("Updating data...", data.toString());
+		Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
@@ -325,6 +326,12 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 
 		updateMenu();
+
+		try {
+			data.put(App.TIMESTAMP_LAST_UPDATED, (int) (System.currentTimeMillis() / 1000));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void updateMenu() {
@@ -472,7 +479,14 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void addFolder(String name, String type) {
 		if (type.equals(App.PROJECT)) addFolder(name, App.CHECKLIST, type, true);
-		else if(type.equals(App.FOLDER)) addFolder(name, App.TASK, type, true);
+		else if (type.equals(App.FOLDER)) addFolder(name, App.TASK, type, true);
+
+		try {
+			// This gets the id of the newly added folder
+			getFlyInMenu().setExpandingItemid(data.getInt(App.NUM_FOLDERS) - 1);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void addFolder(String name, String contentType, String type, boolean removable) {
@@ -743,10 +757,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		return super.getFlyInMenu();
 	}
 
-	public int getSDKVersion() {
-		return Build.VERSION.SDK_INT;
-	}
-
 	public int getMenuWidth() {
 		return menuWidth;
 	}
@@ -765,5 +775,16 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public Button getDragButton() {
 		return dragButton;
+	}
+
+	public void updateContentItemsOrder() {
+		String order = "";
+		for (int i = 0; i < getFlyInMenu().getMenuItems().size() - 1; i++) {
+			order += getFlyInMenu().getMenuItems().get(i).getId() + ",";
+		}
+
+		order += getFlyInMenu().getMenuItems().get(getFlyInMenu().getMenuItems().size() - 1).getId();
+
+		updateChilrenOrder(order, -1, -1);
 	}
 }

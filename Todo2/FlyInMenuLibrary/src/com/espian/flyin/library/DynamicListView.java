@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.todo.code3.xml;
+package com.espian.flyin.library;
 
 import java.util.ArrayList;
 
@@ -30,25 +30,16 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-
-import com.espian.flyin.library.FlyInMenu;
-import com.todo.code3.misc.App;
-import com.todo.code3.view.ChecklistView;
-import com.todo.code3.view.ContentView;
-import com.todo.code3.view.ProjectView;
-import com.todo.code3.view.TaskView;
 
 /**
  * The dynamic listview is an extension of listview that supports cell dragging
@@ -79,9 +70,8 @@ public class DynamicListView extends ListView {
 	private final int MOVE_DURATION = 150;
 	private final int LINE_THICKNESS = 5;
 
-	private ArrayList<TaskItem> taskItems;
-	private ArrayList<ChecklistItem> checklistItems;
-	private String viewType;
+	private ArrayList<FlyInMenuItem> menuItems;
+	private FlyInFragmentActivity activity;
 
 	private int mLastEventY = -1;
 
@@ -109,8 +99,6 @@ public class DynamicListView extends ListView {
 	private boolean mIsWaitingForScrollFinish = false;
 	private int mScrollState = OnScrollListener.SCROLL_STATE_IDLE;
 
-	private ContentView contentView;
-
 	public DynamicListView(Context context) {
 		super(context);
 		init(context);
@@ -124,6 +112,14 @@ public class DynamicListView extends ListView {
 	public DynamicListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(context);
+	}
+
+	public void setFlyInFragmentActivity(FlyInFragmentActivity a) {
+		activity = a;
+	}
+
+	public void setMenuItems(ArrayList<FlyInMenuItem> items) {
+		menuItems = items;
 	}
 
 	public void init(Context context) {
@@ -351,13 +347,6 @@ public class DynamicListView extends ListView {
 				return;
 			}
 
-			Log.i("asdasd", mBelowItemId + " : " + mMobileItemId + " : " + mAboveItemId);
-
-			// Prevents swapping if two different tasks have different checked states
-			if (viewType.equals(App.TASK_VIEW)) {
-				if (taskItems.get(originalItem).isCompleted() != taskItems.get(getPositionForView(switchView)).isCompleted()) return;
-			}
-
 			swapElements(originalItem, getPositionForView(switchView));
 
 			((BaseAdapter) getAdapter()).notifyDataSetChanged();
@@ -396,15 +385,9 @@ public class DynamicListView extends ListView {
 	}
 
 	private void swapElements(int indexOne, int indexTwo) {
-		if (viewType.equals(App.TASK_VIEW)) {
-			TaskItem temp = taskItems.get(indexOne);
-			taskItems.set(indexOne, taskItems.get(indexTwo));
-			taskItems.set(indexTwo, temp);
-		} else if (viewType.equals(App.CHECKLIST_VIEW)) {
-			ChecklistItem temp = checklistItems.get(indexOne);
-			checklistItems.set(indexOne, checklistItems.get(indexTwo));
-			checklistItems.set(indexTwo, temp);
-		}
+		FlyInMenuItem temp = menuItems.get(indexOne);
+		menuItems.set(indexOne, menuItems.get(indexTwo));
+		menuItems.set(indexTwo, temp);
 	}
 
 	/**
@@ -457,7 +440,7 @@ public class DynamicListView extends ListView {
 			});
 			hoverViewAnimator.start();
 
-			contentView.updateContentItemsOrder();
+			activity.updateContentItemsOrder();
 		} else {
 			touchEventsCancelled();
 		}
@@ -529,20 +512,6 @@ public class DynamicListView extends ListView {
 		}
 
 		return false;
-	}
-
-	public void setTaskItems(ArrayList<TaskItem> list) {
-		taskItems = list;
-	}
-
-	public void setChecklistItems(ArrayList<ChecklistItem> list) {
-		checklistItems = list;
-	}
-
-	public void setContentView(ContentView v) {
-		contentView = v;
-		if (v instanceof TaskView) viewType = App.TASK_VIEW;
-		else if (v instanceof ChecklistView || v instanceof ProjectView) viewType = App.CHECKLIST_VIEW;
 	}
 
 	/**
@@ -632,7 +601,6 @@ public class DynamicListView extends ListView {
 	};
 
 	public boolean onInterceptTouchEvent(MotionEvent e) {
-		Log.i("asdasd", "intercept");
 		return false;
 	};
 }

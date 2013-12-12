@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="left"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:id="@+id/fly_menu_holder"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#393C3B"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <com.espian.flyin.library.DynamicListView
+            android:id="@+id/fly_listview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:cacheColorHint="#00000000"
+            android:divider="#2E302F"
+            android:dividerHeight="1px"
+            android:fadingEdgeLength="0dp"
+            android:visibility="visible" >
+        </com.espian.flyin.library.DynamicListView>
+
+        <ViewStub
+            android:id="@+id/fly_custom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- simple drop shadow -->
+
+    <View
+        android:id="@+id/fly_outside"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -6,7 +6,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.Transformation;
@@ -67,19 +69,10 @@ public class TaskView extends ContentView {
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(true) return;
 				if (activity.isMoving()) return;
 
 				try {
-					JSONObject folder = new JSONObject(activity.getData().getString(App.FOLDER + currentFolder));
-					JSONObject task;
-					if (currentChecklist != -1) {
-						JSONObject checklist = new JSONObject(folder.getString(App.CHECKLIST + currentChecklist));
-
-						task = new JSONObject(checklist.getString(App.TASK + view.getId()));
-					} else {
-						task = new JSONObject(folder.getString(App.TASK + view.getId()));
-					}
+					JSONObject task = new JSONObject(activity.getData().getString(App.TASK + view.getId()));
 
 					activity.openTask(task);
 				} catch (JSONException e) {
@@ -102,7 +95,7 @@ public class TaskView extends ContentView {
 
 			JSONObject parent = new JSONObject(data.getString(App.FOLDER + currentFolder));
 			if (parent.getString(App.CONTENT_TYPE).equals(App.CHECKLIST) && currentChecklist != -1) {
-				parent = new JSONObject(parent.getString(App.CHECKLIST + currentChecklist));
+				parent = new JSONObject(data.getString(App.CHECKLIST + currentChecklist));
 				isChecklistChild = true;
 			}
 
@@ -113,14 +106,16 @@ public class TaskView extends ContentView {
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (parent.has(App.TASK + id)) {
-					JSONObject task = new JSONObject(parent.getString(App.TASK + id));
+				if (data.has(App.TASK + id)) {
+					JSONObject task = new JSONObject(data.getString(App.TASK + id));
 
 					TaskItem ti = new TaskItem();
 					ti.setTitle(task.getString(App.NAME));
 					ti.setEnabled(true);
 					ti.setId(task.getInt(App.ID));
 					ti.setFolderId(currentFolder);
+					if (task.has(App.TIMESTAMP_CREATED)) ti.setTimestampCreated(task.getInt(App.TIMESTAMP_CREATED));
+					if (task.has(App.TIMESTAMP_COMPLETED)) ti.setTimestampChecked(task.getInt(App.TIMESTAMP_COMPLETED));
 
 					if (isChecklistChild) ti.setChecklistId(parent.getInt(App.ID));
 
@@ -140,11 +135,11 @@ public class TaskView extends ContentView {
 			e.printStackTrace();
 		}
 
-//		if (taskItems.size() == 0) {
-//			empty.setVisibility(View.VISIBLE);
-//		} else {
-//			empty.setVisibility(View.GONE);
-//		}
+		// if (taskItems.size() == 0) {
+		// empty.setVisibility(View.VISIBLE);
+		// } else {
+		// empty.setVisibility(View.GONE);
+		// }
 	}
 
 	public void updateContentItemsOrder() {
@@ -157,17 +152,17 @@ public class TaskView extends ContentView {
 	}
 
 	private void sortTaskItems() {
-		ArrayList<TaskItem> checked = new ArrayList<TaskItem>();
-		ArrayList<TaskItem> unchecked = new ArrayList<TaskItem>();
-
-		for (TaskItem i : taskItems) {
-			if (i.isCompleted()) checked.add(i);
-			else unchecked.add(i);
-		}
-
-		taskItems.clear();
-		taskItems.addAll(unchecked);
-		taskItems.addAll(checked);
+//		ArrayList<TaskItem> checked = new ArrayList<TaskItem>();
+//		ArrayList<TaskItem> unchecked = new ArrayList<TaskItem>();
+//
+//		for (TaskItem i : taskItems) {
+//			if (i.isCompleted()) checked.add(i);
+//			else unchecked.add(i);
+//		}
+//
+//		taskItems.clear();
+//		taskItems.addAll(unchecked);
+//		taskItems.addAll(checked);
 	}
 
 	public void collapseView(final View view, final int id) {
@@ -207,7 +202,10 @@ public class TaskView extends ContentView {
 	}
 
 	public void expandView(final View view) {
-		Runnable expandRunnable = new Runnable() {
+		if(view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+		else view.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
+		
+		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
 
@@ -240,9 +238,7 @@ public class TaskView extends ContentView {
 				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}
-		};
-
-		activity.runOnUiThread(expandRunnable);
+		}, 0);
 	}
 
 	public ArrayList<TaskItem> getTaskItems() {
@@ -260,7 +256,7 @@ public class TaskView extends ContentView {
 	public void invalidateExpandingItemId() {
 		expandingItemId = -1;
 	}
-	
+
 	public int getListViewItemHeight() {
 		return listViewItemHeight;
 	}

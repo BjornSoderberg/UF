@@ -11,7 +11,7 @@ public class ContentItem {
 	//protected CharSequence mCondText;
 	protected int id;
 	protected int folderId;
-
+	protected long timestampCreated = -1;
 	protected boolean mEnabled = true;
 
 	public int getIconId() {
@@ -32,6 +32,10 @@ public class ContentItem {
 	
 	public int getFolderId() {
 		return folderId;
+	}
+	
+	public long getTimestampCreated() {
+		return timestampCreated;
 	}
 
 //	public CharSequence getTitleCondensed() {
@@ -82,4 +86,8 @@ public class ContentItem {
 		return this;
 	}
 
+	public ContentItem setTimestampCreated(int i) {
+		timestampCreated = i;
+		return this;
+	}
 }
