@@ -9,7 +9,7 @@
         android:id="@+id/fly_menu_holder"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="#393C3B"
+        android:background="@color/rbm_menu_background"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -31,15 +31,5 @@
             android:layout_height="wrap_content"
             android:visibility="gone" />
     </LinearLayout>
-
-    <!-- simple drop shadow -->
-
-    <View
-        android:id="@+id/fly_outside"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:clickable="false"
-        android:visibility="gone" />
 
 </LinearLayout>

@@ -20,16 +20,12 @@ public class TaskContentView extends ContentView {
 	private TextView descTV;
 	private EditText descET, focusDummy;
 	private Button saveButton;
+	
+	private int id;
 
-	private int currentFolder = -1;
-	private int currentChecklist = -1;
-	private int currentTask = -1;
-
-	public TaskContentView(MainActivity activity, int currentFolder, int currentChecklist, int currentTask) {
+	public TaskContentView(MainActivity activity, int id) {
 		super(activity);
-		this.currentFolder = currentFolder;
-		this.currentChecklist = currentChecklist;
-		this.currentTask = currentTask;
+		this.id = id;
 	}
 
 	protected void init() {
@@ -52,6 +48,7 @@ public class TaskContentView extends ContentView {
 				focusDummy.requestFocus();
 				
 				saveDescription(descET.getText().toString());
+				descTV.setText(descET.getText().toString());
 			}
 		});
 
@@ -83,11 +80,7 @@ public class TaskContentView extends ContentView {
 
 	public void update(JSONObject data) {
 		try {
-			JSONObject parent = new JSONObject(data.getString(App.FOLDER + currentFolder));
-			if (parent.getString(App.CONTENT_TYPE).equals(App.CHECKLIST) && currentChecklist != -1) {
-				parent = new JSONObject(parent.getString(App.CHECKLIST + currentChecklist));
-			}
-			JSONObject task = new JSONObject(parent.getString(App.TASK + currentTask));
+			JSONObject task = new JSONObject(data.getString(App.TASK + id));
 
 			if (task.has(App.DESCRIPTION)) {
 				descTV.setText(task.getString(App.DESCRIPTION));
@@ -115,7 +108,7 @@ public class TaskContentView extends ContentView {
 	private void saveDescription(String desc) {
 		hideKeyboard();
 		
-		activity.setTaskDescription(desc, currentTask, currentChecklist, currentFolder);
+		activity.setTaskDescription(desc, id);
 	}
 
 	// not used

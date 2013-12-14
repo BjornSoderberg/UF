@@ -3,13 +3,18 @@ package com.espian.flyin.library;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.Animation;
@@ -30,15 +35,12 @@ import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
-import com.espian.flyin.library.DynamicListView;
-
 public class FlyInMenu extends LinearLayout {
 
 	public static final int FLY_IN_WITH_ACTIVITY = 0;
 	public static final int FLY_IN_OVER_ACTIVITY = 1;
 
 	private ListView listView;
-	private View mOutsideView;
 	private LinearLayout mMenuHolder;
 	private ViewStub mCustomStub;
 	private View mCustomView;
@@ -94,7 +96,7 @@ public class FlyInMenu extends LinearLayout {
 
 	private void inflateLayout() {
 		hasDynamicListView = activity.getSDKVersion() >= 11;
-		
+
 		Log.i("asassad", "a" + activity.getSDKVersion());
 
 		try {
@@ -109,15 +111,8 @@ public class FlyInMenu extends LinearLayout {
 	private void initUi() {
 
 		listView = (ListView) findViewById(R.id.fly_listview);
-		mOutsideView = findViewById(R.id.fly_outside);
 		mCustomStub = (ViewStub) findViewById(R.id.fly_custom);
 		mMenuHolder = (LinearLayout) findViewById(R.id.fly_menu_holder);
-
-		mOutsideView.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				hideMenu();
-			}
-		});
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -226,8 +221,8 @@ public class FlyInMenu extends LinearLayout {
 				adapter = new Adapter();
 				listView.setAdapter(adapter);
 			} else adapter.notifyDataSetChanged();
-			
-			if(hasDynamicListView) ((DynamicListView) listView).setMenuItems(menuItems);
+
+			if (hasDynamicListView) ((DynamicListView) listView).setMenuItems(menuItems);
 		}
 	}
 
@@ -292,7 +287,6 @@ public class FlyInMenu extends LinearLayout {
 		// Hides the menu views when the animation has ended
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				mOutsideView.setVisibility(View.GONE);
 				mMenuHolder.setVisibility(View.GONE);
 				if (mCustomView != null) {
 					mCustomView.setVisibility(View.GONE);
@@ -369,7 +363,7 @@ public class FlyInMenu extends LinearLayout {
 		}
 	}
 
-	public void setExpandingItemid(int id) {
+	public void setExpandingItemId(int id) {
 		expandingItemId = id;
 	}
 
@@ -388,7 +382,7 @@ public class FlyInMenu extends LinearLayout {
 	public int getContentOffset() {
 		return contentOffset;
 	}
-	
+
 	public ArrayList<FlyInMenuItem> getMenuItems() {
 		return menuItems;
 	}
@@ -461,8 +455,8 @@ public class FlyInMenu extends LinearLayout {
 
 		@Override
 		public long getItemId(int position) {
-			if(position < 0 || position >= menuItems.size()) return -1;
-			
+			if (position < 0 || position >= menuItems.size()) return -1;
+
 			FlyInMenuItem item = getItem(position);
 			return item.getId();
 		}
@@ -485,7 +479,7 @@ public class FlyInMenu extends LinearLayout {
 				if (convertView.getLayoutParams() != null) convertView.getLayoutParams().height = 1;
 				else convertView.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
 			}
-			
+
 			convertView.setId(item.getId());
 
 			return convertView;

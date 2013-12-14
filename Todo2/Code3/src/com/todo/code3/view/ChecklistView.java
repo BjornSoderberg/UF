@@ -31,16 +31,15 @@ public class ChecklistView extends ContentView {
 
 	private boolean hasDynamicListView;
 
-	private int currentFolder = -1;
-
 	private int expandingItemId = -1;
 	private int listViewItemHeight;
 
 	protected ArrayList<ChecklistItem> checklistItems;
 
-	public ChecklistView(MainActivity activity, int currentFolder) {
+	public ChecklistView(MainActivity activity, int parentId, String parentType) {
 		super(activity);
-		this.currentFolder = currentFolder;
+		this.parentId = parentId;
+		this.parentType = parentType;
 	}
 
 	protected void init() {
@@ -69,7 +68,7 @@ public class ChecklistView extends ContentView {
 				try {
 					JSONObject checklist = new JSONObject(activity.getData().getString(App.CHECKLIST + view.getId()));
 
-					activity.openChecklist(checklist);
+					activity.open(checklist.getInt(App.ID), App.CHECKLIST);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -86,7 +85,7 @@ public class ChecklistView extends ContentView {
 		try {
 			checklistItems.clear();
 
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
+			JSONObject folder = new JSONObject(data.getString(parentType + parentId));
 
 			String childrenIds[] = folder.getString(App.CHILDREN_IDS).split(",");
 
@@ -97,7 +96,8 @@ public class ChecklistView extends ContentView {
 
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));
-					ci.setFolderId(currentFolder);
+					ci.setParentId(parentId);
+					ci.setParentType(parentType);
 					ci.setId(checklist.getInt(App.ID));
 					if (checklist.has(App.TIMESTAMP_CREATED)) ci.setTimestampCreated(checklist.getInt(App.TIMESTAMP_CREATED));
 
@@ -124,7 +124,7 @@ public class ChecklistView extends ContentView {
 			order += checklistItems.get(i).getId() + ",";
 		}
 		order += checklistItems.get(checklistItems.size() - 1).getId();
-		activity.updateChilrenOrder(order, -1, currentFolder);
+		activity.updateChilrenOrder(order, parentId, parentType);
 	}
 
 	public void expandView(final View view) {

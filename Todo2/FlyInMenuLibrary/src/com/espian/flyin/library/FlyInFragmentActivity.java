@@ -84,6 +84,7 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	}
 
 	public abstract void updateContentItemsOrder();
+	public abstract int getContentWidth();
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

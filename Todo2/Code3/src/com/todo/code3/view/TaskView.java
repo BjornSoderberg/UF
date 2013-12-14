@@ -35,16 +35,13 @@ public class TaskView extends ContentView {
 
 	private TaskAdapter adapter;
 
-	private int currentFolder = -1;
-	private int currentChecklist = -1;
-
 	private int listViewItemHeight;
 	private int expandingItemId = -1;
 
-	public TaskView(MainActivity activity, int currentFolder, int currentChecklist) {
+	public TaskView(MainActivity activity, int parentId, String parentType) {
 		super(activity);
-		this.currentFolder = currentFolder;
-		this.currentChecklist = currentChecklist;
+		this.parentId = parentId;
+		this.parentType = parentType;
 	}
 
 	protected void init() {
@@ -74,7 +71,7 @@ public class TaskView extends ContentView {
 				try {
 					JSONObject task = new JSONObject(activity.getData().getString(App.TASK + view.getId()));
 
-					activity.openTask(task);
+					activity.open(task.getInt(App.ID), App.TASK);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -91,13 +88,7 @@ public class TaskView extends ContentView {
 		try {
 			taskItems.clear();
 
-			boolean isChecklistChild = false;
-
-			JSONObject parent = new JSONObject(data.getString(App.FOLDER + currentFolder));
-			if (parent.getString(App.CONTENT_TYPE).equals(App.CHECKLIST) && currentChecklist != -1) {
-				parent = new JSONObject(data.getString(App.CHECKLIST + currentChecklist));
-				isChecklistChild = true;
-			}
+			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
 
 			String childrenIds[];
 
@@ -113,11 +104,10 @@ public class TaskView extends ContentView {
 					ti.setTitle(task.getString(App.NAME));
 					ti.setEnabled(true);
 					ti.setId(task.getInt(App.ID));
-					ti.setFolderId(currentFolder);
+					ti.setParentId(parentId);
+					ti.setParentType(parentType);
 					if (task.has(App.TIMESTAMP_CREATED)) ti.setTimestampCreated(task.getInt(App.TIMESTAMP_CREATED));
 					if (task.has(App.TIMESTAMP_COMPLETED)) ti.setTimestampChecked(task.getInt(App.TIMESTAMP_COMPLETED));
-
-					if (isChecklistChild) ti.setChecklistId(parent.getInt(App.ID));
 
 					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED)) ti.completed(true);
 					else ti.completed(false);
@@ -148,7 +138,7 @@ public class TaskView extends ContentView {
 			order += taskItems.get(i).getId() + ",";
 		}
 		order += taskItems.get(taskItems.size() - 1).getId();
-		activity.updateChilrenOrder(order, currentChecklist, currentFolder);
+		activity.updateChilrenOrder(order, parentId, parentType);
 	}
 
 	private void sortTaskItems() {

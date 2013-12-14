@@ -32,7 +32,6 @@ public final class R {
         public static int fly_custom=0x7f060005;
         public static int fly_listview=0x7f060004;
         public static int fly_menu_holder=0x7f060003;
-        public static int fly_outside=0x7f060006;
         public static int fly_searchview=0x7f060000;
         public static int rbm_item_icon=0x7f060001;
         public static int rbm_item_text=0x7f060002;

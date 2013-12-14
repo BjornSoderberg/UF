@@ -4,7 +4,6 @@ public class TaskItem extends ContentItem {
 
 	protected boolean isChecklistChild;
 	protected boolean isCompleted;
-	protected int checklistId = -1;
 	protected long timestampChecked = -1;
 	
 	public boolean isChecklistChild() {
@@ -15,22 +14,12 @@ public class TaskItem extends ContentItem {
 		return isCompleted;
 	}
 	
-	public int getChecklistId() {
-		return checklistId;
-	}
-	
 	public long getTimestampCompleted() {
 		return timestampChecked;
 	}
 	
 	public TaskItem isChecklistChild(boolean b) {
 		isChecklistChild = b;
-		return this;
-	}
-	
-	public TaskItem setChecklistId(int i) {
-		checklistId = i;
-		isChecklistChild(true);
 		return this;
 	}
 	

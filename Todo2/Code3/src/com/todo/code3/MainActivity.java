@@ -15,7 +15,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
@@ -24,7 +23,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,10 +64,12 @@ public class MainActivity extends FlyInFragmentActivity {
 	// the first folder should always be the inbox folder
 	// this folder is selected in getDataFromSharedPreferences();
 	// this may later be alterable
-	private int currentFolder = -1;
-	private int currentChecklist = -1;
-	private int currentTask = -1;
-	private String folderContentType;
+//	private int currentFolder = -1;
+//	private int currentChecklist = -1;
+//	private int currentTask = -1;
+//	private String folderContentType;
+	private int openObjectId = -1;
+	private String openObjectType;
 
 	public ArrayList<ContentView> contentViews;
 
@@ -100,8 +103,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		height = dm.heightPixels - App.getStatusBarHeight(getResources());
 		menuWidth = (int) (width * 0.8);
 
-		Log.i("asdasdsa", height + ", " + dm.heightPixels);
-
 		setContentView(R.layout.wrapper);
 
 		prefs = getSharedPreferences(App.PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -123,12 +124,11 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			if (d == null) {
 				data = new JSONObject();
-				data.put(App.CONTENT_TYPE, App.FOLDER);
 				data.put(App.NUM_TASKS, 0);
 				data.put(App.NUM_CHECKLISTS, 0);
 				data.put(App.NUM_FOLDERS, 0);
 
-				addFolder("Inbox", App.TASK, App.FOLDER, false);
+				addFolder("Inbox", App.FOLDER, false);
 
 			} else {
 				data = new JSONObject(d);
@@ -304,10 +304,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = buttonSize;
 		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = buttonSize;
 
-		LinearLayout l = (LinearLayout) findViewById(R.id.barBorder);
-		LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) l.getLayoutParams();
-		p.height = borderHeight;
-		l.setLayoutParams(p);
+		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
+		((LinearLayout) findViewById(R.id.bar)).getLayoutParams().height = barHeight;
 	}
 
 	private void updateData() {
@@ -383,6 +381,25 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void viewAddTaskDialog(View v) {
+		//When using a real XML file for the interface, remove the id "asd" from task_item
+//		RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
+//		View.inflate(this, R.layout.task_item, r);
+//		final LinearLayout ti = (LinearLayout) findViewById(R.id.asd);
+//		final int height = ti.getLayoutParams().height;
+//		ti.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 1));
+//		
+//		Animation animation = new Animation() {
+//			protected void applyTransformation(float time, Transformation t) {
+//				if((int)(height * time) != 0) ti.getLayoutParams().height = (int) (height * time);
+//				else ti.getLayoutParams().height = 1;
+//				
+//				ti.requestLayout();
+//			}
+//		};
+//		animation.setDuration(2000);
+//		ti.startAnimation(animation);
+//		
+//		if(true) return;
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add new task");
 		alert.setMessage("What do you have to do?");
@@ -421,9 +438,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				String name = inputInAddDialog.getText().toString();
-				if (folderContentType.equals(App.TASK) || currentChecklist != -1) {
+				if (openObjectType.equals(App.FOLDER) || openObjectType.equals(App.CHECKLIST)) {
 					addTask(name);
-				} else if (folderContentType.equals(App.CHECKLIST)) addChecklist(name);
+				} else if (openObjectType.equals(App.PROJECT)) addChecklist(name);
 
 				inputInAddDialog = null;
 			}
@@ -437,7 +454,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void addTask(String name) {
 		Log.i("Main Activity", "Added task " + name);
 
-		data = App.addTask(name, currentChecklist, currentFolder, data);
+		data = App.addTask(name, openObjectId, openObjectType, data);
 
 		// this should be the id of the new task
 		int id = -1;
@@ -458,7 +475,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void addChecklist(String name) {
 		Log.i("Main Activity", "Added checklist " + name);
 
-		data = App.addChecklist(name, currentFolder, data);
+		data = App.addChecklist(name, openObjectId, App.FOLDER, data);
 		editor.put(App.DATA, data.toString());
 
 		int id = -1;
@@ -478,70 +495,58 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void addFolder(String name, String type) {
-		if (type.equals(App.PROJECT)) addFolder(name, App.CHECKLIST, type, true);
-		else if (type.equals(App.FOLDER)) addFolder(name, App.TASK, type, true);
+		addFolder(name, type, true);
 
 		try {
 			// This gets the id of the newly added folder
-			getFlyInMenu().setExpandingItemid(data.getInt(App.NUM_FOLDERS) - 1);
+			getFlyInMenu().setExpandingItemId(data.getInt(App.NUM_FOLDERS) - 1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void addFolder(String name, String contentType, String type, boolean removable) {
-		data = App.addFolder(name, contentType, type, removable, data);
+	public void addFolder(String name, String type, boolean removable) {
+		data = App.addFolder(name, type, removable, data);
 		editor.put(App.DATA, data.toString());
 
 		updateMenu();
 	}
 
-	public void checkTask(int taskId, int checklistId, int folderId, boolean isChecked) {
-		Log.i("completeTask", taskId + ", " + checklistId + ", " + folderId);
-
-		data = App.checkTask(taskId, checklistId, folderId, isChecked, data);
+	public void checkTask(int taskId, int parentId, String parentType, boolean isChecked) {
+		data = App.checkTask(taskId, parentId, parentType, isChecked, data);
 
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
 
-	public void setTaskDescription(String desc, int taskId, int checklistId, int folderId) {
-		data = App.setTaskDescription(desc, taskId, checklistId, folderId, data);
+	public void setTaskDescription(String desc, int taskId) {
+		data = App.setTaskDescription(desc, taskId,  data);
 	}
 
-	// previously known as setCurrentFolder
-	// this function also opens projects
 	private void openFolder(int id, String type) {
 		if (isMoving) return;
 
 		try {
-			currentChecklist = -1;
+			if(openObjectId == id && openObjectType.equals(type)) return;
+			
+			openObjectId = id;
+			openObjectType = type;
 
-			if (currentFolder == id) return;
-			currentFolder = id;
-			// this should also load the correct data...
-
-			JSONObject object = new JSONObject(data.getString(App.FOLDER + id));
-			// if (type.equals(App.FOLDER)) object = new
-			// JSONObject(data.getString(App.FOLDER + id));
-			// else if (type.equals(App.PROJECT)) object = new
-			// JSONObject(data.getString(App.PROJECT + id));
+			JSONObject object = new JSONObject(data.getString(App.FOLDER + openObjectId));
 
 			setTitle(object.getString(App.NAME));
-
-			folderContentType = object.getString(App.CONTENT_TYPE);
 
 			posInWrapper = 0;
 			contentViews.clear();
 
 			if (type.equals(App.FOLDER)) {
-				if (folderContentType.equals(App.TASK)) {
-					contentViews.add(posInWrapper, new TaskView(this, currentFolder, currentChecklist));
-				} else if (folderContentType.equals(App.CHECKLIST)) {
-					contentViews.add(posInWrapper, new ChecklistView(this, currentFolder));
-				}
+//				if (object.getString(App.CONTENT_TYPE).equals(App.TASK)) {
+					contentViews.add(posInWrapper, new TaskView(this, openObjectId, openObjectType));
+//				} else if (object.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
+//					contentViews.add(posInWrapper, new ChecklistView(this, openObjectId, openObjectType));
+//				}
 			} else if (type.equals(App.PROJECT)) {
-				contentViews.add(posInWrapper, new ProjectView(this, currentFolder));
+				contentViews.add(posInWrapper, new ProjectView(this, openObjectId, openObjectType));
 			}
 
 			Log.i("Changed the current folder", object.getString(App.NAME));
@@ -551,47 +556,18 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateData();
 	}
 
-	public void openChecklist(JSONObject checklist) {
-		if (isMoving) return;
-
-		Log.i("openChecklist", "Opened checklist");
-
-		try {
-			currentChecklist = checklist.getInt(App.ID);
-			setTitle(checklist.getString(App.NAME));
-
-			scroller.startScroll(currentContentOffset, 0, -width, 0, scrollDuration);
-			scrollHandler.postDelayed(scrollRunnable, 1000 / 60);
-
-			posInWrapper++;
-
-			/*
-			 * if (contentViews.size() - 1 > posInWrapper &&
-			 * contentViews.get(posInWrapper) instanceof TaskView) ((TaskView)
-			 * contentViews
-			 * .get(posInWrapper)).setFolderAndChecklist(currentFolder,
-			 * currentChecklist); else
-			 */
-			if (contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
-			contentViews.add(posInWrapper, new TaskView(this, currentFolder, currentChecklist));
-
-			backButton.setVisibility(View.VISIBLE);
-			dragButton.setVisibility(View.GONE);
-			updateData();
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void openTask(JSONObject task) {
+	public void open(int id, String type) {
 		if (isMoving) return;
 
 		Log.i("openTask", "Opened task");
 
 		try {
-			currentTask = task.getInt(App.ID);
-			setTitle(task.getString(App.NAME));
+			openObjectId = id;
+			openObjectType = type;
+			
+			JSONObject object = new JSONObject(data.getString(type + id));
+			
+			setTitle(object.getString(App.NAME));
 
 			scroller.startScroll(currentContentOffset, 0, -width, 0, scrollDuration);
 			scrollHandler.postDelayed(scrollRunnable, scrollFps);
@@ -599,7 +575,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			posInWrapper++;
 
 			if (contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
-			contentViews.add(posInWrapper, new TaskContentView(this, currentFolder, currentChecklist, currentTask));
+			
+			if(type.equals(App.TASK))
+			contentViews.add(posInWrapper, new TaskContentView(this, openObjectId));
+			else if(type.equals(App.CHECKLIST))contentViews.add(posInWrapper, new TaskView(this, openObjectId, openObjectType)); 
 
 			backButton.setVisibility(View.VISIBLE);
 			dragButton.setVisibility(View.GONE);
@@ -620,31 +599,19 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void goBack() {
 		if (isMoving) return;
 
-		Log.i("asdasdas", posInWrapper + ", ");
-
 		// this means that it is not in any checklist or task
-		if (currentChecklist == -1 && currentTask == -1) return;
+		if (openObjectType.equals(App.FOLDER) || openObjectType.equals(App.PROJECT)) return;
 
 		try {
-			if (currentTask == -1) {
-				currentChecklist = -1;
+			JSONObject object = new JSONObject(data.getString(openObjectType + openObjectId));
+	
+			setTitle(new JSONObject(data.getString(object.getString(App.PARENT_CONTENT_TYPE) + object.getInt(App.PARENT_ID))).getString(App.NAME));
 
-				setTitle(new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.NAME));
+			openObjectId = object.getInt(App.PARENT_ID);
+			openObjectType = object.getString(App.PARENT_CONTENT_TYPE);
+			
 
-			} else {
-				currentTask = -1;
-
-				String name;
-				if (currentChecklist == -1) {
-					name = new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.NAME);
-				} else {
-					name = new JSONObject(new JSONObject(data.getString(App.FOLDER + currentFolder)).getString(App.CHECKLIST + currentChecklist)).getString(App.NAME);
-				}
-
-				setTitle(name);
-			}
-
-			if (currentChecklist == -1 && currentTask == -1) {
+			if (openObjectType.equals(App.FOLDER) || openObjectType.equals(App.PROJECT)) {
 				backButton.setVisibility(View.GONE);
 				dragButton.setVisibility(View.VISIBLE);
 			}
@@ -696,8 +663,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void setTitle(String name) {
-		Log.i(nameTV.getWidth() + "", width + "");
-
 		nameTV.setText(name);
 
 		Rect bounds = new Rect();
@@ -719,8 +684,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
-	public void updateChilrenOrder(String children, int checklistId, int folderId) {
-		data = App.updateChildrenOrder(children, checklistId, folderId, data);
+	public void updateChilrenOrder(String children, int parentId, String parentType) {
+		data = App.updateChildrenOrder(children, parentId, parentType, data);
 
 		editor.put(App.DATA, data.toString());
 		updateData();
@@ -785,6 +750,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		order += getFlyInMenu().getMenuItems().get(getFlyInMenu().getMenuItems().size() - 1).getId();
 
-		updateChilrenOrder(order, -1, -1);
+		updateChilrenOrder(order, -1, "");
 	}
 }

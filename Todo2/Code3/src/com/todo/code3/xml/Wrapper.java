@@ -7,11 +7,12 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.misc.App;
 
-public class Wrapper extends LinearLayout {
+public class Wrapper extends RelativeLayout {
 
 	private int x, y, startX, startY, lastX;
 
@@ -23,6 +24,7 @@ public class Wrapper extends LinearLayout {
 	private static final int MENU_OPEN = 1;
 
 	private boolean isDragging = false;
+	private boolean hasStarted = false;
 
 	private ViewConfiguration viewConfig;
 
@@ -43,9 +45,10 @@ public class Wrapper extends LinearLayout {
 
 		if (e.getAction() == MotionEvent.ACTION_DOWN) {
 			startX = x = lastX = (int) e.getRawX();
-			startY = y = (int) e.getRawY()  - App.getStatusBarHeight(activity.getResources());
+			startY = y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
 
 			startTime = System.currentTimeMillis();
+			hasStarted = true;
 
 			// If the swipe started between 0 and
 			// 30 dp from the screens right side,
@@ -53,9 +56,11 @@ public class Wrapper extends LinearLayout {
 			// the correct location to be able to
 			// open the menu
 			if (x <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources()) && x >= 0) dragStartLocation = MENU_CLOSED;
-			if (activity.getMenuWidth()< e.getRawX()) dragStartLocation = MENU_OPEN;
+			if (activity.getMenuWidth() < e.getRawX()) dragStartLocation = MENU_OPEN;
 
 		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
+			if(!hasStarted) return true;
+			
 			x = (int) e.getRawX();
 			y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
 
@@ -70,6 +75,8 @@ public class Wrapper extends LinearLayout {
 				}
 			}
 		} else if (e.getAction() == MotionEvent.ACTION_UP) {
+			if(!hasStarted) return true;
+			
 			if (isDragging) {
 				// delta time
 				double dt = (System.currentTimeMillis() - startTime) / 1000D;
@@ -81,8 +88,7 @@ public class Wrapper extends LinearLayout {
 					if (activity.getFlyInMenu().getContentOffset() > activity.getContentWidth() / 2) activity.getFlyInMenu().showMenu();
 					else activity.getFlyInMenu().hideMenu();
 				}
-			}
-			if (!isDragging) {
+			} else {
 				Button b = activity.getDragButton();
 
 				if (dragStartLocation == MENU_OPEN) activity.getFlyInMenu().hideMenu();
@@ -91,14 +97,14 @@ public class Wrapper extends LinearLayout {
 
 			}
 
-			isDragging = false;
+			isDragging = hasStarted = false;
 			dragStartLocation = -1;
 		}
 
 		return true;
 	}
 
-	public boolean onInterceptTouchEvent(MotionEvent e) {		
+	public boolean onInterceptTouchEvent(MotionEvent e) {
 		// If the menu is visible, the user is able to drag,
 		// as long as he does not drag on the menu
 		if (!isDragging && activity.getFlyInMenu().isMenuVisible()) {
@@ -113,11 +119,11 @@ public class Wrapper extends LinearLayout {
 			else return true;
 		}
 
-		// If the touch is outside the touch area for the drag, the user should
-		// not be able to drag
-		if (e.getRawX() > App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return false;
+		// If the touch is inside the touch area for the drag, the user should
+		// be able to drag
+		if (e.getRawX() <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return true;
 
-		return true;
+		return false;
 	}
 
 	public void setActivity(MainActivity a) {

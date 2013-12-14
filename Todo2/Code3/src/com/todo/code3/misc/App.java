@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.SparseArray;
 
 public class App {
 
@@ -34,7 +33,7 @@ public class App {
 	public static final boolean UNCHECKED = false;
 
 	public static final String TYPE = "type";
-	public static final String CONTENT_TYPE = "contentType";
+//	public static final String CONTENT_TYPE = "contentType";
 	public static final String PARENT_CONTENT_TYPE = "parentContentType";
 
 	public static final String FOLDER = "folder";
@@ -44,7 +43,7 @@ public class App {
 
 	public static final String TASK_VIEW = "taskView";
 	public static final String CHECKLIST_VIEW = "checklistView";
-	
+
 	public static final String TIMESTAMP_CREATED = "timestampCreated";
 	public static final String TIMESTAMP_COMPLETED = "timestampCompleted";
 	public static final String TIMESTAMP_LAST_UPDATED = "timestampLastUpdated";
@@ -81,40 +80,24 @@ public class App {
 	}
 
 	// static methods originally from the MainActivity
-	public static JSONObject addTask(String name, int currentChecklist, int currentFolder, JSONObject data) {
+	public static JSONObject addTask(String name, int parentId, String parentType, JSONObject data) {
 		try {
 			JSONObject task = new JSONObject();
 			task.put(App.NAME, name);
-			// It needs to be checked if the number of tasks is correct
 			task.put(App.ID, data.getInt(App.NUM_TASKS));
-			task.put(App.TIMESTAMP_CREATED, (int)(System.currentTimeMillis()/1000));
+			task.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
+			task.put(App.PARENT_CONTENT_TYPE, parentType);
+			task.put(App.PARENT_ID, parentId);
 
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
+			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
 
-			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + currentChecklist));
+			String children = addToChildrenString(parent, task.getInt(App.ID));
+			parent.put(App.CHILDREN_IDS, children);
 
-				task.put(App.PARENT_CONTENT_TYPE, App.CHECKLIST);
-				task.put(App.PARENT_ID, currentChecklist);
-
-				data.put(App.TASK + task.getInt(App.ID), task.toString());
-
-				String children = addToChildrenString(checklist, task.getInt(App.ID));
-				checklist.put(App.CHILDREN_IDS, children);
-
-				data.put(App.CHECKLIST + currentChecklist, checklist.toString());
-			} else if (folder.getString(App.CONTENT_TYPE).equals(App.TASK)) {
-				task.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
-				task.put(App.PARENT_ID, currentFolder);
-
-				String children = addToChildrenString(folder, task.getInt(App.ID));
-				folder.put(App.CHILDREN_IDS, children);
-
-				data.put(App.TASK + task.getInt(App.ID), task.toString());
-			}
-
+			data.put(App.TASK + task.getInt(App.ID), task.toString());
 			data.put(App.NUM_TASKS, data.getInt(App.NUM_TASKS) + 1);
-			data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
+			data.put(parentType + parentId, parent.toString());
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -122,29 +105,26 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject addChecklist(String name, int currentFolder, JSONObject data) {
+	public static JSONObject addChecklist(String name, int parentId, String parentType, JSONObject data) {
 		try {
+			
+			Log.i("asdasdsad", "CHECKLIST");
 			JSONObject checklist = new JSONObject();
 			checklist.put(App.NAME, name);
-			checklist.put(App.PARENT_ID, currentFolder);
-			checklist.put(App.PARENT_CONTENT_TYPE, App.FOLDER);
-			checklist.put(App.TIMESTAMP_CREATED, (int)(System.currentTimeMillis()/1000));
+			checklist.put(App.ID, data.getInt(App.NUM_CHECKLISTS));
+			checklist.put(App.PARENT_ID, parentId);
+			checklist.put(App.PARENT_CONTENT_TYPE, parentType);
+			checklist.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
 
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + currentFolder));
+			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
 
-			if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-				// It needs to be checked if the number of checklists is correct
+			String children = addToChildrenString(parent, checklist.getInt(App.ID));
+			parent.put(App.CHILDREN_IDS, children);
 
-				checklist.put(App.ID, data.getInt(App.NUM_CHECKLISTS));
+			data.put(App.CHECKLIST + checklist.getInt(App.ID), checklist.toString());
+			data.put(App.NUM_CHECKLISTS, data.getInt(App.NUM_CHECKLISTS) + 1);
+			data.put(parentType + parentId, parent.toString());
 
-				data.put(App.CHECKLIST + checklist.getInt(App.ID), checklist.toString());
-
-				String children = addToChildrenString(folder, checklist.getInt(App.ID));
-				folder.put(App.CHILDREN_IDS, children);
-
-				data.put(App.NUM_CHECKLISTS, data.getInt(App.NUM_CHECKLISTS) + 1);
-				data.put(App.FOLDER + folder.getInt(App.ID), folder.toString());
-			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -152,26 +132,23 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject addFolder(String name, String contentType, String type, boolean removable, JSONObject data) {
+	public static JSONObject addFolder(String name, String type, boolean removable, JSONObject data) {
 		try {
 			JSONObject folder = new JSONObject();
 			folder.put(App.NAME, name);
-			folder.put(App.CONTENT_TYPE, contentType);
 			folder.put(App.ID, data.getInt(App.NUM_FOLDERS));
 			folder.put(App.REMOVABLE, removable);
 			folder.put(App.TYPE, type);
 			folder.put(App.CHILDREN_IDS, "");
-			folder.put(App.TIMESTAMP_CREATED, (int)(System.currentTimeMillis()/1000));
+			folder.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
 
 			// This makes the project non-visible
-			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
-			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
 
 			String children = addToChildrenString(data, folder.getInt(App.ID), true);
-			Log.i("asdsadsadsads c", children);
 			data.put(App.CHILDREN_IDS, children);
 
-			Log.i("Main Activity", "Added folder " + name);
+			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
+			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -179,34 +156,23 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject checkTask(int taskId, int checklistId, int folderId, boolean isChecked, JSONObject data) {
+	public static JSONObject checkTask(int taskId, int parentId, String parentType, boolean isChecked, JSONObject data) {
 		try {
-			
+
 			JSONObject task = new JSONObject(data.getString(App.TASK + taskId));
 			task.put(App.COMPLETED, isChecked);
-			
-			if(isChecked) task.put(App.TIMESTAMP_COMPLETED, (int)(System.currentTimeMillis()/1000));
+
+			if (isChecked) task.put(App.TIMESTAMP_COMPLETED, (int) (System.currentTimeMillis() / 1000));
 			else task.put(App.TIMESTAMP_COMPLETED, -1);
-			
+
 			data.put(App.TASK + taskId, task.toString());
+			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
 
-			if (checklistId != -1 /* && folder.has(App.CHECKLIST + checklistId) */) {
-				JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + checklistId));
+			String childrenOrder = putTaskBeforeCheckedTasks(taskId, parentId, parentType, data);
+			parent.put(App.CHILDREN_IDS, childrenOrder);
 
-				String childrenOrder = putTaskBeforeCheckedTasks(taskId, checklist, data);
-				checklist.put(App.CHILDREN_IDS, childrenOrder);
+			data.put(parentType + parentId, parent.toString());
 
-				data.put(App.CHECKLIST + checklistId, checklist.toString());
-			} else if (data.has(App.TASK + taskId)) {
-				JSONObject folder = new JSONObject(data.getString(App.FOLDER + folderId));
-				
-				String childrenOrder = putTaskBeforeCheckedTasks(taskId, folder, data);
-				folder.put(App.CHILDREN_IDS, childrenOrder);
-
-				data.put(App.FOLDER + folderId, folder.toString());
-			}
-
-			Log.i("Compelted Task", "Completed Task");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -214,27 +180,13 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject setTaskDescription(String desc, int taskId, int checklistId, int folderId, JSONObject data) {
+	public static JSONObject setTaskDescription(String desc, int taskId, JSONObject data) {
 		try {
-			JSONObject folder = new JSONObject(data.getString(App.FOLDER + folderId));
+			JSONObject task = new JSONObject(data.getString(App.TASK + taskId));
+			
+			task.put(App.DESCRIPTION, desc);
 
-			if (checklistId != -1) {
-				JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + checklistId));
-				JSONObject task = new JSONObject(data.getString(App.TASK + taskId));
-
-				task.put(App.DESCRIPTION, desc);
-
-				data.put(App.TASK + taskId, task.toString());
-				data.put(App.CHECKLIST + checklistId, checklist.toString());
-				data.put(App.FOLDER + folderId, folder.toString());
-			} else if (folder.has(App.TASK + taskId)) {
-				JSONObject task = new JSONObject(data.getString(App.TASK + taskId));
-
-				task.put(App.DESCRIPTION, desc);
-
-				data.put(App.TASK + taskId, task.toString());
-				data.put(App.FOLDER + folderId, folder.toString());
-			}
+			data.put(App.TASK + taskId, task.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -242,29 +194,14 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject updateChildrenOrder(String children, int checklistId, int folderId, JSONObject data) {
+	public static JSONObject updateChildrenOrder(String children, int parentId, String parentType, JSONObject data) {
 		try {
-			JSONObject folder, checklist;
-
 			children = children.replaceAll(" ", "");
-
-			if (folderId != -1) {
-				if (data.has(App.FOLDER + folderId)) {
-					folder = new JSONObject(data.getString(App.FOLDER + folderId));
-
-					if (checklistId == -1) {
-						folder.put(App.CHILDREN_IDS, children);
-					} else if (folder.getString(App.CONTENT_TYPE).equals(App.CHECKLIST)) {
-						if (data.has(App.CHECKLIST + checklistId)) {
-							checklist = new JSONObject(data.getString(App.CHECKLIST + checklistId));
-							checklist.put(App.CHILDREN_IDS, children);
-
-							data.put(App.CHECKLIST + checklistId, checklist.toString());
-						}
-					}
-
-					data.put(App.FOLDER + folderId, folder.toString());
-				}
+			
+			if(parentId != -1) {
+				JSONObject parent = new JSONObject(data.getString(parentType + parentId));
+				parent.put(App.CHILDREN_IDS, children);
+				data.put(parentType + parentId, parent.toString());
 			} else {
 				data.put(App.CHILDREN_IDS, children);
 			}
@@ -306,10 +243,12 @@ public class App {
 		return "";
 	}
 
-	public static String putTaskBeforeCheckedTasks(int taskId, JSONObject parent, JSONObject data) {
+	public static String putTaskBeforeCheckedTasks(int taskId, int parentId, String parentType, JSONObject data) {
 		try {
 			String order = "";
 			boolean hasUsedTaskId = false;
+			
+			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
 
 			String[] childrenIds;
 			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
@@ -341,26 +280,26 @@ public class App {
 
 		return taskId + "";
 	}
-	
-	public static SparseArray<String> getChildrenInParent(JSONObject parent) {
-		try {
-			String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
-			SparseArray<String> children = new SparseArray<String>();
-			
-			for(int i = 0; i < childrenIds.length; i++) {
-				JSONObject child = new JSONObject(parent.getString(parent.getString(App.CONTENT_TYPE) + childrenIds[i]));
-				
-				children.put(child.getInt(App.ID), child.getString(App.NAME));
-			}
-			
-			return children;
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
+
+//	public static SparseArray<String> getChildrenInParent(JSONObject parent) {
+//		try {
+//			String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
+//			SparseArray<String> children = new SparseArray<String>();
+//
+//			for (int i = 0; i < childrenIds.length; i++) {
+//				JSONObject child = new JSONObject(parent.getString(parent.getString(App.CONTENT_TYPE) + childrenIds[i]));
+//
+//				children.put(child.getInt(App.ID), child.getString(App.NAME));
+//			}
+//
+//			return children;
+//
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return null;
+//	}
 
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

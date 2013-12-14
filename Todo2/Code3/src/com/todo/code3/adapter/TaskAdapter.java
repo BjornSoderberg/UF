@@ -92,11 +92,11 @@ public class TaskAdapter extends BaseAdapter {
 						// This runs the code inside with a delay
 						new Handler().postDelayed(new Runnable() {
 							public void run() {
-								activity.checkTask(item.getId(), item.getChecklistId(), item.getFolderId(), shouldCheck);
+								activity.checkTask(item.getId(), item.getParentId(), item.getParentType(), shouldCheck);
 							}
 						}, App.COLLAPSE_ANIMATION_DURATION);
 					} else {
-						activity.checkTask(item.getId(),  item.getChecklistId(), item.getFolderId(), shouldCheck);
+						activity.checkTask(item.getId(),  item.getParentId(), item.getParentType(), shouldCheck);
 					}
 
 				}

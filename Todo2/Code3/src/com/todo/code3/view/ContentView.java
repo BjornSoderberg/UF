@@ -10,6 +10,8 @@ import com.todo.code3.MainActivity;
 public abstract class ContentView extends LinearLayout {
 	
 	protected MainActivity activity;
+	protected int parentId;
+	protected String parentType;
 	
 	public ContentView(MainActivity activity) {
 		super(activity);

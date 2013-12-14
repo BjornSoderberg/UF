@@ -10,7 +10,9 @@ public class ContentItem {
 	protected CharSequence title;
 	//protected CharSequence mCondText;
 	protected int id;
-	protected int folderId;
+	protected int parentId;
+	protected String parentType;
+	
 	protected long timestampCreated = -1;
 	protected boolean mEnabled = true;
 
@@ -30,8 +32,12 @@ public class ContentItem {
 		return title;
 	}
 	
-	public int getFolderId() {
-		return folderId;
+	public int getParentId() {
+		return parentId;
+	}
+	
+	public String getParentType() {
+		return parentType;
 	}
 	
 	public long getTimestampCreated() {
@@ -81,8 +87,13 @@ public class ContentItem {
 		return this;
 	}
 	
-	public ContentItem setFolderId(int i) {
-		folderId = i;
+	public ContentItem setParentId(int i) {
+		parentId = i;
+		return this;
+	}
+	
+	public ContentItem setParentType(String type) {
+		parentType = type;
 		return this;
 	}
 

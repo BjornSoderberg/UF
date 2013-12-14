@@ -33,19 +33,17 @@ public class ProjectView extends ContentView {
 	private TextView empty;
 
 	private boolean hasDynamicListView;
-
-	// the same as currentFolder
-	protected int currentProject = -1;
 	
 	private int expandingItemId = -1;
 	private int listViewItemHeight;
 
 	protected ArrayList<ChecklistItem> checklistItems;
 
-	public ProjectView(MainActivity activity, int currentProject) {
+	public ProjectView(MainActivity activity, int parentId, String parentType) {
 		// super(activity, currentProject);
 		super(activity);
-		this.currentProject = currentProject;
+		this.parentId = parentId;
+		this.parentType = parentType;
 	}
 
 	protected void init() {
@@ -77,7 +75,7 @@ public class ProjectView extends ContentView {
 				try {
 					JSONObject checklist = new JSONObject(activity.getData().getString(App.CHECKLIST + view.getId()));
 
-					activity.openChecklist(checklist);
+					activity.open(checklist.getInt(App.ID), App.CHECKLIST);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -98,12 +96,10 @@ public class ProjectView extends ContentView {
 	}
 
 	public void update(JSONObject data) {
-		Log.i("asdasd", "asdasd update project");
-
 		try {
 			checklistItems.clear();
 
-			JSONObject project = new JSONObject(data.getString(App.FOLDER + currentProject));
+			JSONObject project = new JSONObject(data.getString(App.FOLDER + parentId));
 
 			String childrenIds[] = project.getString(App.CHILDREN_IDS).split(",");
 
@@ -114,7 +110,8 @@ public class ProjectView extends ContentView {
 
 					ChecklistItem ci = new ChecklistItem();
 					ci.setTitle(checklist.getString(App.NAME));
-					ci.setFolderId(currentProject);
+					ci.setParentId(parentId);
+					ci.setParentType(parentType);
 					ci.setId(checklist.getInt(App.ID));
 					if (checklist.has(App.TIMESTAMP_CREATED)) ci.setTimestampCreated(checklist.getInt(App.TIMESTAMP_CREATED));
 					
@@ -145,7 +142,7 @@ public class ProjectView extends ContentView {
 			order += checklistItems.get(i).getId() + ",";
 		}
 		order += checklistItems.get(checklistItems.size() - 1).getId();
-		activity.updateChilrenOrder(order, -1, currentProject);
+		activity.updateChilrenOrder(order, parentId, parentType);
 	}
 	
 	public void expandView(final View view) {

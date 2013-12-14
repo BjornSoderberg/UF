@@ -6,19 +6,20 @@
     android:background="#bbbbbb"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:id="@+id/bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#35ADCF" >
+        android:layout_height="40dp"
+        android:background="#35ADCF" />
 
         <LinearLayout
             android:id="@+id/l"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true" >
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal" >
 
             <Button
                 android:id="@+id/dragButton"
@@ -37,25 +38,26 @@
         </LinearLayout>
 
         <!-- Border lines for buttons -->
+
         <LinearLayout
             android:id="@+id/line1"
-            android:orientation="horizontal"
             android:layout_width="2px"
             android:layout_height="40dp"
             android:layout_alignRight="@+id/l"
             android:background="#298DA9"
-            android:enabled="false" />
+            android:enabled="false"
+            android:orientation="horizontal" />
 
         <LinearLayout
             android:id="@+id/line2"
-            android:orientation="horizontal"
             android:layout_width="2px"
             android:layout_height="40dp"
             android:layout_alignLeft="@+id/addButton"
             android:background="#298DA9"
-            android:enabled="false" />
-		<!-- End of border lines for buttons -->
-        
+            android:enabled="false"
+            android:orientation="horizontal" />
+        <!-- End of border lines for buttons -->
+
         <Button
             android:id="@+id/addButton"
             android:layout_width="40dp"
@@ -76,12 +78,12 @@
             android:text="Folder"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#ffffff" />
-    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/barBorder"
         android:layout_width="match_parent"
         android:layout_height="4dp"
+        android:layout_below="@+id/bar"
         android:background="#298DA9"
         android:orientation="horizontal" >
     </LinearLayout>
@@ -90,6 +92,7 @@
         android:id="@+id/wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/barBorder"
         android:background="#cccccc"
         android:orientation="horizontal" >
     </LinearLayout>
