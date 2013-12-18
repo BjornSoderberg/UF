@@ -18,11 +18,6 @@ package com.todo.code3.xml;
 
 import java.util.ArrayList;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.TypeEvaluator;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,8 +26,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -41,10 +38,13 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.TypeEvaluator;
+import com.nineoldandroids.animation.ValueAnimator;
+import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
+import com.todo.code3.R;
 import com.todo.code3.adapter.AllAdapter;
-import com.todo.code3.misc.App;
 import com.todo.code3.view.ContentView;
-//import com.nineoldandroids.animation.ObjectAnimator;
 
 /**
  * The dynamic listview is an extension of listview that supports cell dragging
@@ -119,24 +119,11 @@ public class DynamicListView extends ListView {
 		init(context);
 	}
 
-	@SuppressLint("NewApi")
 	public void init(Context context) {
 		setOnItemLongClickListener(mOnItemLongClickListener);
 		setOnScrollListener(mScrollListener);
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		mSmoothScrollAmountAtEdge = (int) (SMOOTH_SCROLL_AMOUNT_AT_EDGE / metrics.density);
-
-		if (Build.VERSION.SDK_INT < App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) return;
-		sBoundEvaluator = new TypeEvaluator<Rect>() {
-			public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
-				return new Rect(interpolate(startValue.left, endValue.left, fraction), interpolate(startValue.top, endValue.top, fraction), interpolate(startValue.right, endValue.right, fraction),
-						interpolate(startValue.bottom, endValue.bottom, fraction));
-			}
-
-			public int interpolate(int start, int end, float fraction) {
-				return (int) (start + fraction * (end - start));
-			}
-		};
 	}
 
 	/**
@@ -335,10 +322,7 @@ public class DynamicListView extends ListView {
 	 * can offset the cell being swapped to where it previously was and then
 	 * animate it to its new position.
 	 */
-	// @SuppressLint("NewApi")
 	private void handleCellSwitch() {
-		// if (Build.VERSION.SDK_INT <
-		// App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) return;
 
 		final int deltaY = mLastEventY - mDownY;
 		int deltaYTotal = mHoverCellOriginalBounds.top + mTotalOffset + deltaY;
@@ -352,8 +336,7 @@ public class DynamicListView extends ListView {
 
 		if (isBelow || isAbove) {
 
-			final long switchItemID = isBelow ? mBelowItemId : mAboveItemId;
-			View switchView = isBelow ? belowView : aboveView;
+			final View switchView = isBelow ? belowView : aboveView;
 			final int originalItem = getPositionForView(mobileView);
 
 			if (switchView == null) {
@@ -362,42 +345,31 @@ public class DynamicListView extends ListView {
 			}
 
 			swapElements(originalItem, getPositionForView(switchView));
-			((AllAdapter) getAdapter()).notifyDataSetChanged();
-			((AllAdapter) getAdapter()).setMovingItemId((int) mMobileItemId);
+
+			int delta = (int) getContext().getResources().getDimension(R.dimen.item_height);
+			if (isBelow) delta = -delta;
+
+			ObjectAnimator a = ObjectAnimator.ofFloat(switchView, "translationY", delta);
+			a.setDuration(MOVE_DURATION);
+			a.start();
+
+			new Handler().postDelayed(new Runnable() {
+				public void run() {
+					((AllAdapter) getAdapter()).notifyDataSetChanged();
+					((AllAdapter) getAdapter()).setMovingItemId((int) mMobileItemId);
+				}
+			}, MOVE_DURATION);
 
 			mDownY = mLastEventY;
-
-			final int switchViewStartTop = switchView.getTop();
-
-			// this code does not do anything since
-			// views are not being reused
-			// mobileView.setVisibility(View.VISIBLE);
-			// switchView.setVisibility(View.INVISIBLE);
 
 			updateNeighborViewsForID(mMobileItemId);
 
 			final ViewTreeObserver observer = getViewTreeObserver();
 			observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-				@SuppressLint("NewApi")
 				public boolean onPreDraw() {
 					observer.removeOnPreDrawListener(this);
 
-					final View switchView = getViewForID(switchItemID);
-
 					mTotalOffset += deltaY;
-
-					int switchViewNewTop = switchView.getTop();
-					final int delta = switchViewStartTop - switchViewNewTop;
-
-					// animates only if the api level is high enough
-					// a method for lower apis needs to be made
-					if (Build.VERSION.SDK_INT >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) {
-						switchView.setTranslationY(delta);
-
-						ObjectAnimator animator = ObjectAnimator.ofFloat(switchView, "translationY", 0);
-						animator.setDuration(1000);
-						animator.start();
-					}
 
 					return true;
 				}
@@ -415,9 +387,7 @@ public class DynamicListView extends ListView {
 	 * Resets all the appropriate fields to a default state while also animating
 	 * the hover cell back to its correct location.
 	 */
-	 @SuppressLint("NewApi")
 	private void touchEventsEnded() {
-
 		final View mobileView = getViewForID(mMobileItemId);
 		if (mCellIsMobile || mIsWaitingForScrollFinish) {
 			mCellIsMobile = false;
@@ -437,46 +407,30 @@ public class DynamicListView extends ListView {
 
 			mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mobileView.getTop());
 
-			if (Build.VERSION.SDK_INT < App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) {
-				((BaseAdapter) getAdapter()).notifyDataSetChanged();
-				mAboveItemId = INVALID_ID;
-				mMobileItemId = INVALID_ID;
-				mBelowItemId = INVALID_ID;
-				mobileView.setVisibility(VISIBLE);
-				mHoverCell = null;
-				setEnabled(true);
-				invalidate();
+			ObjectAnimator a = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
+			a.addUpdateListener(new AnimatorUpdateListener() {
+				public void onAnimationUpdate(ValueAnimator arg0) {
+					invalidate();
+				}
+			});
+			a.setDuration(MOVE_DURATION);
+			a.start();
 
-				contentView.updateContentItemsOrder();
-			} else {
+			new Handler().postDelayed(new Runnable() {
+				public void run() {
+					((BaseAdapter) getAdapter()).notifyDataSetChanged();
+					mAboveItemId = INVALID_ID;
+					mMobileItemId = INVALID_ID;
+					mBelowItemId = INVALID_ID;
+					mobileView.setVisibility(VISIBLE);
+					mHoverCell = null;
+					setEnabled(true);
+					invalidate();
 
-				ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
-				hoverViewAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-					@Override
-					public void onAnimationUpdate(ValueAnimator valueAnimator) {
-						invalidate();
-					}
-				});
-				hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationStart(Animator animation) {
-						setEnabled(false);
-					}
+					contentView.updateContentItemsOrder();
+				}
+			}, MOVE_DURATION);
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						mAboveItemId = INVALID_ID;
-						mMobileItemId = INVALID_ID;
-						mBelowItemId = INVALID_ID;
-						mobileView.setVisibility(VISIBLE);
-						mHoverCell = null;
-						setEnabled(true);
-						invalidate();
-
-						contentView.updateContentItemsOrder();
-					}
-				});
-				hoverViewAnimator.start();}
 		} else {
 			touchEventsCancelled();
 		}
@@ -505,7 +459,16 @@ public class DynamicListView extends ListView {
 	 * final location when the user lifts his finger by modifying the
 	 * BitmapDrawable's bounds.
 	 */
-	private static TypeEvaluator<Rect> sBoundEvaluator;
+	private static TypeEvaluator<Rect> sBoundEvaluator = new TypeEvaluator<Rect>() {
+		public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
+			return new Rect(interpolate(startValue.left, endValue.left, fraction), interpolate(startValue.top, endValue.top, fraction), interpolate(startValue.right, endValue.right, fraction),
+					interpolate(startValue.bottom, endValue.bottom, fraction));
+		}
+
+		public int interpolate(int start, int end, float fraction) {
+			return (int) (start + fraction * (end - start));
+		}
+	};;
 
 	/**
 	 * Determines whether this listview is in a scrolling state invoked by the
@@ -522,7 +485,7 @@ public class DynamicListView extends ListView {
 	 */
 	@SuppressLint("NewApi")
 	public boolean handleMobileCellScroll(Rect r) {
-		if (Build.VERSION.SDK_INT < App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) return false;
+		if (Build.VERSION.SDK_INT < 8) return false;
 
 		int offset = computeVerticalScrollOffset();
 		int height = getHeight();
@@ -531,13 +494,17 @@ public class DynamicListView extends ListView {
 		int hoverViewTop = r.top;
 		int hoverHeight = r.height();
 
+		Log.i("", offset + " : " + height + " : " + extent + " : " + range + " : " + hoverViewTop + " : " + hoverHeight);
+
 		if (hoverViewTop <= 0 && offset > 0) {
 			smoothScrollBy(-mSmoothScrollAmountAtEdge, 0);
+			// scrollBy(0, -mSmoothScrollAmountAtEdge);
 			return true;
 		}
 
 		if (hoverViewTop + hoverHeight >= height && (offset + extent) < range) {
 			smoothScrollBy(mSmoothScrollAmountAtEdge, 0);
+			// scrollBy(0, mSmoothScrollAmountAtEdge);
 			return true;
 		}
 
