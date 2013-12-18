@@ -18,7 +18,11 @@ package com.todo.code3.xml;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,7 +33,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -38,10 +41,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
-import com.nineoldandroids.animation.ObjectAnimator;
 import com.todo.code3.adapter.AllAdapter;
 import com.todo.code3.misc.App;
 import com.todo.code3.view.ContentView;
+//import com.nineoldandroids.animation.ObjectAnimator;
 
 /**
  * The dynamic listview is an extension of listview that supports cell dragging
@@ -332,9 +335,10 @@ public class DynamicListView extends ListView {
 	 * can offset the cell being swapped to where it previously was and then
 	 * animate it to its new position.
 	 */
-//	@SuppressLint("NewApi")
+	// @SuppressLint("NewApi")
 	private void handleCellSwitch() {
-//		if (Build.VERSION.SDK_INT < App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) return;
+		// if (Build.VERSION.SDK_INT <
+		// App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) return;
 
 		final int deltaY = mLastEventY - mDownY;
 		int deltaYTotal = mHoverCellOriginalBounds.top + mTotalOffset + deltaY;
@@ -365,31 +369,35 @@ public class DynamicListView extends ListView {
 
 			final int switchViewStartTop = switchView.getTop();
 
-			mobileView.setVisibility(View.VISIBLE);
-			switchView.setVisibility(View.INVISIBLE);
+			// this code does not do anything since
+			// views are not being reused
+			// mobileView.setVisibility(View.VISIBLE);
+			// switchView.setVisibility(View.INVISIBLE);
 
 			updateNeighborViewsForID(mMobileItemId);
 
 			final ViewTreeObserver observer = getViewTreeObserver();
 			observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+				@SuppressLint("NewApi")
 				public boolean onPreDraw() {
 					observer.removeOnPreDrawListener(this);
 
-					View switchView = getViewForID(switchItemID);
+					final View switchView = getViewForID(switchItemID);
 
 					mTotalOffset += deltaY;
 
 					int switchViewNewTop = switchView.getTop();
-					int delta = switchViewStartTop - switchViewNewTop;
+					final int delta = switchViewStartTop - switchViewNewTop;
 
-//					switchView.setTranslationY(delta);
-//					switchView.offsetTopAndBottom(delta);
-					
-					Log.i("asdsad", delta + "");
+					// animates only if the api level is high enough
+					// a method for lower apis needs to be made
+					if (Build.VERSION.SDK_INT >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) {
+						switchView.setTranslationY(delta);
 
-					ObjectAnimator animator = ObjectAnimator.ofFloat(switchView, "translationY", -delta);
-					animator.setDuration(MOVE_DURATION);
-					animator.start();
+						ObjectAnimator animator = ObjectAnimator.ofFloat(switchView, "translationY", 0);
+						animator.setDuration(1000);
+						animator.start();
+					}
 
 					return true;
 				}
@@ -407,9 +415,8 @@ public class DynamicListView extends ListView {
 	 * Resets all the appropriate fields to a default state while also animating
 	 * the hover cell back to its correct location.
 	 */
-	@SuppressLint("NewApi")
+	 @SuppressLint("NewApi")
 	private void touchEventsEnded() {
-		if (Build.VERSION.SDK_INT < App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) return;
 
 		final View mobileView = getViewForID(mMobileItemId);
 		if (mCellIsMobile || mIsWaitingForScrollFinish) {
@@ -430,33 +437,46 @@ public class DynamicListView extends ListView {
 
 			mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mobileView.getTop());
 
-//			ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
-//			hoverViewAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//				@Override
-//				public void onAnimationUpdate(ValueAnimator valueAnimator) {
-//					invalidate();
-//				}
-//			});
-//			hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
-//				@Override
-//				public void onAnimationStart(Animator animation) {
-//					setEnabled(false);
-//				}
-//
-//				@Override
-//				public void onAnimationEnd(Animator animation) {
-//					mAboveItemId = INVALID_ID;
-//					mMobileItemId = INVALID_ID;
-//					mBelowItemId = INVALID_ID;
-//					mobileView.setVisibility(VISIBLE);
-//					mHoverCell = null;
-//					setEnabled(true);
-//					invalidate();
-//
-//					contentView.updateContentItemsOrder();
-//				}
-//			});
-//			hoverViewAnimator.start();
+			if (Build.VERSION.SDK_INT < App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS) {
+				((BaseAdapter) getAdapter()).notifyDataSetChanged();
+				mAboveItemId = INVALID_ID;
+				mMobileItemId = INVALID_ID;
+				mBelowItemId = INVALID_ID;
+				mobileView.setVisibility(VISIBLE);
+				mHoverCell = null;
+				setEnabled(true);
+				invalidate();
+
+				contentView.updateContentItemsOrder();
+			} else {
+
+				ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
+				hoverViewAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+					@Override
+					public void onAnimationUpdate(ValueAnimator valueAnimator) {
+						invalidate();
+					}
+				});
+				hoverViewAnimator.addListener(new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationStart(Animator animation) {
+						setEnabled(false);
+					}
+
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						mAboveItemId = INVALID_ID;
+						mMobileItemId = INVALID_ID;
+						mBelowItemId = INVALID_ID;
+						mobileView.setVisibility(VISIBLE);
+						mHoverCell = null;
+						setEnabled(true);
+						invalidate();
+
+						contentView.updateContentItemsOrder();
+					}
+				});
+				hoverViewAnimator.start();}
 		} else {
 			touchEventsCancelled();
 		}
