@@ -11,7 +11,6 @@ public class ContentItem {
 	//protected CharSequence mCondText;
 	protected int id;
 	protected int parentId;
-	protected String parentType;
 	
 	protected long timestampCreated = -1;
 	protected boolean mEnabled = true;
@@ -34,10 +33,6 @@ public class ContentItem {
 	
 	public int getParentId() {
 		return parentId;
-	}
-	
-	public String getParentType() {
-		return parentType;
 	}
 	
 	public long getTimestampCreated() {
@@ -89,11 +84,6 @@ public class ContentItem {
 	
 	public ContentItem setParentId(int i) {
 		parentId = i;
-		return this;
-	}
-	
-	public ContentItem setParentType(String type) {
-		parentType = type;
 		return this;
 	}
 

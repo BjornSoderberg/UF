@@ -20,7 +20,7 @@ public class TaskContentView extends ContentView {
 	private TextView descTV;
 	private EditText descET, focusDummy;
 	private Button saveButton;
-	
+
 	private int id;
 
 	public TaskContentView(MainActivity activity, int id) {
@@ -46,7 +46,7 @@ public class TaskContentView extends ContentView {
 				saveButton.setVisibility(View.GONE);
 
 				focusDummy.requestFocus();
-				
+
 				saveDescription(descET.getText().toString());
 				descTV.setText(descET.getText().toString());
 			}
@@ -57,7 +57,7 @@ public class TaskContentView extends ContentView {
 				descTV.setVisibility(View.GONE);
 				descET.setVisibility(View.VISIBLE);
 				saveButton.setVisibility(View.VISIBLE);
-				
+
 				descET.setText(descTV.getText());
 
 				descET.requestFocus();
@@ -66,24 +66,25 @@ public class TaskContentView extends ContentView {
 		descET.setOnFocusChangeListener(new OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus) {
 				// This has not been tested on a real device
-				if (hasFocus) showKeyboard();
-				else hideKeyboard();
+				if (hasFocus) App.showKeyboard(getContext());
+				else App.hideKeyboard(getContext(), focusDummy);
 			}
 		});
 
 		focusDummy.setOnFocusChangeListener(new OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus) {
-				if (hasFocus) hideKeyboard();
+				if (hasFocus) App.hideKeyboard(getContext(), focusDummy);
 			}
 		});
 	}
 
 	public void update(JSONObject data) {
 		try {
-			JSONObject task = new JSONObject(data.getString(App.TASK + id));
-
-			if (task.has(App.DESCRIPTION)) {
-				descTV.setText(task.getString(App.DESCRIPTION));
+			JSONObject task = new JSONObject(data.getString(id + ""));
+			if (task.getString(App.TYPE).equals(App.TASK)) {
+				if (task.has(App.DESCRIPTION)) {
+					descTV.setText(task.getString(App.DESCRIPTION));
+				}
 			}
 
 		} catch (JSONException e) {
@@ -92,27 +93,19 @@ public class TaskContentView extends ContentView {
 
 	}
 
-	private void showKeyboard() {
-		((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-	}
-
-	private void hideKeyboard() {
-		((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(focusDummy.getWindowToken(), 0);
-	}
-
 	public void leave() {
 		focusDummy.requestFocus();
-		hideKeyboard();
+		App.hideKeyboard(getContext(), focusDummy);
 	}
 
 	private void saveDescription(String desc) {
-		hideKeyboard();
-		
+		App.hideKeyboard(getContext(), focusDummy);
+
 		activity.setTaskDescription(desc, id);
 	}
 
 	// not used
-	public void updateContentItemsOrder() {		
+	public void updateContentItemsOrder() {
 	}
 
 }

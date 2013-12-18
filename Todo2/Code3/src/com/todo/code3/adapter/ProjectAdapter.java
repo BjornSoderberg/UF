@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.view.ProjectView;
-import com.todo.code3.xml.ChecklistItem;
+import com.todo.code3.xml.FolderItem;
 import com.todo.code3.xml.ContentItem;
 
 public class ProjectAdapter extends BaseAdapter {
@@ -30,7 +30,7 @@ public class ProjectAdapter extends BaseAdapter {
 		return projectView.getChecklistItems().size();
 	}
 
-	public ChecklistItem getItem(int position) {
+	public FolderItem getItem(int position) {
 		return projectView.getChecklistItems().get(position);
 	}
 
@@ -38,14 +38,14 @@ public class ProjectAdapter extends BaseAdapter {
 		if (position < 0 || position >= projectView.getChecklistItems().size()) {
 			return -1;
 		}
-		ChecklistItem item = getItem(position);
+		FolderItem item = getItem(position);
 		return item.getId();
 	}
 
 	public View getView(int position, View view, ViewGroup parent) {
 		ContentItem item = projectView.getChecklistItems().get(position);
 
-		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.checklist_item, null);
+		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.folder_item, null);
 
 		final TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
 

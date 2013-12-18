@@ -38,10 +38,8 @@ public class TaskView extends ContentView {
 	private int listViewItemHeight;
 	private int expandingItemId = -1;
 
-	public TaskView(MainActivity activity, int parentId, String parentType) {
-		super(activity);
-		this.parentId = parentId;
-		this.parentType = parentType;
+	public TaskView(MainActivity activity, int parentId) {
+		super(activity, parentId);
 	}
 
 	protected void init() {
@@ -69,9 +67,10 @@ public class TaskView extends ContentView {
 				if (activity.isMoving()) return;
 
 				try {
-					JSONObject task = new JSONObject(activity.getData().getString(App.TASK + view.getId()));
-
-					activity.open(task.getInt(App.ID), App.TASK);
+					JSONObject task = new JSONObject(activity.getData().getString(view.getId() + ""));
+					if (task.getString(App.TYPE).equals(App.TASK))
+					activity.open(task.getInt(App.ID));
+					
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -88,7 +87,7 @@ public class TaskView extends ContentView {
 		try {
 			taskItems.clear();
 
-			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
 			String childrenIds[];
 
@@ -97,15 +96,15 @@ public class TaskView extends ContentView {
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (data.has(App.TASK + id)) {
-					JSONObject task = new JSONObject(data.getString(App.TASK + id));
+				if (data.has(id)) {
+					JSONObject task = new JSONObject(data.getString(id));
+					if (!task.getString(App.TYPE).equals(App.TASK)) continue;
 
 					TaskItem ti = new TaskItem();
 					ti.setTitle(task.getString(App.NAME));
 					ti.setEnabled(true);
 					ti.setId(task.getInt(App.ID));
 					ti.setParentId(parentId);
-					ti.setParentType(parentType);
 					if (task.has(App.TIMESTAMP_CREATED)) ti.setTimestampCreated(task.getInt(App.TIMESTAMP_CREATED));
 					if (task.has(App.TIMESTAMP_COMPLETED)) ti.setTimestampChecked(task.getInt(App.TIMESTAMP_COMPLETED));
 
@@ -120,7 +119,7 @@ public class TaskView extends ContentView {
 
 			adapter.notifyDataSetChanged();
 
-			if (hasDynamicListView) ((DynamicListView) listView).setTaskItems(taskItems);
+//			if (hasDynamicListView) ((DynamicListView) listView).setTaskItems(taskItems);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -138,21 +137,21 @@ public class TaskView extends ContentView {
 			order += taskItems.get(i).getId() + ",";
 		}
 		order += taskItems.get(taskItems.size() - 1).getId();
-		activity.updateChilrenOrder(order, parentId, parentType);
+		activity.updateChildrenOrder(order, parentId);
 	}
 
 	private void sortTaskItems() {
-//		ArrayList<TaskItem> checked = new ArrayList<TaskItem>();
-//		ArrayList<TaskItem> unchecked = new ArrayList<TaskItem>();
-//
-//		for (TaskItem i : taskItems) {
-//			if (i.isCompleted()) checked.add(i);
-//			else unchecked.add(i);
-//		}
-//
-//		taskItems.clear();
-//		taskItems.addAll(unchecked);
-//		taskItems.addAll(checked);
+		// ArrayList<TaskItem> checked = new ArrayList<TaskItem>();
+		// ArrayList<TaskItem> unchecked = new ArrayList<TaskItem>();
+		//
+		// for (TaskItem i : taskItems) {
+		// if (i.isCompleted()) checked.add(i);
+		// else unchecked.add(i);
+		// }
+		//
+		// taskItems.clear();
+		// taskItems.addAll(unchecked);
+		// taskItems.addAll(checked);
 	}
 
 	public void collapseView(final View view, final int id) {
@@ -192,9 +191,9 @@ public class TaskView extends ContentView {
 	}
 
 	public void expandView(final View view) {
-		if(view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+		if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
 		else view.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
-		
+
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;

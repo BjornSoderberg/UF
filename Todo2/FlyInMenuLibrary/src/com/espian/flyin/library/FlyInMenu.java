@@ -3,18 +3,12 @@ package com.espian.flyin.library;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.Animation;
@@ -22,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -96,8 +91,6 @@ public class FlyInMenu extends LinearLayout {
 
 	private void inflateLayout() {
 		hasDynamicListView = activity.getSDKVersion() >= 11;
-
-		Log.i("asassad", "a" + activity.getSDKVersion());
 
 		try {
 			if (hasDynamicListView) LayoutInflater.from(getContext()).inflate(R.layout.fly_menu_dynamic, this, true);
@@ -302,6 +295,8 @@ public class FlyInMenu extends LinearLayout {
 		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
 
+		hideKeyboard();
+
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -324,6 +319,11 @@ public class FlyInMenu extends LinearLayout {
 		showFlyIn.setDuration(0).start();
 
 		contentOffset += dx;
+	}
+
+	private void hideKeyboard() {
+		((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(mMenuHolder.getWindowToken(), 0);
+
 	}
 
 	private void expandView(final View view) {

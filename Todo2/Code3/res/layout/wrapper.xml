@@ -72,9 +72,10 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/addButton"
-            android:layout_alignBottom="@+id/addButton"
+            android:layout_above="@+id/barBorder"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:gravity="center"
             android:text="Folder"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#ffffff" />

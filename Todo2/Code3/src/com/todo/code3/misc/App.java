@@ -9,6 +9,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 public class App {
 
@@ -18,12 +20,13 @@ public class App {
 	public static final String NAME = "name";
 	public static final String ID = "id";
 	public static final String PARENT_ID = "parentId";
-	public static final String CHILDREN_IDS = "childrenId";
+	public static final String CHILDREN_IDS = "childrenIds";
 
 	// public static final String NUM_CHILDREN = "numChildren";
-	public static final String NUM_TASKS = "numTasks";
-	public static final String NUM_CHECKLISTS = "numChecklists";
-	public static final String NUM_FOLDERS = "numFolders";
+	// public static final String NUM_TASKS = "numTasks";
+	// public static final String NUM_CHECKLISTS = "numChecklists";
+	// public static final String NUM_FOLDERS = "numFolders";
+	public static final String NUM_IDS = "numIds";
 
 	public static final String REMOVABLE = "removable";
 	public static final String REMOVED = "removed";
@@ -33,13 +36,12 @@ public class App {
 	public static final boolean UNCHECKED = false;
 
 	public static final String TYPE = "type";
-//	public static final String CONTENT_TYPE = "contentType";
-	public static final String PARENT_CONTENT_TYPE = "parentContentType";
 
-	public static final String FOLDER = "folder";
-	public static final String PROJECT = "project";
-	public static final String CHECKLIST = "checklist";
-	public static final String TASK = "task";
+//	 public static final String FOLDER = "folder";
+//	 public static final String PROJECT = "project";
+	 public static final String FOLDER = "folder";
+	 public static final String TASK = "task";
+	 public static final String NOTE = "note";
 
 	public static final String TASK_VIEW = "taskView";
 	public static final String CHECKLIST_VIEW = "checklistView";
@@ -79,51 +81,24 @@ public class App {
 
 	}
 
-	// static methods originally from the MainActivity
-	public static JSONObject addTask(String name, int parentId, String parentType, JSONObject data) {
+	public static JSONObject add(String name, String type, int parentId, JSONObject data) {
 		try {
-			JSONObject task = new JSONObject();
-			task.put(App.NAME, name);
-			task.put(App.ID, data.getInt(App.NUM_TASKS));
-			task.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
-			task.put(App.PARENT_CONTENT_TYPE, parentType);
-			task.put(App.PARENT_ID, parentId);
+			JSONObject object = new JSONObject();
+			object.put(App.NAME, name);
+			object.put(App.PARENT_ID, parentId);
+			object.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
+			object.put(App.TYPE, type);
 
-			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
+			object.put(App.ID, data.getInt(App.NUM_IDS));
+			data.put(App.NUM_IDS, data.getInt(App.NUM_IDS) + 1);
 
-			String children = addToChildrenString(parent, task.getInt(App.ID));
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
+
+			String children = addToChildrenString(parent, object.getInt(App.ID));
 			parent.put(App.CHILDREN_IDS, children);
 
-			data.put(App.TASK + task.getInt(App.ID), task.toString());
-			data.put(App.NUM_TASKS, data.getInt(App.NUM_TASKS) + 1);
-			data.put(parentType + parentId, parent.toString());
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return data;
-	}
-
-	public static JSONObject addChecklist(String name, int parentId, String parentType, JSONObject data) {
-		try {
-			
-			Log.i("asdasdsad", "CHECKLIST");
-			JSONObject checklist = new JSONObject();
-			checklist.put(App.NAME, name);
-			checklist.put(App.ID, data.getInt(App.NUM_CHECKLISTS));
-			checklist.put(App.PARENT_ID, parentId);
-			checklist.put(App.PARENT_CONTENT_TYPE, parentType);
-			checklist.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
-
-			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
-
-			String children = addToChildrenString(parent, checklist.getInt(App.ID));
-			parent.put(App.CHILDREN_IDS, children);
-
-			data.put(App.CHECKLIST + checklist.getInt(App.ID), checklist.toString());
-			data.put(App.NUM_CHECKLISTS, data.getInt(App.NUM_CHECKLISTS) + 1);
-			data.put(parentType + parentId, parent.toString());
+			data.put(object.getInt(App.ID) + "", object.toString());
+			data.put(parentId + "", parent.toString());
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -136,19 +111,17 @@ public class App {
 		try {
 			JSONObject folder = new JSONObject();
 			folder.put(App.NAME, name);
-			folder.put(App.ID, data.getInt(App.NUM_FOLDERS));
+			folder.put(App.ID, data.getInt(App.NUM_IDS));
 			folder.put(App.REMOVABLE, removable);
 			folder.put(App.TYPE, type);
 			folder.put(App.CHILDREN_IDS, "");
 			folder.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
 
-			// This makes the project non-visible
-
 			String children = addToChildrenString(data, folder.getInt(App.ID), true);
 			data.put(App.CHILDREN_IDS, children);
 
-			data.put(App.FOLDER + data.getInt(App.NUM_FOLDERS), folder.toString());
-			data.put(App.NUM_FOLDERS, data.getInt(App.NUM_FOLDERS) + 1);
+			data.put(data.getInt(App.NUM_IDS) + "", folder.toString());
+			data.put(App.NUM_IDS, data.getInt(App.NUM_IDS) + 1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -156,22 +129,24 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject checkTask(int taskId, int parentId, String parentType, boolean isChecked, JSONObject data) {
+	public static JSONObject checkTask(int taskId, int parentId, boolean isChecked, JSONObject data) {
 		try {
 
-			JSONObject task = new JSONObject(data.getString(App.TASK + taskId));
+			JSONObject task = new JSONObject(data.getString(taskId + ""));
+			if(!task.getString(App.TYPE).equals(App.TASK)) return data;
+			
 			task.put(App.COMPLETED, isChecked);
 
 			if (isChecked) task.put(App.TIMESTAMP_COMPLETED, (int) (System.currentTimeMillis() / 1000));
 			else task.put(App.TIMESTAMP_COMPLETED, -1);
 
-			data.put(App.TASK + taskId, task.toString());
-			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
+			data.put(taskId + "", task.toString());
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
-			String childrenOrder = putTaskBeforeCheckedTasks(taskId, parentId, parentType, data);
-			parent.put(App.CHILDREN_IDS, childrenOrder);
+//			String childrenOrder = putTaskBeforeCheckedTasks(taskId, parentId, data);
+//			parent.put(App.CHILDREN_IDS, childrenOrder);
 
-			data.put(parentType + parentId, parent.toString());
+			data.put(parentId + "", parent.toString());
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -180,13 +155,13 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject setTaskDescription(String desc, int taskId, JSONObject data) {
+	public static JSONObject setProperty(String key, String value, int id, JSONObject data) {
 		try {
-			JSONObject task = new JSONObject(data.getString(App.TASK + taskId));
-			
-			task.put(App.DESCRIPTION, desc);
+			JSONObject object = new JSONObject(data.getString(id + ""));
 
-			data.put(App.TASK + taskId, task.toString());
+			object.put(key, value);
+
+			data.put(id + "", object.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -194,14 +169,14 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject updateChildrenOrder(String children, int parentId, String parentType, JSONObject data) {
+	public static JSONObject updateChildrenOrder(String children, int parentId, JSONObject data) {
 		try {
 			children = children.replaceAll(" ", "");
-			
-			if(parentId != -1) {
-				JSONObject parent = new JSONObject(data.getString(parentType + parentId));
+
+			if (parentId != -1) {
+				JSONObject parent = new JSONObject(data.getString(parentId + ""));
 				parent.put(App.CHILDREN_IDS, children);
-				data.put(parentType + parentId, parent.toString());
+				data.put(parentId + "", parent.toString());
 			} else {
 				data.put(App.CHILDREN_IDS, children);
 			}
@@ -243,12 +218,12 @@ public class App {
 		return "";
 	}
 
-	public static String putTaskBeforeCheckedTasks(int taskId, int parentId, String parentType, JSONObject data) {
+	public static String putTaskBeforeCheckedTasks(int taskId, int parentId, JSONObject data) {
 		try {
 			String order = "";
 			boolean hasUsedTaskId = false;
-			
-			JSONObject parent = new JSONObject(data.getString(parentType + parentId));
+
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
 			String[] childrenIds;
 			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
@@ -259,7 +234,7 @@ public class App {
 			for (int i = 0; i < childrenIds.length; i++) {
 				if (!childrenIds[i].equals(taskId + "")) {
 
-					JSONObject task = new JSONObject(data.getString(App.TASK + childrenIds[i]));
+					JSONObject task = new JSONObject(data.getString(childrenIds[i] + ""));
 
 					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED) && !hasUsedTaskId) {
 						order += taskId + ",";
@@ -281,25 +256,28 @@ public class App {
 		return taskId + "";
 	}
 
-//	public static SparseArray<String> getChildrenInParent(JSONObject parent) {
-//		try {
-//			String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
-//			SparseArray<String> children = new SparseArray<String>();
-//
-//			for (int i = 0; i < childrenIds.length; i++) {
-//				JSONObject child = new JSONObject(parent.getString(parent.getString(App.CONTENT_TYPE) + childrenIds[i]));
-//
-//				children.put(child.getInt(App.ID), child.getString(App.NAME));
-//			}
-//
-//			return children;
-//
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return null;
-//	}
+	// public static SparseArray<String> getChildrenInParent(JSONObject parent)
+	// {
+	// try {
+	// String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
+	// SparseArray<String> children = new SparseArray<String>();
+	//
+	// for (int i = 0; i < childrenIds.length; i++) {
+	// JSONObject child = new
+	// JSONObject(parent.getString(parent.getString(App.CONTENT_TYPE) +
+	// childrenIds[i]));
+	//
+	// children.put(child.getInt(App.ID), child.getString(App.NAME));
+	// }
+	//
+	// return children;
+	//
+	// } catch (JSONException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// return null;
+	// }
 
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -322,5 +300,13 @@ public class App {
 		}
 
 		return sb.toString();
+	}
+
+	public static void showKeyboard(Context c) {
+		((InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+	}
+
+	public static void hideKeyboard(Context c, View v) {
+		((InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
 }

@@ -11,9 +11,16 @@ public abstract class ContentView extends LinearLayout {
 	
 	protected MainActivity activity;
 	protected int parentId;
-	protected String parentType;
 	
-	public ContentView(MainActivity activity) {
+	public ContentView(MainActivity activity, int parentId) {
+		super(activity);
+		this.activity = activity;
+		this.parentId = parentId;
+		
+		init();
+	}
+	
+	public ContentView(MainActivity activity){
 		super(activity);
 		this.activity = activity;
 		

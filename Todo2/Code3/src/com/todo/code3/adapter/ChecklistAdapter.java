@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.view.ChecklistView;
-import com.todo.code3.xml.ChecklistItem;
+import com.todo.code3.xml.FolderItem;
 import com.todo.code3.xml.ContentItem;
 import com.todo.code3.xml.TaskItem;
 
@@ -31,7 +31,7 @@ public class ChecklistAdapter extends BaseAdapter {
 		return checklistView.getChecklistItems().size();
 	}
 
-	public ChecklistItem getItem(int position) {
+	public FolderItem getItem(int position) {
 		return checklistView.getChecklistItems().get(position);
 	}
 
@@ -39,21 +39,20 @@ public class ChecklistAdapter extends BaseAdapter {
         if (position < 0 || position >= checklistView.getChecklistItems().size()) {
             return -1;
         }
-        ChecklistItem item = getItem(position);
+        FolderItem item = getItem(position);
         return item.getId();
     }
 
 	public View getView(int position, View view, ViewGroup parent) {
 		ContentItem item = checklistView.getChecklistItems().get(position);
 
-		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.checklist_item, null);
+		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.folder_item, null);
 
 		final TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
 
 		text.setText(item.getTitle());
 		view.setEnabled(item.isEnabled());
-		Log.i("checklist adapter", item.getTitle() + " - " + item.getId());
-
+	
 		if(item.getId() == checklistView.getExpandingItemId()) {
 			checklistView.invalidateExpandingItemId();
 			checklistView.expandView(view);

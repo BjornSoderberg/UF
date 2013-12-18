@@ -30,8 +30,8 @@ public final class R {
 		public static final int fly_listview = 0x7f070006;
 		public static final int fly_menu_holder = 0x7f070005;
 		public static final int fly_searchview = 0x7f070000;
-		public static final int rbm_item_icon = 0x7f070004;
-		public static final int rbm_item_text = 0x7f070001;
+		public static final int rbm_item_icon = 0x7f070003;
+		public static final int rbm_item_text = 0x7f070004;
 	}
 	public static final class layout {
 		public static final int fly_item = 0x7f030003;

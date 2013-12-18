@@ -21,7 +21,7 @@ import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ChecklistAdapter;
 import com.todo.code3.misc.App;
-import com.todo.code3.xml.ChecklistItem;
+import com.todo.code3.xml.FolderItem;
 import com.todo.code3.xml.DynamicListView;
 
 public class ChecklistView extends ContentView {
@@ -34,12 +34,10 @@ public class ChecklistView extends ContentView {
 	private int expandingItemId = -1;
 	private int listViewItemHeight;
 
-	protected ArrayList<ChecklistItem> checklistItems;
+	protected ArrayList<FolderItem> checklistItems;
 
-	public ChecklistView(MainActivity activity, int parentId, String parentType) {
-		super(activity);
-		this.parentId = parentId;
-		this.parentType = parentType;
+	public ChecklistView(MainActivity activity, int parentId) {
+		super(activity, parentId);
 	}
 
 	protected void init() {
@@ -53,7 +51,7 @@ public class ChecklistView extends ContentView {
 		v.setLayoutParams(params);
 		addView(v);
 
-		checklistItems = new ArrayList<ChecklistItem>();
+		checklistItems = new ArrayList<FolderItem>();
 
 		listView = (ListView) v.findViewById(R.id.listview);
 		ChecklistAdapter adapter = new ChecklistAdapter(activity, this);
@@ -66,9 +64,10 @@ public class ChecklistView extends ContentView {
 				if(activity.isMoving()) return;
 				
 				try {
-					JSONObject checklist = new JSONObject(activity.getData().getString(App.CHECKLIST + view.getId()));
-
-					activity.open(checklist.getInt(App.ID), App.CHECKLIST);
+					JSONObject checklist = new JSONObject(activity.getData().getString(view.getId() + ""));
+					if(checklist.getString(App.TYPE).equals(App.FOLDER))
+					activity.open(checklist.getInt(App.ID));
+					
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -85,19 +84,19 @@ public class ChecklistView extends ContentView {
 		try {
 			checklistItems.clear();
 
-			JSONObject folder = new JSONObject(data.getString(parentType + parentId));
+			JSONObject folder = new JSONObject(data.getString(parentId + ""));
 
 			String childrenIds[] = folder.getString(App.CHILDREN_IDS).split(",");
 
 			for (int i = 0; i < childrenIds.length; i++) {
 				String id = childrenIds[i];
-				if (data.has(App.CHECKLIST + id)) {
-					JSONObject checklist = new JSONObject(data.getString(App.CHECKLIST + id));
+				if (data.has(id)) {
+					JSONObject checklist = new JSONObject(data.getString(id));
+					if(!checklist.getString(App.TYPE).equals(App.FOLDER)) continue;
 
-					ChecklistItem ci = new ChecklistItem();
+					FolderItem ci = new FolderItem();
 					ci.setTitle(checklist.getString(App.NAME));
 					ci.setParentId(parentId);
-					ci.setParentType(parentType);
 					ci.setId(checklist.getInt(App.ID));
 					if (checklist.has(App.TIMESTAMP_CREATED)) ci.setTimestampCreated(checklist.getInt(App.TIMESTAMP_CREATED));
 
@@ -107,7 +106,7 @@ public class ChecklistView extends ContentView {
 
 			((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
 
-			if (hasDynamicListView) ((DynamicListView) listView).setChecklistItems(checklistItems);
+//			if (hasDynamicListView) ((DynamicListView) listView).setChecklistItems(checklistItems);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -124,7 +123,7 @@ public class ChecklistView extends ContentView {
 			order += checklistItems.get(i).getId() + ",";
 		}
 		order += checklistItems.get(checklistItems.size() - 1).getId();
-		activity.updateChilrenOrder(order, parentId, parentType);
+		activity.updateChildrenOrder(order, parentId);
 	}
 
 	public void expandView(final View view) {
@@ -167,7 +166,7 @@ public class ChecklistView extends ContentView {
 		}, 0);
 	}
 
-	public ArrayList<ChecklistItem> getChecklistItems() {
+	public ArrayList<FolderItem> getChecklistItems() {
 		return checklistItems;
 	}
 
