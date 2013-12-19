@@ -36,6 +36,5 @@ public final class R {
 	public static final class layout {
 		public static final int fly_item = 0x7f030003;
 		public static final int fly_menu = 0x7f030004;
-		public static final int fly_menu_dynamic = 0x7f030005;
 	}
 }

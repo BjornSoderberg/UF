@@ -1,14 +1,10 @@
 package com.espian.flyin.library;
 
-import org.json.JSONObject;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
