@@ -44,7 +44,7 @@ public class ProjectView extends ContentView {
 	}
 
 	protected void init() {
-		hasDynamicListView = activity.getSDKVersion() >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS;
+//		hasDynamicListView = activity.getSDKVersion() >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS;
 
 		View v;
 

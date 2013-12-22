@@ -42,8 +42,9 @@ import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
 import com.todo.code3.R;
-import com.todo.code3.adapter.AllAdapter;
+import com.todo.code3.adapter.ItemAdapter;
 import com.todo.code3.view.ContentView;
+import com.todo.code3.view.ItemView;
 
 /**
  * The dynamic listview is an extension of listview that supports cell dragging
@@ -101,7 +102,7 @@ public class DynamicListView extends ListView {
 	private boolean mIsWaitingForScrollFinish = false;
 	private int mScrollState = OnScrollListener.SCROLL_STATE_IDLE;
 
-	private ContentView contentView;
+	private ItemView itemView;
 
 	public DynamicListView(Context context) {
 		super(context);
@@ -130,25 +131,28 @@ public class DynamicListView extends ListView {
 	 * been selected, the hover cell is created and set up.
 	 */
 	private AdapterView.OnItemLongClickListener mOnItemLongClickListener = new AdapterView.OnItemLongClickListener() {
-		public boolean onItemLongClick(AdapterView<?> parent, View view,
-				int pos, long id) {
-			mTotalOffset = 0;
-
-			int position = pointToPosition(mDownX, mDownY);
-			int itemNum = position - getFirstVisiblePosition();
-
-			View selectedView = getChildAt(itemNum);
-			mMobileItemId = getAdapter().getItemId(position);
-			mHoverCell = getAndAddHoverView(selectedView);
-			selectedView.setVisibility(INVISIBLE);
-
-			mCellIsMobile = true;
-
-			updateNeighborViewsForID(mMobileItemId);
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
+			startDragging();
 
 			return true;
 		}
 	};
+	
+	private void startDragging() {
+		mTotalOffset = 0;
+
+		int position = pointToPosition(mDownX, mDownY);
+		int itemNum = position - getFirstVisiblePosition();
+
+		View selectedView = getChildAt(itemNum);
+		mMobileItemId = getAdapter().getItemId(position);
+		mHoverCell = getAndAddHoverView(selectedView);
+		selectedView.setVisibility(INVISIBLE);
+
+		mCellIsMobile = true;
+
+		updateNeighborViewsForID(mMobileItemId);
+	}
 
 	/**
 	 * Creates the hover cell with the appropriate bitmap and of appropriate
@@ -194,8 +198,7 @@ public class DynamicListView extends ListView {
 
 	/** Returns a bitmap showing a screenshot of the view passed in. */
 	private Bitmap getBitmapFromView(View v) {
-		Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(),
-				Bitmap.Config.ARGB_8888);
+		Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		v.draw(canvas);
 		return bitmap;
@@ -276,8 +279,7 @@ public class DynamicListView extends ListView {
 			int deltaY = mLastEventY - mDownY;
 
 			if (mCellIsMobile) {
-				mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left,
-						mHoverCellOriginalBounds.top + deltaY + mTotalOffset);
+				mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mHoverCellOriginalBounds.top + deltaY + mTotalOffset);
 				mHoverCell.setBounds(mHoverCellCurrentBounds);
 				invalidate();
 
@@ -333,10 +335,8 @@ public class DynamicListView extends ListView {
 		View mobileView = getViewForID(mMobileItemId);
 		View aboveView = getViewForID(mAboveItemId);
 
-		boolean isBelow = (belowView != null)
-				&& (deltaYTotal > belowView.getTop());
-		boolean isAbove = (aboveView != null)
-				&& (deltaYTotal < aboveView.getTop());
+		boolean isBelow = (belowView != null) && (deltaYTotal > belowView.getTop());
+		boolean isAbove = (aboveView != null) && (deltaYTotal < aboveView.getTop());
 
 		if (isBelow || isAbove) {
 
@@ -350,21 +350,17 @@ public class DynamicListView extends ListView {
 
 			swapElements(originalItem, getPositionForView(switchView));
 
-			int delta = (int) getContext().getResources().getDimension(
-					R.dimen.item_height);
-			if (isBelow)
-				delta = -delta;
+			int delta = (int) getContext().getResources().getDimension(R.dimen.item_height);
+			if (isBelow) delta = -delta;
 
-			ObjectAnimator a = ObjectAnimator.ofFloat(switchView,
-					"translationY", delta);
+			ObjectAnimator a = ObjectAnimator.ofFloat(switchView, "translationY", delta);
 			a.setDuration(MOVE_DURATION);
 			a.start();
 
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
-					((AllAdapter) getAdapter()).notifyDataSetChanged();
-					((AllAdapter) getAdapter())
-							.setMovingItemId((int) mMobileItemId);
+					((ItemAdapter) getAdapter()).notifyDataSetChanged();
+					((ItemAdapter) getAdapter()).setMovingItemId((int) mMobileItemId);
 				}
 			}, MOVE_DURATION);
 
@@ -413,11 +409,9 @@ public class DynamicListView extends ListView {
 				return;
 			}
 
-			mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left,
-					mobileView.getTop());
+			mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mobileView.getTop());
 
-			ObjectAnimator a = ObjectAnimator.ofObject(mHoverCell, "bounds",
-					sBoundEvaluator, mHoverCellCurrentBounds);
+			ObjectAnimator a = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
 			a.addUpdateListener(new AnimatorUpdateListener() {
 				public void onAnimationUpdate(ValueAnimator v) {
 					invalidate();
@@ -437,7 +431,7 @@ public class DynamicListView extends ListView {
 					setEnabled(true);
 					invalidate();
 
-					contentView.updateContentItemsOrder();
+					itemView.updateContentItemsOrder();
 				}
 			}, MOVE_DURATION);
 
@@ -471,11 +465,7 @@ public class DynamicListView extends ListView {
 	 */
 	private static TypeEvaluator<Rect> sBoundEvaluator = new TypeEvaluator<Rect>() {
 		public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
-			return new Rect(interpolate(startValue.left, endValue.left,
-					fraction), interpolate(startValue.top, endValue.top,
-					fraction), interpolate(startValue.right, endValue.right,
-					fraction), interpolate(startValue.bottom, endValue.bottom,
-					fraction));
+			return new Rect(interpolate(startValue.left, endValue.left, fraction), interpolate(startValue.top, endValue.top, fraction), interpolate(startValue.right, endValue.right, fraction), interpolate(startValue.bottom, endValue.bottom, fraction));
 		}
 
 		public int interpolate(int start, int end, float fraction) {
@@ -498,8 +488,7 @@ public class DynamicListView extends ListView {
 	 */
 	@SuppressLint("NewApi")
 	public boolean handleMobileCellScroll(Rect r) {
-		if (Build.VERSION.SDK_INT < 8)
-			return false;
+		if (Build.VERSION.SDK_INT < 8) return false;
 
 		int offset = computeVerticalScrollOffset();
 		int height = getHeight();
@@ -526,8 +515,8 @@ public class DynamicListView extends ListView {
 		contentItems = list;
 	}
 
-	public void setContentView(ContentView v) {
-		contentView = v;
+	public void setItemView(ItemView v) {
+		itemView = v;
 	}
 
 	/**
@@ -546,15 +535,12 @@ public class DynamicListView extends ListView {
 		private int mCurrentVisibleItemCount;
 		private int mCurrentScrollState;
 
-		public void onScroll(AbsListView view, int firstVisibleItem,
-				int visibleItemCount, int totalItemCount) {
+		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			mCurrentFirstVisibleItem = firstVisibleItem;
 			mCurrentVisibleItemCount = visibleItemCount;
 
-			mPreviousFirstVisibleItem = (mPreviousFirstVisibleItem == -1) ? mCurrentFirstVisibleItem
-					: mPreviousFirstVisibleItem;
-			mPreviousVisibleItemCount = (mPreviousVisibleItemCount == -1) ? mCurrentVisibleItemCount
-					: mPreviousVisibleItemCount;
+			mPreviousFirstVisibleItem = (mPreviousFirstVisibleItem == -1) ? mCurrentFirstVisibleItem : mPreviousFirstVisibleItem;
+			mPreviousVisibleItemCount = (mPreviousVisibleItemCount == -1) ? mCurrentVisibleItemCount : mPreviousVisibleItemCount;
 
 			checkAndHandleFirstVisibleCellChange();
 			checkAndHandleLastVisibleCellChange();
@@ -579,8 +565,7 @@ public class DynamicListView extends ListView {
 		 * correct position after the listview has entered an idle scroll state.
 		 */
 		private void isScrollCompleted() {
-			if (mCurrentVisibleItemCount > 0
-					&& mCurrentScrollState == SCROLL_STATE_IDLE) {
+			if (mCurrentVisibleItemCount > 0 && mCurrentScrollState == SCROLL_STATE_IDLE) {
 				if (mCellIsMobile && mIsMobileScrolling) {
 					handleMobileCellScroll();
 				} else if (mIsWaitingForScrollFinish) {
@@ -609,10 +594,8 @@ public class DynamicListView extends ListView {
 		 * updated.
 		 */
 		public void checkAndHandleLastVisibleCellChange() {
-			int currentLastVisibleItem = mCurrentFirstVisibleItem
-					+ mCurrentVisibleItemCount;
-			int previousLastVisibleItem = mPreviousFirstVisibleItem
-					+ mPreviousVisibleItemCount;
+			int currentLastVisibleItem = mCurrentFirstVisibleItem + mCurrentVisibleItemCount;
+			int previousLastVisibleItem = mPreviousFirstVisibleItem + mPreviousVisibleItemCount;
 			if (currentLastVisibleItem != previousLastVisibleItem) {
 				if (mCellIsMobile && mMobileItemId != INVALID_ID) {
 					updateNeighborViewsForID(mMobileItemId);

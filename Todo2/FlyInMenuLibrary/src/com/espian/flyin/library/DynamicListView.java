@@ -27,6 +27,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -430,6 +431,7 @@ public class DynamicListView extends ListView {
 			
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
+					
 					((BaseAdapter) getAdapter()).notifyDataSetChanged();
 					mAboveItemId = INVALID_ID;
 					mMobileItemId = INVALID_ID;

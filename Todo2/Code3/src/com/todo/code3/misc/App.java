@@ -28,7 +28,7 @@ public class App {
 	// public static final String NUM_FOLDERS = "numFolders";
 	public static final String NUM_IDS = "numIds";
 
-	public static final String REMOVABLE = "removable";
+	// public static final String REMOVABLE = "removable";
 	public static final String REMOVED = "removed";
 	public static final String COMPLETED = "completed";
 
@@ -37,11 +37,11 @@ public class App {
 
 	public static final String TYPE = "type";
 
-//	 public static final String FOLDER = "folder";
-//	 public static final String PROJECT = "project";
-	 public static final String FOLDER = "folder";
-	 public static final String TASK = "task";
-	 public static final String NOTE = "note";
+	// public static final String FOLDER = "folder";
+	// public static final String PROJECT = "project";
+	public static final String FOLDER = "folder";
+	public static final String TASK = "task";
+	public static final String NOTE = "note";
 
 	public static final String TASK_VIEW = "taskView";
 	public static final String CHECKLIST_VIEW = "checklistView";
@@ -51,8 +51,6 @@ public class App {
 	public static final String TIMESTAMP_LAST_UPDATED = "timestampLastUpdated";
 
 	public static final String DESCRIPTION = "description";
-
-	public static final int MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS = 11;
 	public static final int BEZEL_AREA_DP = 16;
 
 	public static final int COLLAPSE_ANIMATION_DURATION = 300;
@@ -85,43 +83,28 @@ public class App {
 		try {
 			JSONObject object = new JSONObject();
 			object.put(App.NAME, name);
-			object.put(App.PARENT_ID, parentId);
-			object.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
-			object.put(App.TYPE, type);
-
 			object.put(App.ID, data.getInt(App.NUM_IDS));
+			object.put(App.TYPE, type);
+			object.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
+
+			if (parentId != -1) object.put(App.PARENT_ID, parentId);
+			if (type.equals(App.FOLDER)) object.put(App.CHILDREN_IDS, "");
+
 			data.put(App.NUM_IDS, data.getInt(App.NUM_IDS) + 1);
 
-			JSONObject parent = new JSONObject(data.getString(parentId + ""));
+			if (parentId != -1) {
+				JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
-			String children = addToChildrenString(parent, object.getInt(App.ID));
-			parent.put(App.CHILDREN_IDS, children);
+				String children = addToChildrenString(parent, object.getInt(App.ID));
+				parent.put(App.CHILDREN_IDS, children);
+				data.put(parentId + "", parent.toString());
+			} else {
+				String children = addToChildrenString(data, object.getInt(App.ID));
+				data.put(App.CHILDREN_IDS, children);
+			}
 
 			data.put(object.getInt(App.ID) + "", object.toString());
-			data.put(parentId + "", parent.toString());
 
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return data;
-	}
-
-	public static JSONObject addFolder(String name, String type, boolean removable, JSONObject data) {
-		try {
-			JSONObject folder = new JSONObject();
-			folder.put(App.NAME, name);
-			folder.put(App.ID, data.getInt(App.NUM_IDS));
-			folder.put(App.REMOVABLE, removable);
-			folder.put(App.TYPE, type);
-			folder.put(App.CHILDREN_IDS, "");
-			folder.put(App.TIMESTAMP_CREATED, (int) (System.currentTimeMillis() / 1000));
-
-			String children = addToChildrenString(data, folder.getInt(App.ID), true);
-			data.put(App.CHILDREN_IDS, children);
-
-			data.put(data.getInt(App.NUM_IDS) + "", folder.toString());
-			data.put(App.NUM_IDS, data.getInt(App.NUM_IDS) + 1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -133,8 +116,8 @@ public class App {
 		try {
 
 			JSONObject task = new JSONObject(data.getString(taskId + ""));
-			if(!task.getString(App.TYPE).equals(App.TASK)) return data;
-			
+			if (!task.getString(App.TYPE).equals(App.TASK)) return data;
+
 			task.put(App.COMPLETED, isChecked);
 
 			if (isChecked) task.put(App.TIMESTAMP_COMPLETED, (int) (System.currentTimeMillis() / 1000));
@@ -143,8 +126,9 @@ public class App {
 			data.put(taskId + "", task.toString());
 			JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
-//			String childrenOrder = putTaskBeforeCheckedTasks(taskId, parentId, data);
-//			parent.put(App.CHILDREN_IDS, childrenOrder);
+			// String childrenOrder = putTaskBeforeCheckedTasks(taskId,
+			// parentId, data);
+			// parent.put(App.CHILDREN_IDS, childrenOrder);
 
 			data.put(parentId + "", parent.toString());
 

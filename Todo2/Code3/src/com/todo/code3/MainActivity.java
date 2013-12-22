@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +39,10 @@ import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
-import com.todo.code3.view.AllView;
 import com.todo.code3.view.ContentView;
+import com.todo.code3.view.ItemView;
 import com.todo.code3.view.TaskContentView;
+import com.todo.code3.xml.FolderHierarchyViewer;
 import com.todo.code3.xml.Wrapper;
 
 public class MainActivity extends FlyInFragmentActivity {
@@ -120,7 +122,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				data = new JSONObject();
 				data.put(App.NUM_IDS, 0);
 
-				addFolder("Inbox", App.FOLDER, false);
+				addFolder("Inbox", App.FOLDER);
 			} else {
 				data = new JSONObject(d);
 			}
@@ -358,21 +360,12 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (data.has(App.CHILDREN_IDS)) childrenIds = data.getString(App.CHILDREN_IDS).split(",");
 			else childrenIds = new String[0];
 
-			for (int i = 0; i < childrenIds.length; i++) {
+			for (int i = childrenIds.length - 1; i >= 0; i--) {
 				String id = childrenIds[i];
 				if (data.has(id)) {
 					JSONObject folder = new JSONObject(data.getString(id));
-					if (folder.getString(App.TYPE).equals(App.FOLDER)/*
-																	 * ||
-																	 * folder.
-																	 * getString
-																	 * (
-																	 * App.TYPE)
-																	 * .
-																	 * equals(App
-																	 * .PROJECT)
-																	 */) {
-						// If the checklist does not have a parent
+					if (folder.getString(App.TYPE).equals(App.FOLDER)) {
+						// If the folder does not have a parent
 						// it should be in the menu.
 						if (folder.getString(App.TYPE).equals(App.FOLDER)) {
 							if (folder.has(App.PARENT_ID) && folder.getInt(App.PARENT_ID) != -1) continue;
@@ -398,14 +391,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	public boolean onFlyInItemClick(FlyInMenuItem item, int position) {
 		try {
 			JSONObject object = new JSONObject(data.getString(item.getId() + ""));
-			if (object.getString(App.TYPE).equals(App.FOLDER) /*
-															 * ||
-															 * object.getString
-															 * (App
-															 * .TYPE).equals(
-															 * App.PROJECT)
-															 */) //
-			openMenuItem(object.getInt(App.ID));
+
+			if (object.getString(App.TYPE).equals(App.FOLDER)) openMenuItem(object.getInt(App.ID));
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -420,6 +407,14 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void viewAddTaskDialog(View v) {
+		RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
+		FolderHierarchyViewer f = new FolderHierarchyViewer(this, data, -1, 0);
+		f.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		f.setBackgroundColor(0xffff00ff);
+		r.addView(f);
+
+		if (true) return;
+
 		// RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
 		// final FormParent ti = new FormParent(this);
 		// r.addView(ti);
@@ -493,7 +488,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private void askForName(final String type) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
+
 		if (type.equals(App.TASK)) {
 			builder.setTitle("Add new task");
 			builder.setMessage("What do you have to do?");
@@ -558,8 +553,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		try {
 			int id = data.getInt(App.NUM_IDS) - 1;
 
-			if (contentViews.get(posInWrapper) instanceof AllView) {
-				((AllView) contentViews.get(posInWrapper)).setExpandingItemId(id);
+			if (contentViews.get(posInWrapper) instanceof ItemView) {
+				((ItemView) contentViews.get(posInWrapper)).setExpandingItemId(id);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -569,7 +564,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void addFolder(String name, String type) {
-		addFolder(name, type, true);
+		data = App.add(name, type, -1, data);
+		editor.put(App.DATA, data.toString());
 
 		try {
 			// This gets the id of the newly added folder
@@ -577,11 +573,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void addFolder(String name, String type, boolean removable) {
-		data = App.addFolder(name, type, removable, data);
-		editor.put(App.DATA, data.toString());
 
 		updateMenu();
 	}
@@ -614,7 +605,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			posInWrapper = 0;
 			contentViews.clear();
 
-			contentViews.add(posInWrapper, new AllView(this, openObjectId));
+			contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -639,7 +630,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
 
 			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskContentView(this, openObjectId));
-			else contentViews.add(posInWrapper, new AllView(this, openObjectId));
+			else contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 
 			backButton.setVisibility(View.VISIBLE);
 			dragButton.setVisibility(View.GONE);
@@ -751,6 +742,14 @@ public class MainActivity extends FlyInFragmentActivity {
 			nameTV.setText(name + "...");
 		}
 	}
+	
+	public void showOptions() {
+		
+	}
+	
+	public void hideOptions() {
+		
+	}
 
 	public void updateChildrenOrder(String children, int parentId) {
 		data = App.updateChildrenOrder(children, parentId, data);
@@ -812,11 +811,15 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void updateContentItemsOrder() {
 		String order = "";
-		for (int i = 0; i < getFlyInMenu().getMenuItems().size() - 1; i++) {
+
+		// Menu items are listed in reverse order when compared to
+		// the other items. Therefore, I put the last item first.
+		for (int i = getFlyInMenu().getMenuItems().size() - 1; i >= 0; i--) {
 			order += getFlyInMenu().getMenuItems().get(i).getId() + ",";
 		}
 
-		order += getFlyInMenu().getMenuItems().get(getFlyInMenu().getMenuItems().size() - 1).getId();
+		// Removes the last ',' from the string
+		order = order.substring(0, order.length() - 1);
 
 		updateChildrenOrder(order, -1);
 	}

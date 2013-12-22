@@ -43,7 +43,7 @@ public class TaskView extends ContentView {
 	}
 
 	protected void init() {
-		hasDynamicListView = activity.getSDKVersion() >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS;
+//		hasDynamicListView = activity.getSDKVersion() >= App.MIN_API_LEVEL_FOR_DRAGGABLE_LIST_VIEW_ITEMS;
 
 		View v;
 		if (hasDynamicListView) v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.task_view_dynamic, null);
