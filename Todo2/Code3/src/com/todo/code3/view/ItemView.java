@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -27,164 +28,246 @@ import com.todo.code3.xml.TaskItem;
 
 public class ItemView extends ContentView {
 
-        private DynamicListView listView;
-        private TextView empty;
+	private DynamicListView listView;
+	private TextView empty;
 
-        private ArrayList<ContentItem> contentItems;
+	private ArrayList<ContentItem> contentItems;
+	private ArrayList<ContentItem> selectedItems;
 
-        private ItemAdapter adapter;
+	private ItemAdapter adapter;
 
-        private int itemHeight;
-        private int expandingItemId = -1;
+	private int itemHeight;
+	private int expandingItemId = -1;
 
-        public ItemView(MainActivity activity, int parentId) {
-                super(activity, parentId);
-        }
+	private boolean optionsMode = false;
 
-        protected void init() {
-                View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.all_item_view, null);
+	public ItemView(MainActivity activity, int parentId) {
+		super(activity, parentId);
+	}
 
-                LayoutParams params = new LayoutParams(activity.getContentWidth(), activity.getContentHeight());
-                v.setLayoutParams(params);
-                addView(v);
+	protected void init() {
+		View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.all_item_view, null);
 
-                contentItems = new ArrayList<ContentItem>();
+		LayoutParams params = new LayoutParams(activity.getContentWidth(), activity.getContentHeight());
+		v.setLayoutParams(params);
+		addView(v);
 
-                listView = (DynamicListView) v.findViewById(R.id.listview);
-                listView.setContentView(this);
+		contentItems = new ArrayList<ContentItem>();
+		selectedItems = new ArrayList<ContentItem>();
 
-                adapter = new ItemAdapter(activity, this);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new OnItemClickListener() {
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                if (activity.isMoving()) return;
+		listView = (DynamicListView) v.findViewById(R.id.listview);
+		listView.setItemView(this);
 
-                                try {
-                                        JSONObject object = new JSONObject(activity.getData().getString(view.getId() + ""));
-                                        activity.open(object.getInt(App.ID));
-                                } catch (JSONException e) {
-                                        e.printStackTrace();
-                                }
-                        }
-                });
+		adapter = new ItemAdapter(activity, this);
+		listView.setAdapter(adapter);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if (activity.isMoving()) return;
+				if (isInOptionsMode()) return;
 
-                empty = (TextView) findViewById(R.id.empty);
-                empty.setText("Empty");
+				try {
+					JSONObject object = new JSONObject(activity.getData().getString(view.getId() + ""));
+					activity.open(object.getInt(App.ID));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 
-                itemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
-        }
+		empty = (TextView) findViewById(R.id.empty);
+		empty.setText("Empty");
 
-        public void update(JSONObject data) {
-                try {
-                        contentItems.clear();
-                        JSONObject parent = new JSONObject(data.getString(parentId + ""));
+		itemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
+	}
 
-                        String childrenIds[];
+	public void update(JSONObject data) {
+		try {
+			contentItems.clear();
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
-                        if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
-                        else childrenIds = new String[0];
+			String childrenIds[];
 
-                        for (String id : childrenIds) {
-                                if (!data.has(id)) continue;
+			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+			else childrenIds = new String[0];
 
-                                JSONObject object = new JSONObject(data.getString(id));
+			for (String id : childrenIds) {
+				if (!data.has(id)) continue;
 
-                                if (object.getString(App.TYPE).equals(App.TASK)) {
-                                        TaskItem item = new TaskItem();
-                                        item.setTitle(object.getString(App.NAME));
-                                        item.setId(object.getInt(App.ID));
-                                        item.setParentId(parentId);
-                                        if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_CREATED));
-                                        if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
-                                        if (object.has(App.COMPLETED) && object.getBoolean(App.COMPLETED)) item.completed(true);
-                                        else item.completed(false);
+				JSONObject object = new JSONObject(data.getString(id));
 
-                                        contentItems.add(item);
-                                } else if (object.getString(App.TYPE).equals(App.FOLDER)) {
-                                        FolderItem item = new FolderItem();
-                                        item.setTitle(object.getString(App.NAME));
-                                        item.setParentId(parentId);
-                                        item.setId(object.getInt(App.ID));
-                                        if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
+				if (object.getString(App.TYPE).equals(App.TASK)) {
+					TaskItem item = new TaskItem();
+					item.setTitle(object.getString(App.NAME));
+					item.setId(object.getInt(App.ID));
+					item.setParentId(parentId);
+					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_CREATED));
+					if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
+					if (object.has(App.COMPLETED) && object.getBoolean(App.COMPLETED)) item.completed(true);
+					else item.completed(false);
 
-                                        contentItems.add(item);
-                                }
-                        }
+					contentItems.add(item);
+				} else if (object.getString(App.TYPE).equals(App.FOLDER)) {
+					FolderItem item = new FolderItem();
+					item.setTitle(object.getString(App.NAME));
+					item.setParentId(parentId);
+					item.setId(object.getInt(App.ID));
+					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
 
-                        adapter.notifyDataSetChanged();
+					contentItems.add(item);
+				}
+			}
 
-                        listView.setContentItems(contentItems);
-                } catch (JSONException e) {
-                        e.printStackTrace();
-                }
-        }
-        
-        public void expandView(final View view) {
-                if(view.getLayoutParams() != null) view.getLayoutParams().height = 1;
-                else view.setLayoutParams(new ListView.LayoutParams(LayoutParams.FILL_PARENT, 1));
-                
-                new Handler().postDelayed(new Runnable() {
-                        public void run() {
-                                AnimationListener al = new AnimationListener() {
-                                        public void onAnimationEnd(Animation a) {
-                                                activity.isMoving(false);
-                                        }
+			adapter.notifyDataSetChanged();
 
-                                        public void onAnimationRepeat(Animation a) {
-                                        }
-                                        
-                                        public void onAnimationStart(Animation a) {
-                                                activity.isMoving(true);
-                                        }
-                                };
-                                
-                                Animation animation = new Animation() {
-                                        protected void applyTransformation(float time, Transformation t) {
-                                                if((int) (itemHeight * time) != 0) view.getLayoutParams().height = (int) (itemHeight * time);
-                                                else view.getLayoutParams().height = 1;
-                                                
-                                                view.requestLayout();
-                                        }
-                                };
-                                
-                                animation.setAnimationListener(al);
-                                animation.setDuration(App.EXPAND_ANIMATION_DURATION);
-                                view.startAnimation(animation);
-                        }
-                }, 0);
-        }
+			listView.setContentItems(contentItems);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
 
-        public void updateContentItemsOrder() {
-                String order = "";
-                for(int i = 0; i< contentItems.size(); i++) {
-                        order += contentItems.get(i).getId() + ",";
-                }
-                // Removes the last ',' from the string
-                order = order.substring(0, order.length() - 1);
-                activity.updateChildrenOrder(order, parentId);
-        }
+	public void expandView(final View view) {
+		if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+		else view.setLayoutParams(new ListView.LayoutParams(LayoutParams.FILL_PARENT, 1));
 
-        public void leave() {
+		Animation animation = new Animation() {
+			protected void applyTransformation(float time, Transformation t) {
+				if ((int) (itemHeight * time) != 0) view.getLayoutParams().height = (int) (itemHeight * time);
+				else view.getLayoutParams().height = 1;
 
-        }
+				view.requestLayout();
+			}
+		};
 
-        public void setExpandingItemId(int id) {
-                expandingItemId = id;
-        }
+		animation.setDuration(App.ANIMATION_DURATION);
+		view.startAnimation(animation);
+	}
 
-        public int getExpandingItemId() {
-                return expandingItemId;
-        }
+	public void collapseView(final View view) {
+		AnimationListener al = new AnimationListener() {
+			public void onAnimationEnd(Animation a) {
+				view.setVisibility(View.GONE);
+			}
 
-        public void invalidateExpandingItemId() {
-                expandingItemId = -1;
-        }
+			public void onAnimationRepeat(Animation a) {
+			}
 
-        public ArrayList<ContentItem> getContentItems() {
-                return contentItems;
-        }
+			public void onAnimationStart(Animation a) {
+			}
+		};
 
-        public int getItemHeight() {
-                return itemHeight;
-        }
+		Animation animation = new Animation() {
+			protected void applyTransformation(float time, Transformation t) {
+				view.getLayoutParams().height = itemHeight - (int) (itemHeight * time);
+
+				view.requestLayout();
+			}
+		};
+
+		animation.setAnimationListener(al);
+		animation.setDuration(App.ANIMATION_DURATION);
+		view.startAnimation(animation);
+	}
+
+	public void updateContentItemsOrder() {
+		String order = "";
+		for (int i = 0; i < contentItems.size(); i++) {
+			order += contentItems.get(i).getId() + ",";
+		}
+		// Removes the last ',' from the string
+		order = order.substring(0, order.length() - 1);
+		activity.updateChildrenOrder(order, parentId);
+	}
+
+	public void toggleItem(int id) {
+		// If the selected items contains the id it is removed
+		for (ContentItem i : selectedItems) {
+			if (i.getId() == id) {
+				selectedItems.remove(i);
+				return;
+			}
+		}
+
+		// If it does not exist, it is added to the selected items
+		for (ContentItem i : contentItems) {
+			if (i.getId() == id && !selectedItems.contains(i)) {
+				selectedItems.add(i);
+				return;
+			}
+		}
+	}
+
+	public void removeSelectedItems() {
+		for (ContentItem i : selectedItems) {
+			View v = getViewById(i.getId());
+			if (v != null) collapseView(v);
+		}
+
+		// Since the items should not be removed until they have collapsed
+		// the removing of the items is delayed by the animation duration.
+		// The selected items array is then emptied.
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				for (ContentItem i : selectedItems) {
+					activity.remove(i.getId());
+				}
+
+				selectedItems.clear();
+			}
+		}, App.ANIMATION_DURATION);
+	}
+
+	private View getViewById(int id) {
+		int firstVisiblePosition = listView.getFirstVisiblePosition();
+		for (int i = 0; i < listView.getChildCount(); i++) {
+			View v = listView.getChildAt(i);
+			int position = firstVisiblePosition + i;
+			long itemId = adapter.getItemId(position);
+			if (itemId == id) return v;
+		}
+
+		return null;
+	}
+
+	public boolean isSelected(int id) {
+		for (ContentItem i : selectedItems)
+			if (i.getId() == id) return true;
+
+		return false;
+	}
+
+	public void enterOptionsMode() {
+		optionsMode = true;
+	}
+
+	public void exitOptionsMode() {
+		optionsMode = false;
+	}
+
+	public boolean isInOptionsMode() {
+		return optionsMode;
+	}
+
+	public void leave() {
+
+	}
+
+	public void setExpandingItemId(int id) {
+		expandingItemId = id;
+	}
+
+	public int getExpandingItemId() {
+		return expandingItemId;
+	}
+
+	public void invalidateExpandingItemId() {
+		expandingItemId = -1;
+	}
+
+	public ArrayList<ContentItem> getContentItems() {
+		return contentItems;
+	}
+
+	public int getItemHeight() {
+		return itemHeight;
+	}
 }

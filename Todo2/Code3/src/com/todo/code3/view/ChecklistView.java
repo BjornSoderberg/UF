@@ -56,7 +56,7 @@ public class ChecklistView extends ContentView {
 		listView = (ListView) v.findViewById(R.id.listview);
 		ChecklistAdapter adapter = new ChecklistAdapter(activity, this);
 
-		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
+//		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
 
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -160,7 +160,7 @@ public class ChecklistView extends ContentView {
 				};
 				
 				animation.setAnimationListener(al);
-				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
+				animation.setDuration(App.ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}
 		}, 0);

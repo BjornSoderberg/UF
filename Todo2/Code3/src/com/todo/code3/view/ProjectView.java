@@ -63,7 +63,7 @@ public class ProjectView extends ContentView {
 		ProjectAdapter adapter = new ProjectAdapter(activity, this);
 		listView.setAdapter(adapter);
 
-		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
+//		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -176,7 +176,7 @@ public class ProjectView extends ContentView {
 				};
 				
 				animation.setAnimationListener(al);
-				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
+				animation.setDuration(App.ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}
 		}, 0);

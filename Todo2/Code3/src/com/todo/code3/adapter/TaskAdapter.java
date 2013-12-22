@@ -55,9 +55,9 @@ public class TaskAdapter extends BaseAdapter {
 
 		if (view.getLayoutParams() != null) view.getLayoutParams().height = taskView.getListViewItemHeight();
 
-		ImageView button = (ImageView) view.findViewById(R.id.rbm_item_checkbox);
+		ImageView button = (ImageView) view.findViewById(R.id.item_checkbox);
 
-		final TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
+		final TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
 
 		if (item.getId() == taskView.getExpandingItemId()) {
@@ -94,7 +94,7 @@ public class TaskAdapter extends BaseAdapter {
 							public void run() {
 								activity.checkTask(item.getId(), item.getParentId(), shouldCheck);
 							}
-						}, App.COLLAPSE_ANIMATION_DURATION);
+						}, App.ANIMATION_DURATION);
 					} else {
 						activity.checkTask(item.getId(),  item.getParentId(), shouldCheck);
 					}

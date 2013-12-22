@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -53,8 +52,7 @@ public class App {
 	public static final String DESCRIPTION = "description";
 	public static final int BEZEL_AREA_DP = 16;
 
-	public static final int COLLAPSE_ANIMATION_DURATION = 300;
-	public static final int EXPAND_ANIMATION_DURATION = 300;
+	public static final int ANIMATION_DURATION = 300;
 
 	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1337;
 
@@ -112,6 +110,28 @@ public class App {
 		return data;
 	}
 
+	public static JSONObject remove(int id, JSONObject data) {
+		try {
+			JSONObject object = new JSONObject(data.getString(id + ""));
+			if (object.has(App.PARENT_ID)) {
+				JSONObject parent = new JSONObject(data.getString(object.getInt(App.PARENT_ID) + ""));
+				String children = removeFromChildrenString(parent, object.getInt(App.ID));
+				parent.put(App.CHILDREN_IDS, children);
+				data.put(parent.getInt(App.ID)+ "", parent.toString());
+			} else {
+				String children = removeFromChildrenString(data, object.getInt(App.ID));
+				data.put(App.CHILDREN_IDS, children);
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		data.remove(id + "");
+
+		return data;
+	}
+
 	public static JSONObject checkTask(int taskId, int parentId, boolean isChecked, JSONObject data) {
 		try {
 
@@ -125,10 +145,6 @@ public class App {
 
 			data.put(taskId + "", task.toString());
 			JSONObject parent = new JSONObject(data.getString(parentId + ""));
-
-			// String childrenOrder = putTaskBeforeCheckedTasks(taskId,
-			// parentId, data);
-			// parent.put(App.CHILDREN_IDS, childrenOrder);
 
 			data.put(parentId + "", parent.toString());
 
@@ -178,7 +194,6 @@ public class App {
 
 	public static String addToChildrenString(JSONObject parent, int newChildId, boolean atBeginning) {
 		String[] s;
-		Log.i("Adding to child string", newChildId + "");
 
 		try {
 			if (parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
@@ -201,67 +216,66 @@ public class App {
 
 		return "";
 	}
-
-	public static String putTaskBeforeCheckedTasks(int taskId, int parentId, JSONObject data) {
+	
+	public static String removeFromChildrenString(JSONObject parent, int id) {
+		String[] s;
+		
 		try {
-			String order = "";
-			boolean hasUsedTaskId = false;
-
-			JSONObject parent = new JSONObject(data.getString(parentId + ""));
-
-			String[] childrenIds;
-			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
-			else childrenIds = new String[0];
-
-			if (childrenIds.length == 0) return taskId + "";
-
-			for (int i = 0; i < childrenIds.length; i++) {
-				if (!childrenIds[i].equals(taskId + "")) {
-
-					JSONObject task = new JSONObject(data.getString(childrenIds[i] + ""));
-
-					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED) && !hasUsedTaskId) {
-						order += taskId + ",";
-						hasUsedTaskId = true;
-					}
-
-					order += task.getInt(App.ID) + ",";
-				}
+			if(parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
+			else s = new String[0];
+			
+			String children = "";
+			for(String string : s) {
+				if(!string.equals(id + "")) children += string + ",";
 			}
-
-			if (!hasUsedTaskId) order += taskId + "";
-
-			if (order.charAt(order.length() - 1) == ',' && order.length() > 1) return order.substring(0, order.length() - 1);
-			else return order;
-		} catch (JSONException e) {
+			
+			// Removes the last "," from the string
+			children = children.substring(0, children.length() - 1);
+			return children;
+		} catch(JSONException e) {
 			e.printStackTrace();
 		}
-
-		return taskId + "";
+		
+		return "";
 	}
 
-	// public static SparseArray<String> getChildrenInParent(JSONObject parent)
-	// {
-	// try {
-	// String childrenIds[] = parent.getString(App.CHILDREN_IDS).split(",");
-	// SparseArray<String> children = new SparseArray<String>();
-	//
-	// for (int i = 0; i < childrenIds.length; i++) {
-	// JSONObject child = new
-	// JSONObject(parent.getString(parent.getString(App.CONTENT_TYPE) +
-	// childrenIds[i]));
-	//
-	// children.put(child.getInt(App.ID), child.getString(App.NAME));
-	// }
-	//
-	// return children;
-	//
-	// } catch (JSONException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// return null;
-	// }
+//	public static String putTaskBeforeCheckedTasks(int taskId, int parentId, JSONObject data) {
+//		try {
+//			String order = "";
+//			boolean hasUsedTaskId = false;
+//
+//			JSONObject parent = new JSONObject(data.getString(parentId + ""));
+//
+//			String[] childrenIds;
+//			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+//			else childrenIds = new String[0];
+//
+//			if (childrenIds.length == 0) return taskId + "";
+//
+//			for (int i = 0; i < childrenIds.length; i++) {
+//				if (!childrenIds[i].equals(taskId + "")) {
+//
+//					JSONObject task = new JSONObject(data.getString(childrenIds[i] + ""));
+//
+//					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED) && !hasUsedTaskId) {
+//						order += taskId + ",";
+//						hasUsedTaskId = true;
+//					}
+//
+//					order += task.getInt(App.ID) + ",";
+//				}
+//			}
+//
+//			if (!hasUsedTaskId) order += taskId + "";
+//
+//			if (order.charAt(order.length() - 1) == ',' && order.length() > 1) return order.substring(0, order.length() - 1);
+//			else return order;
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return taskId + "";
+//	}
 
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

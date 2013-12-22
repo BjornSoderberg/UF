@@ -60,7 +60,7 @@ public class TaskView extends ContentView {
 		adapter = new TaskAdapter(activity, this);
 		listView.setAdapter(adapter);
 
-		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
+//		if (hasDynamicListView) ((DynamicListView) listView).setContentView(this);
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -184,7 +184,7 @@ public class TaskView extends ContentView {
 		};
 
 		animation.setAnimationListener(al);
-		animation.setDuration(App.COLLAPSE_ANIMATION_DURATION);
+		animation.setDuration(App.ANIMATION_DURATION);
 		view.startAnimation(animation);
 
 		expandingItemId = id;
@@ -224,7 +224,7 @@ public class TaskView extends ContentView {
 				};
 
 				animation.setAnimationListener(al);
-				animation.setDuration(App.EXPAND_ANIMATION_DURATION);
+				animation.setDuration(App.ANIMATION_DURATION);
 				view.startAnimation(animation);
 			}
 		}, 0);

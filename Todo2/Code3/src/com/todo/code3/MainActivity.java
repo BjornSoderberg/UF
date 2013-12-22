@@ -23,13 +23,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +43,6 @@ import com.todo.code3.misc.SPEditor;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
 import com.todo.code3.view.TaskContentView;
-import com.todo.code3.xml.FolderHierarchyViewer;
 import com.todo.code3.xml.Wrapper;
 
 public class MainActivity extends FlyInFragmentActivity {
@@ -53,6 +53,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private LinearLayout wrapper;
 	private TextView nameTV;
 	private EditText inputInAddDialog;
+	private LinearLayout options;
 
 	private Button dragButton, backButton;
 
@@ -74,12 +75,11 @@ public class MainActivity extends FlyInFragmentActivity {
 	private Runnable scrollRunnable;
 	private Handler scrollHandler;
 	private boolean isMoving = false;
-	private int scrollDuration = 300;
 	private int currentContentOffset = 0;
 	private int posInWrapper = 0;
 	private long scrollFps = 1000 / 60;
 
-	private int width, height, menuWidth;
+	private int width, height, menuWidth, barHeight;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -107,7 +107,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		contentViews = new ArrayList<ContentView>();
 
 		initXML();
-		initBar();
+		initBars();
 
 		loadFlyInMenu(getMenuWidth());
 
@@ -172,6 +172,18 @@ public class MainActivity extends FlyInFragmentActivity {
 		dragButton = (Button) findViewById(R.id.dragButton);
 		backButton = (Button) findViewById(R.id.backButton);
 
+		options = (LinearLayout) findViewById(R.id.bottomBar);
+		options.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if(isMoving) return;
+				
+				if(contentViews.get(posInWrapper) instanceof ItemView) {
+					ItemView i = (ItemView) contentViews.get(posInWrapper);
+					if(i.isInOptionsMode()) i.removeSelectedItems();
+				}
+			}
+		});
+
 		initAddButtons();
 	}
 
@@ -182,6 +194,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		Button addFolderButton = new Button(this);
 		addFolderButton.setText("+  Add new folder");
+		// Makes it transparent
 		addFolderButton.setBackgroundColor(0);
 		addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.rbm_item_text_color));
 		addFolderButton.setOnClickListener(new OnClickListener() {
@@ -237,77 +250,12 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		// Button addProjectButton = new Button(this);
-		// addProjectButton.setText("+  Add new project");
-		// addProjectButton.setBackgroundColor(0);
-		// addProjectButton.setTextColor(0xff888888);
-		// addProjectButton.setOnClickListener(new OnClickListener() {
-		// public void onClick(View v) {
-		// AlertDialog.Builder alert = new
-		// AlertDialog.Builder(MainActivity.this);
-		// alert.setTitle("Add new project");
-		//
-		// // Set the views in the alert dialog
-		// LinearLayout l = new LinearLayout(MainActivity.this);
-		// Button button = new Button(MainActivity.this);
-		// if (button.getLayoutParams() != null) button.getLayoutParams().width
-		// = LayoutParams.FILL_PARENT;
-		// inputInAddDialog = new EditText(MainActivity.this);
-		//
-		// // Checks if voice recognition is present
-		// PackageManager pm = getPackageManager();
-		// List<ResolveInfo> activities = pm.queryIntentActivities(new
-		// Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-		//
-		// if (activities.size() != 0 &&
-		// App.isNetworkAvailable(MainActivity.this)) {
-		// button.setText("Press me to speak");
-		// button.setOnClickListener(new OnClickListener() {
-		// public void onClick(View v) {
-		// try {
-		// Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-		// i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-		// RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-		// i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Add a new project.");
-		//
-		// startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
-		// } catch (Exception e) {
-		// Toast.makeText(MainActivity.this,
-		// "There was an error when trying to use the voice recongizer.",
-		// Toast.LENGTH_LONG).show();
-		// }
-		// }
-		// });
-		// l.addView(button);
-		// }
-		//
-		// l.setOrientation(LinearLayout.VERTICAL);
-		// l.addView(inputInAddDialog);
-		//
-		// alert.setView(l);
-		// alert.setPositiveButton("Add", new DialogInterface.OnClickListener()
-		// {
-		// public void onClick(DialogInterface dialog, int which) {
-		// String name = inputInAddDialog.getText().toString();
-		// addFolder(name, App.PROJECT);
-		//
-		// inputInAddDialog = null;
-		// }
-		// });
-		//
-		// alert.setNegativeButton("Cancel", null);
-		//
-		// alert.show();
-		// }
-		// });
-
 		customView.addView(addFolderButton);
-		// customView.addView(addProjectButton);
 		getFlyInMenu().setCustomView(customView);
 	}
 
-	private void initBar() {
-		int barHeight = height / 12 - height / 120;
+	private void initBars() {
+		barHeight = height / 12 - height / 120;
 		int buttonSize = barHeight;
 		int borderHeight = height / 120;
 
@@ -322,7 +270,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = buttonSize;
 
 		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
-		((LinearLayout) findViewById(R.id.bar)).getLayoutParams().height = barHeight;
+		((LinearLayout) findViewById(R.id.topBar)).getLayoutParams().height = barHeight;
+
+		options.getLayoutParams().height = buttonSize;
 	}
 
 	private void updateData() {
@@ -407,13 +357,16 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void viewAddTaskDialog(View v) {
-		RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
-		FolderHierarchyViewer f = new FolderHierarchyViewer(this, data, -1, 0);
-		f.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		f.setBackgroundColor(0xffff00ff);
-		r.addView(f);
-
-		if (true) return;
+		// RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
+		// FolderHierarchyViewer f = new FolderHierarchyViewer(this, data, -1,
+		// 0);
+		// f.setLayoutParams(new
+		// RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
+		// LayoutParams.FILL_PARENT));
+		// f.setBackgroundColor(0xffff00ff);
+		// r.addView(f);
+		//
+		// if (true) return;
 
 		// RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
 		// final FormParent ti = new FormParent(this);
@@ -563,6 +516,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateData();
 	}
 
+	public void remove(int id) {
+		data = App.remove(id, data);
+		editor.put(App.DATA, data.toString());
+		
+		updateData();
+	}
+	
 	public void addFolder(String name, String type) {
 		data = App.add(name, type, -1, data);
 		editor.put(App.DATA, data.toString());
@@ -614,6 +574,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void open(int id) {
 		if (isMoving) return;
+		hideOptions();
 
 		try {
 			openObjectId = id;
@@ -622,7 +583,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			setTitle(object.getString(App.NAME));
 
-			scroller.startScroll(currentContentOffset, 0, -width, 0, scrollDuration);
+			scroller.startScroll(currentContentOffset, 0, -width, 0, App.ANIMATION_DURATION);
 			scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 			posInWrapper++;
@@ -650,10 +611,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void goBack() {
 		if (isMoving) return;
-
-		// this means that it is not in any checklist or task
-		// if (openObjectType.equals(App.CHECKLIST) ||
-		// openObjectType.equals(App.PROJECT)) return;
+		hideOptions();
 
 		try {
 			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
@@ -675,7 +633,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				}
 			}
 
-			scroller.startScroll(currentContentOffset, 0, width, 0, scrollDuration);
+			scroller.startScroll(currentContentOffset, 0, width, 0, App.ANIMATION_DURATION);
 			scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 			contentViews.get(posInWrapper).leave();
@@ -742,13 +700,64 @@ public class MainActivity extends FlyInFragmentActivity {
 			nameTV.setText(name + "...");
 		}
 	}
-	
-	public void showOptions() {
-		
+
+	public void toggleOptions() {
+		if (options.getVisibility() == View.GONE) showOptions();
+		else hideOptions();
 	}
-	
-	public void hideOptions() {
+
+	public void showOptions() {
+		options.setVisibility(View.VISIBLE);
+		options.getLayoutParams().height = 1;
+
+		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView)contentViews.get(posInWrapper)).enterOptionsMode();
+
+		Animation animation = new Animation() {
+			protected void applyTransformation(float time, Transformation t) {
+				if ((int) (time * barHeight) != 0) options.getLayoutParams().height = (int) (time * barHeight);
+				else options.getLayoutParams().height = 1;
+				options.requestLayout();
+			}
+		};
+		animation.setDuration(App.ANIMATION_DURATION);
+		options.startAnimation(animation);
+
+		// new Handler().postDelayed(new Runnable() {
+		// public void run() {
+		//
+		// }
+		// }, App.ANIMATION_DURATION);
+
+//		options.setOnClickListener(new OnClickListener() {
+//			public void onClick(View v) {
+//				hideOptions();
+//			}
+//		});
 		
+		updateData();
+	}
+
+	public void hideOptions() {
+		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView)contentViews.get(posInWrapper)).exitOptionsMode();
+		
+		Animation animation = new Animation() {
+			protected void applyTransformation(float time, Transformation t) {
+				if (barHeight - (int) (time * barHeight) != 0) options.getLayoutParams().height = barHeight - (int) (time * barHeight);
+				else options.getLayoutParams().height = 1;
+
+				options.requestLayout();
+			}
+		};
+		animation.setDuration(App.ANIMATION_DURATION);
+		options.startAnimation(animation);
+
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				options.setVisibility(View.GONE);
+			}
+		}, App.ANIMATION_DURATION);
+		
+		updateData();
 	}
 
 	public void updateChildrenOrder(String children, int parentId) {
@@ -759,6 +768,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void onBackPressed() {
+		if(contentViews.get(posInWrapper) instanceof ItemView) {
+			if(((ItemView)contentViews.get(posInWrapper)).isInOptionsMode()) {
+				hideOptions();
+				return;
+			}
+		}
+		
 		if (posInWrapper == 0) {
 			if (getFlyInMenu().isMenuVisible()) getFlyInMenu().hideMenu();
 			else super.onBackPressed();

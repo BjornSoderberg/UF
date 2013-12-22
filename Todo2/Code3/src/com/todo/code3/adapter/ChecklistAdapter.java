@@ -48,7 +48,7 @@ public class ChecklistAdapter extends BaseAdapter {
 
 		if (view == null || view instanceof TextView) view = inflater.inflate(R.layout.folder_item, null);
 
-		final TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
+		final TextView text = (TextView) view.findViewById(R.id.item_text);
 
 		text.setText(item.getTitle());
 		view.setEnabled(item.isEnabled());

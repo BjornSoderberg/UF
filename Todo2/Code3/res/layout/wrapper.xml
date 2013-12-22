@@ -7,84 +7,84 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:id="@+id/bar"
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#35ADCF" />
+        android:background="#35ADCF"
+        android:orientation="horizontal" />
 
-        <LinearLayout
-            android:id="@+id/l"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/dragButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/menu"
-                android:onClick="toggleMenu" />
-
-            <Button
-                android:id="@+id/backButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="#5DC6E5"
-                android:onClick="goBack"
-                android:visibility="gone" />
-        </LinearLayout>
-
-        <!-- Border lines for buttons -->
-
-        <LinearLayout
-            android:id="@+id/line1"
-            android:layout_width="2px"
-            android:layout_height="40dp"
-            android:layout_alignRight="@+id/l"
-            android:background="#298DA9"
-            android:enabled="false"
-            android:orientation="horizontal" />
-
-        <LinearLayout
-            android:id="@+id/line2"
-            android:layout_width="2px"
-            android:layout_height="40dp"
-            android:layout_alignLeft="@+id/addButton"
-            android:background="#298DA9"
-            android:enabled="false"
-            android:orientation="horizontal" />
-        <!-- End of border lines for buttons -->
+    <LinearLayout
+        android:id="@+id/l"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/addButton"
+            android:id="@+id/dragButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/plus"
-            android:onClick="viewAddTaskDialog"
-            android:textColor="#ffffff" />
+            android:background="@drawable/menu"
+            android:onClick="toggleMenu" />
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/barBorder"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:text="Folder"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ffffff" />
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#5DC6E5"
+            android:onClick="goBack"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Border lines for buttons -->
+
+    <LinearLayout
+        android:id="@+id/line1"
+        android:layout_width="2px"
+        android:layout_height="40dp"
+        android:layout_alignRight="@+id/l"
+        android:background="#298DA9"
+        android:enabled="false"
+        android:orientation="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/line2"
+        android:layout_width="2px"
+        android:layout_height="40dp"
+        android:layout_alignLeft="@+id/addButton"
+        android:background="#298DA9"
+        android:enabled="false"
+        android:orientation="horizontal" />
+    <!-- End of border lines for buttons -->
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/plus"
+        android:onClick="viewAddTaskDialog"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/barBorder"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="Folder"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#ffffff" />
 
     <LinearLayout
         android:id="@+id/barBorder"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_below="@+id/bar"
+        android:layout_below="@+id/topBar"
         android:background="#298DA9"
         android:orientation="horizontal" >
     </LinearLayout>
@@ -93,9 +93,22 @@
         android:id="@+id/wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/bottomBar"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/barBorder"
         android:background="#cccccc"
         android:orientation="horizontal" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="40dp"
+        android:background="#35ADCF"
+        android:orientation="horizontal"
+        android:visibility="gone" >
     </LinearLayout>
 
 </com.todo.code3.xml.Wrapper>

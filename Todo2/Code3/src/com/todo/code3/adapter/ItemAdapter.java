@@ -6,15 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.view.ItemView;
-import com.todo.code3.xml.FolderItem;
 import com.todo.code3.xml.ContentItem;
+import com.todo.code3.xml.FolderItem;
 import com.todo.code3.xml.TaskItem;
 
 public class ItemAdapter extends BaseAdapter {
@@ -50,37 +52,61 @@ public class ItemAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final ContentItem item = itemView.getContentItems().get(position);
 
-		View view = null;		
-		if (item instanceof TaskItem) view = getTaskView(position, (TaskItem) item);
-		if (item instanceof FolderItem) view = getFolderView(position, (FolderItem) item);
-		if(view == null) return null;
-		
+		View view = null;
+		if (itemView.isInOptionsMode()) view = getOptionsView(position, item);
+		else if (item instanceof TaskItem) view = getTaskView(position, (TaskItem) item);
+		else if (item instanceof FolderItem) view = getFolderView(position, (FolderItem) item);
+		if (view == null) return null;
+
+		// Assures that all the views have the same height
+		if (view.getLayoutParams() != null) view.getLayoutParams().height = itemView.getItemHeight();
+		else view.setLayoutParams(new ListView.LayoutParams(LayoutParams.FILL_PARENT, itemView.getItemHeight()));
+
 		if (item.getId() == movingId) {
 			view.setVisibility(View.INVISIBLE);
 			movingId = -1;
 		}
-		
-		if(item.getId() == itemView.getExpandingItemId()) {
+
+		if (item.getId() == itemView.getExpandingItemId()) {
 			itemView.invalidateExpandingItemId();
 			itemView.expandView(view);
 		}
-		
+
+		view.setId(item.getId());
+
+		return view;
+	}
+
+	private View getOptionsView(int position, final ContentItem item) {
+		final View view = inflater.inflate(R.layout.options_item, null);
+
+		final ImageView button = (ImageView) view.findViewById(R.id.item_checkbox);
+		button.setImageResource(R.drawable.box);
+		TextView text = (TextView) view.findViewById(R.id.item_text);
+		text.setText(item.getTitle() + " (edit)");
+
+		button.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				Log.i("item adapter  get options", "pressed button" + itemView.getActivity().isMoving());
+				
+				if(itemView.getActivity().isMoving()) return;
+				
+				itemView.toggleItem(item.getId());
+				
+				if (itemView.isSelected(item.getId())) button.setImageResource(R.drawable.checked);
+				else button.setImageResource(R.drawable.box);
+			}
+		});
+
 		return view;
 	}
 
 	private View getTaskView(int position, final TaskItem item) {
 		final View view = inflater.inflate(R.layout.task_item, null);
 
-		if (view.getLayoutParams() != null) view.getLayoutParams().height = itemView.getItemHeight();
-
-		ImageView button = (ImageView) view.findViewById(R.id.rbm_item_checkbox);
-		TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
+		ImageView button = (ImageView) view.findViewById(R.id.item_checkbox);
+		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
-
-		// if(item.getId() == contentView.getExpandingItemId()) {
-		// contentView.invalidateExpandingItemId();
-		// contentView.expandView(view);
-		// }
 
 		button.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -101,23 +127,14 @@ public class ItemAdapter extends BaseAdapter {
 			text.setPaintFlags(257);
 		}
 
-		view.setId(item.getId());
-
 		return view;
 	}
 
 	private View getFolderView(int position, FolderItem item) {
 		View view = inflater.inflate(R.layout.folder_item, null);
 
-		TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
+		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
-
-		// if(item.getId() == contentView.getExpandingItemId()) {
-		// contentView.invalidateExpandingItemId();
-		// contentView.expandView(view);
-		// }
-
-		view.setId(item.getId());
 
 		return view;
 	}
