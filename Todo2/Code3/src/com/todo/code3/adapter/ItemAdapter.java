@@ -81,20 +81,17 @@ public class ItemAdapter extends BaseAdapter {
 		final View view = inflater.inflate(R.layout.options_item, null);
 
 		final ImageView button = (ImageView) view.findViewById(R.id.item_checkbox);
-		button.setImageResource(R.drawable.box);
+		if (itemView.isSelected(item.getId())) button.setImageResource(R.drawable.checked);
+		else button.setImageResource(R.drawable.box);
+		
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (edit)");
 
 		button.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Log.i("item adapter  get options", "pressed button" + itemView.getActivity().isMoving());
-				
-				if(itemView.getActivity().isMoving()) return;
-				
+				if (itemView.getActivity().isMoving()) return;
+
 				itemView.toggleItem(item.getId());
-				
-				if (itemView.isSelected(item.getId())) button.setImageResource(R.drawable.checked);
-				else button.setImageResource(R.drawable.box);
 			}
 		});
 

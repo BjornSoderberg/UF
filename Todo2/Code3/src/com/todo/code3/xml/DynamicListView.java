@@ -134,13 +134,8 @@ public class DynamicListView extends ListView {
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
 //			startDragging();
 			itemView.getActivity().toggleOptions();
-//			for(int i = 0; i < getChildCount(); i++) {
-//				View v = getChildAt(i);
-//				if(v.findViewById(R.id.task_item_checkbox) != null) {
-//					View vv = v.findViewById(R.id.task_item_checkbox);
-//					vv.setBackgroundResource(R.drawable.ic_launcher);
-//				}
-//			}
+			// Selects the pressed item
+			itemView.toggleItem(view.getId());
 
 			return true;
 		}

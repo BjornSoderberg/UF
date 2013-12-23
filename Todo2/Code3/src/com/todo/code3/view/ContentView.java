@@ -3,6 +3,7 @@ package com.todo.code3.view;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.todo.code3.MainActivity;

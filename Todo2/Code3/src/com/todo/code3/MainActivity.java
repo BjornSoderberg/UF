@@ -1,6 +1,7 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONException;
@@ -43,6 +44,7 @@ import com.todo.code3.misc.SPEditor;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
 import com.todo.code3.view.TaskContentView;
+import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
 
 public class MainActivity extends FlyInFragmentActivity {
@@ -53,7 +55,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private LinearLayout wrapper;
 	private TextView nameTV;
 	private EditText inputInAddDialog;
-	private LinearLayout options;
+	private OptionsBar options;
 
 	private Button dragButton, backButton;
 
@@ -122,7 +124,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				data = new JSONObject();
 				data.put(App.NUM_IDS, 0);
 
-				addFolder("Inbox", App.FOLDER);
+				addMenuItem("Inbox", App.FOLDER);
 			} else {
 				data = new JSONObject(d);
 			}
@@ -172,17 +174,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		dragButton = (Button) findViewById(R.id.dragButton);
 		backButton = (Button) findViewById(R.id.backButton);
 
-		options = (LinearLayout) findViewById(R.id.bottomBar);
-		options.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				if(isMoving) return;
-				
-				if(contentViews.get(posInWrapper) instanceof ItemView) {
-					ItemView i = (ItemView) contentViews.get(posInWrapper);
-					if(i.isInOptionsMode()) i.removeSelectedItems();
-				}
-			}
-		});
+		options = (OptionsBar) findViewById(R.id.bottomBar);
+		options.setMainActivity(this);
 
 		initAddButtons();
 	}
@@ -205,7 +198,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				// Set the views in the alert dialog
 				LinearLayout l = new LinearLayout(MainActivity.this);
 				Button button = new Button(MainActivity.this);
-				if (button.getLayoutParams() != null) button.getLayoutParams().width = LayoutParams.FILL_PARENT;
+				button.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				inputInAddDialog = new EditText(MainActivity.this);
 
 				// Checks if voice recognition is present
@@ -238,7 +231,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						String name = inputInAddDialog.getText().toString();
-						addFolder(name, App.FOLDER);
+						addMenuItem(name, App.FOLDER);
 
 						inputInAddDialog = null;
 					}
@@ -516,14 +509,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateData();
 	}
 
-	public void remove(int id) {
-		data = App.remove(id, data);
-		editor.put(App.DATA, data.toString());
-		
-		updateData();
-	}
-	
-	public void addFolder(String name, String type) {
+	public void addMenuItem(String name, String type) {
 		data = App.add(name, type, -1, data);
 		editor.put(App.DATA, data.toString());
 
@@ -535,6 +521,84 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 
 		updateMenu();
+	}
+
+	public void remove(int id) {
+		remove(id, true);
+	}
+
+	public void remove(int id, boolean update) {
+		data = App.remove(id, data);
+		editor.put(App.DATA, data.toString());
+
+		if (update) updateData();
+	}
+
+	public void removeWithChildren(int id) {
+		removeWithChildrenLoop(id);
+
+		updateData();
+	}
+
+	public void removeWithChildrenLoop(int id) {
+		try {
+			JSONObject object = new JSONObject(data.getString(id + ""));
+
+			if (object.has(App.CHILDREN_IDS) && !object.getString(App.CHILDREN_IDS).equals("")) {
+				String[] childrenIds = object.getString(App.CHILDREN_IDS).split(",");
+
+				for (String string : childrenIds) {
+					removeWithChildrenLoop(Integer.parseInt(string));
+				}
+			} else remove(id, false);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		data = App.remove(id, data);
+		editor.put(App.DATA, data.toString());
+
+		updateData();
+	}
+
+	public void groupItemsInNewFolder(String newFolderName, int[] itemIds) {
+		add(newFolderName, App.FOLDER);
+
+		if (itemIds.length == 0) return;
+
+		try {
+			JSONObject newFolder = new JSONObject(data.getString((data.getInt(App.NUM_IDS) - 1) + ""));
+
+			// Gets the old folder from the first item in the itemIds array's
+			// parent id
+			JSONObject child = new JSONObject(data.getString(itemIds[0] + ""));
+			JSONObject oldFolder = new JSONObject(data.getString(child.getInt(App.PARENT_ID) + ""));
+
+			String newChildrenString = "";
+			for (int id : itemIds) {
+				// builds the new children string
+				newChildrenString += id + ",";
+
+				// removes the children ids from the old parent's string
+				if (data.has(id + "")) {
+					data = App.setProperty(App.PARENT_ID, newFolder.getInt(App.ID), id, data);
+				}
+			}
+
+			Log.i(Arrays.toString(itemIds), newChildrenString);
+
+			newChildrenString = newChildrenString.substring(0, newChildrenString.length() - 1);
+			data = App.setProperty(App.CHILDREN_IDS, newChildrenString, newFolder.getInt(App.ID), data);
+
+			String oldChildrenString = App.removeFromChildrenString(oldFolder, itemIds);
+			data = App.setProperty(App.CHILDREN_IDS, oldChildrenString, oldFolder.getInt(App.ID), data);
+
+			editor.put(App.DATA, data.toString());
+
+			updateData();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void checkTask(int taskId, int parentId, boolean isChecked) {
@@ -552,6 +616,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private void openMenuItem(int id) {
 		if (isMoving) return;
+		hideOptions();
 
 		try {
 			if (openObjectId == id) return;
@@ -604,14 +669,14 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void goBack(View v) {
 		goBack();
-
-		// hides the keyboard if it is open
-		((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
 
 	public void goBack() {
 		if (isMoving) return;
 		hideOptions();
+
+		// hides the keyboard if it is open
+		App.hideKeyboard(this, new Button(this));
 
 		try {
 			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
@@ -621,11 +686,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			openObjectId = object.getInt(App.PARENT_ID);
 			object = new JSONObject(data.getString(openObjectId + ""));
 
-			/*
-			 * if (object.getString(App.TYPE).equals(App.PROJECT)) {
-			 * backButton.setVisibility(View.GONE);
-			 * dragButton.setVisibility(View.VISIBLE); } else
-			 */if (object.getString(App.TYPE).equals(App.FOLDER)) {
+			if (object.getString(App.TYPE).equals(App.FOLDER)) {
 				JSONObject o = new JSONObject(data.getString(openObjectId + ""));
 				if (!o.has(App.PARENT_ID) || o.getInt(App.PARENT_ID) == -1) {
 					backButton.setVisibility(View.GONE);
@@ -639,7 +700,6 @@ public class MainActivity extends FlyInFragmentActivity {
 			contentViews.get(posInWrapper).leave();
 			posInWrapper--;
 			updateData();
-
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -710,7 +770,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		options.setVisibility(View.VISIBLE);
 		options.getLayoutParams().height = 1;
 
-		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView)contentViews.get(posInWrapper)).enterOptionsMode();
+		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).enterOptionsMode();
 
 		Animation animation = new Animation() {
 			protected void applyTransformation(float time, Transformation t) {
@@ -722,41 +782,38 @@ public class MainActivity extends FlyInFragmentActivity {
 		animation.setDuration(App.ANIMATION_DURATION);
 		options.startAnimation(animation);
 
-		// new Handler().postDelayed(new Runnable() {
-		// public void run() {
-		//
-		// }
-		// }, App.ANIMATION_DURATION);
+		options.clearOptionsItems();
+		options.addOptionsItem(App.OPTIONS_REMOVE);
+		options.addOptionsItem(App.OPTIONS_GROUP_ITEMS);
+		options.addOptionsItem(App.OPTIONS_SELECT_ALL);
 
-//		options.setOnClickListener(new OnClickListener() {
-//			public void onClick(View v) {
-//				hideOptions();
-//			}
-//		});
-		
 		updateData();
 	}
 
 	public void hideOptions() {
-		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView)contentViews.get(posInWrapper)).exitOptionsMode();
-		
-		Animation animation = new Animation() {
-			protected void applyTransformation(float time, Transformation t) {
-				if (barHeight - (int) (time * barHeight) != 0) options.getLayoutParams().height = barHeight - (int) (time * barHeight);
-				else options.getLayoutParams().height = 1;
+		if (0 <= posInWrapper && posInWrapper < contentViews.size()) //
+		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).exitOptionsMode();
 
-				options.requestLayout();
-			}
-		};
-		animation.setDuration(App.ANIMATION_DURATION);
-		options.startAnimation(animation);
+		// Makes the hide animation only if the view is not already hidden
+		if (options.getVisibility() != View.GONE) {
+			Animation animation = new Animation() {
+				protected void applyTransformation(float time, Transformation t) {
+					if (barHeight - (int) (time * barHeight) != 0) options.getLayoutParams().height = barHeight - (int) (time * barHeight);
+					else options.getLayoutParams().height = 1;
 
-		new Handler().postDelayed(new Runnable() {
-			public void run() {
-				options.setVisibility(View.GONE);
-			}
-		}, App.ANIMATION_DURATION);
-		
+					options.requestLayout();
+				}
+			};
+			animation.setDuration(App.ANIMATION_DURATION);
+			options.startAnimation(animation);
+
+			new Handler().postDelayed(new Runnable() {
+				public void run() {
+					options.setVisibility(View.GONE);
+				}
+			}, App.ANIMATION_DURATION);
+		}
+
 		updateData();
 	}
 
@@ -768,13 +825,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void onBackPressed() {
-		if(contentViews.get(posInWrapper) instanceof ItemView) {
-			if(((ItemView)contentViews.get(posInWrapper)).isInOptionsMode()) {
+		if (contentViews.get(posInWrapper) instanceof ItemView) {
+			if (((ItemView) contentViews.get(posInWrapper)).isInOptionsMode()) {
 				hideOptions();
 				return;
 			}
 		}
-		
+
 		if (posInWrapper == 0) {
 			if (getFlyInMenu().isMenuVisible()) getFlyInMenu().hideMenu();
 			else super.onBackPressed();
@@ -823,6 +880,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public Button getDragButton() {
 		return dragButton;
+	}
+
+	public ContentView getOpenContentView() {
+		return contentViews.get(posInWrapper);
 	}
 
 	public void updateContentItemsOrder() {

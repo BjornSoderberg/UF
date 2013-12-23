@@ -56,6 +56,11 @@ public class App {
 
 	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1337;
 
+	// Ids for the options menu
+	public static final int OPTIONS_REMOVE = 0;
+	public static final int OPTIONS_GROUP_ITEMS = 1;
+	public static final int OPTIONS_SELECT_ALL = 2;
+
 	// converting dp to pixels and vice versa
 	public static int dpToPx(int dp, Resources r) {
 		DisplayMetrics displayMetrics = r.getDisplayMetrics();
@@ -112,12 +117,14 @@ public class App {
 
 	public static JSONObject remove(int id, JSONObject data) {
 		try {
+			if(!data.has(id + "")) return data;
+			
 			JSONObject object = new JSONObject(data.getString(id + ""));
 			if (object.has(App.PARENT_ID)) {
 				JSONObject parent = new JSONObject(data.getString(object.getInt(App.PARENT_ID) + ""));
 				String children = removeFromChildrenString(parent, object.getInt(App.ID));
 				parent.put(App.CHILDREN_IDS, children);
-				data.put(parent.getInt(App.ID)+ "", parent.toString());
+				data.put(parent.getInt(App.ID) + "", parent.toString());
 			} else {
 				String children = removeFromChildrenString(data, object.getInt(App.ID));
 				data.put(App.CHILDREN_IDS, children);
@@ -155,7 +162,7 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject setProperty(String key, String value, int id, JSONObject data) {
+	public static JSONObject setProperty(String key, Object value, int id, JSONObject data) {
 		try {
 			JSONObject object = new JSONObject(data.getString(id + ""));
 
@@ -216,66 +223,97 @@ public class App {
 
 		return "";
 	}
-	
+
 	public static String removeFromChildrenString(JSONObject parent, int id) {
 		String[] s;
-		
+
 		try {
-			if(parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
+			if (parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
 			else s = new String[0];
-			
+
 			String children = "";
-			for(String string : s) {
-				if(!string.equals(id + "")) children += string + ",";
+			for (String string : s) {
+				if (!string.equals(id + "")) children += string + ",";
 			}
-			
+
 			// Removes the last "," from the string
-			children = children.substring(0, children.length() - 1);
+			if (children.length() > 0) children = children.substring(0, children.length() - 1);
+			
 			return children;
-		} catch(JSONException e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "";
 	}
 
-//	public static String putTaskBeforeCheckedTasks(int taskId, int parentId, JSONObject data) {
-//		try {
-//			String order = "";
-//			boolean hasUsedTaskId = false;
-//
-//			JSONObject parent = new JSONObject(data.getString(parentId + ""));
-//
-//			String[] childrenIds;
-//			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
-//			else childrenIds = new String[0];
-//
-//			if (childrenIds.length == 0) return taskId + "";
-//
-//			for (int i = 0; i < childrenIds.length; i++) {
-//				if (!childrenIds[i].equals(taskId + "")) {
-//
-//					JSONObject task = new JSONObject(data.getString(childrenIds[i] + ""));
-//
-//					if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED) && !hasUsedTaskId) {
-//						order += taskId + ",";
-//						hasUsedTaskId = true;
-//					}
-//
-//					order += task.getInt(App.ID) + ",";
-//				}
-//			}
-//
-//			if (!hasUsedTaskId) order += taskId + "";
-//
-//			if (order.charAt(order.length() - 1) == ',' && order.length() > 1) return order.substring(0, order.length() - 1);
-//			else return order;
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return taskId + "";
-//	}
+	public static String removeFromChildrenString(JSONObject parent, int[] ids) {
+		String[] s;
+
+		try {
+			if (parent.has(App.CHILDREN_IDS)) s = parent.getString(App.CHILDREN_IDS).split(",");
+			else s = new String[0];
+
+			String children = "";
+			for (String string : s) {
+				boolean existed = false;
+				for (int id : ids) {
+					if (string.equals(id + "")) existed = true;
+				}
+
+				if (!existed) children += string + ",";
+			}
+
+			children = children.substring(0, children.length() - 1);
+			return children;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
+
+	// public static String putTaskBeforeCheckedTasks(int taskId, int parentId,
+	// JSONObject data) {
+	// try {
+	// String order = "";
+	// boolean hasUsedTaskId = false;
+	//
+	// JSONObject parent = new JSONObject(data.getString(parentId + ""));
+	//
+	// String[] childrenIds;
+	// if (parent.has(App.CHILDREN_IDS)) childrenIds =
+	// parent.getString(App.CHILDREN_IDS).split(",");
+	// else childrenIds = new String[0];
+	//
+	// if (childrenIds.length == 0) return taskId + "";
+	//
+	// for (int i = 0; i < childrenIds.length; i++) {
+	// if (!childrenIds[i].equals(taskId + "")) {
+	//
+	// JSONObject task = new JSONObject(data.getString(childrenIds[i] + ""));
+	//
+	// if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED) &&
+	// !hasUsedTaskId) {
+	// order += taskId + ",";
+	// hasUsedTaskId = true;
+	// }
+	//
+	// order += task.getInt(App.ID) + ",";
+	// }
+	// }
+	//
+	// if (!hasUsedTaskId) order += taskId + "";
+	//
+	// if (order.charAt(order.length() - 1) == ',' && order.length() > 1) return
+	// order.substring(0, order.length() - 1);
+	// else return order;
+	// } catch (JSONException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// return taskId + "";
+	// }
 
 	public static boolean isNetworkAvailable(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

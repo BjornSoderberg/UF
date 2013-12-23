@@ -6,6 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,8 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -46,7 +50,7 @@ public class ItemView extends ContentView {
 	}
 
 	protected void init() {
-		View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.all_item_view, null);
+		View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_view, null);
 
 		LayoutParams params = new LayoutParams(activity.getContentWidth(), activity.getContentHeight());
 		v.setLayoutParams(params);
@@ -83,6 +87,8 @@ public class ItemView extends ContentView {
 	public void update(JSONObject data) {
 		try {
 			contentItems.clear();
+
+			if (!data.has(parentId + "")) return;
 			JSONObject parent = new JSONObject(data.getString(parentId + ""));
 
 			String childrenIds[];
@@ -183,6 +189,7 @@ public class ItemView extends ContentView {
 		for (ContentItem i : selectedItems) {
 			if (i.getId() == id) {
 				selectedItems.remove(i);
+				updateIcon(id);
 				return;
 			}
 		}
@@ -191,12 +198,26 @@ public class ItemView extends ContentView {
 		for (ContentItem i : contentItems) {
 			if (i.getId() == id && !selectedItems.contains(i)) {
 				selectedItems.add(i);
+				updateIcon(id);
 				return;
 			}
 		}
 	}
 
-	public void removeSelectedItems() {
+	private void updateIcon(int id) {		
+		if ((ImageView) getViewById(id).findViewById(R.id.item_checkbox) == null) return;
+
+		if (isSelected(id)) ((ImageView) getViewById(id).findViewById(R.id.item_checkbox)).setImageResource(R.drawable.checked);
+		else ((ImageView) getViewById(id).findViewById(R.id.item_checkbox)).setImageResource(R.drawable.box);
+	}
+
+	public void performActionOnSelectedItems(int id) {
+		if (id == App.OPTIONS_REMOVE) removeSelectedItems();
+		if (id == App.OPTIONS_GROUP_ITEMS) groupSelectedItems();
+		if (id == App.OPTIONS_SELECT_ALL) toggleSelection();
+	}
+
+	private void removeSelectedItems() {
 		for (ContentItem i : selectedItems) {
 			View v = getViewById(i.getId());
 			if (v != null) collapseView(v);
@@ -208,7 +229,7 @@ public class ItemView extends ContentView {
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				for (ContentItem i : selectedItems) {
-					activity.remove(i.getId());
+					activity.removeWithChildren(i.getId());
 				}
 
 				selectedItems.clear();
@@ -216,27 +237,67 @@ public class ItemView extends ContentView {
 		}, App.ANIMATION_DURATION);
 	}
 
+	public void groupSelectedItems() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+		alert.setTitle("Name the new folder");
+
+		final EditText et = new EditText(activity);
+		alert.setView(et);
+		alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				final String name = et.getText().toString();
+				final int[] selectedItemIds = new int[selectedItems.size()];
+
+				for (int i = 0; i < selectedItems.size(); i++) {
+					selectedItemIds[i] = selectedItems.get(i).getId();
+
+					collapseView(getViewById(selectedItems.get(i).getId()));
+				}
+
+				selectedItems.clear();
+
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						activity.groupItemsInNewFolder(name, selectedItemIds);
+					}
+				}, App.ANIMATION_DURATION);
+			}
+		});
+
+		alert.setNegativeButton("Cancel", null);
+
+		alert.show();
+
+	}
+
+	private void toggleSelection() {
+		if (selectedItems.size() == 0) selectedItems.addAll(contentItems);
+		else selectedItems.clear();
+
+		for (ContentItem i : contentItems)
+			updateIcon(i.getId());
+	}
+
 	private View getViewById(int id) {
-		int firstVisiblePosition = listView.getFirstVisiblePosition();
 		for (int i = 0; i < listView.getChildCount(); i++) {
 			View v = listView.getChildAt(i);
-			int position = firstVisiblePosition + i;
-			long itemId = adapter.getItemId(position);
-			if (itemId == id) return v;
+			if (v.getId() == id) return v;
 		}
 
 		return null;
 	}
 
 	public boolean isSelected(int id) {
-		for (ContentItem i : selectedItems)
-			if (i.getId() == id) return true;
+		for(ContentItem i : selectedItems)
+			if(i.getId() == id) return true;
 
 		return false;
 	}
 
 	public void enterOptionsMode() {
 		optionsMode = true;
+		// Clears the selected items every time the options mode is entered
+		selectedItems.clear();
 	}
 
 	public void exitOptionsMode() {

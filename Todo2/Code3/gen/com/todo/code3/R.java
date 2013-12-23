@@ -71,14 +71,14 @@ public final class R {
         public static final int wrapper=0x7f07001d;
     }
     public static final class layout {
-        public static final int all_item_view=0x7f030000;
-        public static final int checklist_view=0x7f030001;
-        public static final int checklist_view_dynamic=0x7f030002;
-        public static final int fly_item=0x7f030003;
-        public static final int fly_menu=0x7f030004;
-        public static final int folder_item=0x7f030005;
-        public static final int form_text_line=0x7f030006;
-        public static final int form_title=0x7f030007;
+        public static final int checklist_view=0x7f030000;
+        public static final int checklist_view_dynamic=0x7f030001;
+        public static final int fly_item=0x7f030002;
+        public static final int fly_menu=0x7f030003;
+        public static final int folder_item=0x7f030004;
+        public static final int form_text_line=0x7f030005;
+        public static final int form_title=0x7f030006;
+        public static final int item_view=0x7f030007;
         public static final int options_item=0x7f030008;
         public static final int project_view=0x7f030009;
         public static final int project_view_dynamic=0x7f03000a;

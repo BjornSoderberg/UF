@@ -98,17 +98,18 @@
         android:layout_below="@+id/barBorder"
         android:background="#cccccc"
         android:orientation="horizontal" >
-
     </LinearLayout>
 
-    <LinearLayout
+    <!-- Start of options bar -->
+
+    <com.todo.code3.xml.OptionsBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
         android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
         android:background="#35ADCF"
         android:orientation="horizontal"
         android:visibility="gone" >
-    </LinearLayout>
+    </com.todo.code3.xml.OptionsBar>
 
 </com.todo.code3.xml.Wrapper>
