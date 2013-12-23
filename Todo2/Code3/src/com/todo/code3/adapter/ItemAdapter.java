@@ -3,11 +3,14 @@ package com.todo.code3.adapter;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -62,7 +65,7 @@ public class ItemAdapter extends BaseAdapter {
 		if (view.getLayoutParams() != null) view.getLayoutParams().height = itemView.getItemHeight();
 		else view.setLayoutParams(new ListView.LayoutParams(LayoutParams.FILL_PARENT, itemView.getItemHeight()));
 
-		if (item.getId() == movingId) {
+		if (item.getId() == movingId && itemView.getListView().isDragging()) {
 			view.setVisibility(View.INVISIBLE);
 			movingId = -1;
 		}
@@ -80,14 +83,14 @@ public class ItemAdapter extends BaseAdapter {
 	private View getOptionsView(int position, final ContentItem item) {
 		final View view = inflater.inflate(R.layout.options_item, null);
 
-		final ImageView button = (ImageView) view.findViewById(R.id.item_checkbox);
-		if (itemView.isSelected(item.getId())) button.setImageResource(R.drawable.checked);
-		else button.setImageResource(R.drawable.box);
+		final ImageView iv = (ImageView) view.findViewById(R.id.item_checkbox);
+		if (itemView.isSelected(item.getId())) iv.setImageResource(R.drawable.checked);
+		else iv.setImageResource(R.drawable.box);
 		
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (edit)");
 
-		button.setOnClickListener(new OnClickListener() {
+		iv.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
@@ -101,11 +104,11 @@ public class ItemAdapter extends BaseAdapter {
 	private View getTaskView(int position, final TaskItem item) {
 		final View view = inflater.inflate(R.layout.task_item, null);
 
-		ImageView button = (ImageView) view.findViewById(R.id.item_checkbox);
+		ImageView iv = (ImageView) view.findViewById(R.id.item_checkbox);
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
 
-		button.setOnClickListener(new OnClickListener() {
+		iv.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
@@ -115,11 +118,11 @@ public class ItemAdapter extends BaseAdapter {
 		});
 
 		if (item.isCompleted()) {
-			button.setImageResource(R.drawable.checked);
+			iv.setImageResource(R.drawable.checked);
 			text.setTextColor(0xff888888);
 			text.setPaintFlags(text.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 		} else {
-			button.setImageResource(R.drawable.box);
+			iv.setImageResource(R.drawable.box);
 			text.setTextColor(0xff585858);
 			text.setPaintFlags(257);
 		}

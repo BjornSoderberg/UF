@@ -204,7 +204,7 @@ public class ItemView extends ContentView {
 		}
 	}
 
-	private void updateIcon(int id) {		
+	private void updateIcon(int id) {
 		if ((ImageView) getViewById(id).findViewById(R.id.item_checkbox) == null) return;
 
 		if (isSelected(id)) ((ImageView) getViewById(id).findViewById(R.id.item_checkbox)).setImageResource(R.drawable.checked);
@@ -271,8 +271,10 @@ public class ItemView extends ContentView {
 	}
 
 	private void toggleSelection() {
-		if (selectedItems.size() == 0) selectedItems.addAll(contentItems);
-		else selectedItems.clear();
+		if (selectedItems.size() != contentItems.size()) {
+			selectedItems.clear();
+			selectedItems.addAll(contentItems);
+		} else selectedItems.clear();
 
 		for (ContentItem i : contentItems)
 			updateIcon(i.getId());
@@ -288,8 +290,8 @@ public class ItemView extends ContentView {
 	}
 
 	public boolean isSelected(int id) {
-		for(ContentItem i : selectedItems)
-			if(i.getId() == id) return true;
+		for (ContentItem i : selectedItems)
+			if (i.getId() == id) return true;
 
 		return false;
 	}
@@ -330,5 +332,9 @@ public class ItemView extends ContentView {
 
 	public int getItemHeight() {
 		return itemHeight;
+	}
+
+	public DynamicListView getListView() {
+		return listView;
 	}
 }

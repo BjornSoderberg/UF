@@ -38,37 +38,38 @@ public final class R {
         public static final int plus=0x7f020004;
     }
     public static final class id {
-        public static final int addButton=0x7f07001a;
+        public static final int addButton=0x7f07001b;
         public static final int answer=0x7f07000c;
-        public static final int backButton=0x7f070017;
-        public static final int barBorder=0x7f07001c;
-        public static final int bigWrapper=0x7f070013;
-        public static final int bottomBar=0x7f07001e;
+        public static final int backButton=0x7f070018;
+        public static final int barBorder=0x7f07001d;
+        public static final int bigWrapper=0x7f070014;
+        public static final int bottomBar=0x7f07001f;
         public static final int button=0x7f07000a;
-        public static final int descET=0x7f07000f;
-        public static final int descTV=0x7f070011;
-        public static final int dragButton=0x7f070016;
+        public static final int descET=0x7f070010;
+        public static final int descTV=0x7f070012;
+        public static final int drag=0x7f07000e;
+        public static final int dragButton=0x7f070017;
         public static final int editText=0x7f070009;
         public static final int empty=0x7f070001;
         public static final int fly_custom=0x7f070007;
         public static final int fly_listview=0x7f070006;
         public static final int fly_menu_holder=0x7f070005;
         public static final int fly_searchview=0x7f070000;
-        public static final int focusDummy=0x7f070012;
+        public static final int focusDummy=0x7f070013;
         public static final int item_checkbox=0x7f07000d;
         public static final int item_text=0x7f070008;
-        public static final int l=0x7f070015;
-        public static final int line1=0x7f070018;
-        public static final int line2=0x7f070019;
+        public static final int l=0x7f070016;
+        public static final int line1=0x7f070019;
+        public static final int line2=0x7f07001a;
         public static final int listview=0x7f070002;
-        public static final int name=0x7f07001b;
+        public static final int name=0x7f07001c;
         public static final int rbm_item_icon=0x7f070003;
         public static final int rbm_item_text=0x7f070004;
-        public static final int saveButton=0x7f070010;
-        public static final int stats=0x7f07000e;
+        public static final int saveButton=0x7f070011;
+        public static final int stats=0x7f07000f;
         public static final int title=0x7f07000b;
-        public static final int topBar=0x7f070014;
-        public static final int wrapper=0x7f07001d;
+        public static final int topBar=0x7f070015;
+        public static final int wrapper=0x7f07001e;
     }
     public static final class layout {
         public static final int checklist_view=0x7f030000;

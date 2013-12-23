@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_height"
     android:background="#ffffff"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/item_padding_topbottom"
-    android:paddingLeft="@dimen/item_padding_leftright"
-    android:paddingRight="@dimen/item_padding_leftright"
-    android:paddingTop="@dimen/item_padding_topbottom" >
+    android:orientation="horizontal" >
 
     <ImageView
         android:id="@+id/item_checkbox"
-        android:src="@drawable/box"
         android:layout_width="@dimen/item_image_width"
         android:layout_height="@dimen/item_image_height"
-        android:scaleType="fitCenter" />
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/item_padding_leftright"
+        android:scaleType="fitCenter"
+        android:src="@drawable/box" />
 
     <TextView
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/drag"
+        android:layout_toRightOf="@+id/item_checkbox"
         android:ellipsize="end"
         android:paddingLeft="@dimen/item_text_padding_left"
         android:singleLine="true"
         android:text="No name"
         android:textColor="#585858"
-        android:textSize="@dimen/item_text_size" />
+        android:textSize="@dimen/item_text_size" />    
 
-</LinearLayout>
+</RelativeLayout>

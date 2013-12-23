@@ -269,7 +269,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-		Log.i("Updating data...", data.toString());
+//		Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
