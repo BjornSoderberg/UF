@@ -24,9 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -40,6 +38,8 @@ import android.widget.Toast;
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
+import com.todo.code3.animation.CollapseAnimation;
+import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
 import com.todo.code3.view.ContentView;
@@ -786,16 +786,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		options.getLayoutParams().height = 1;
 
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).enterOptionsMode();
-
-		Animation animation = new Animation() {
-			protected void applyTransformation(float time, Transformation t) {
-				if ((int) (time * barHeight) != 0) options.getLayoutParams().height = (int) (time * barHeight);
-				else options.getLayoutParams().height = 1;
-				options.requestLayout();
-			}
-		};
-		animation.setDuration(App.ANIMATION_DURATION);
-		options.startAnimation(animation);
+		
+		new ExpandAnimation(options,App.ANIMATION_DURATION, barHeight).animate();
 
 		options.clearOptionsItems();
 		options.addOptionsItem(App.OPTIONS_REMOVE);
@@ -812,16 +804,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		// Makes the hide animation only if the view is not already hidden
 		if (options.getVisibility() != View.GONE) {
-			Animation animation = new Animation() {
-				protected void applyTransformation(float time, Transformation t) {
-					if (barHeight - (int) (time * barHeight) != 0) options.getLayoutParams().height = barHeight - (int) (time * barHeight);
-					else options.getLayoutParams().height = 1;
-
-					options.requestLayout();
-				}
-			};
-			animation.setDuration(App.ANIMATION_DURATION);
-			options.startAnimation(animation);
+			new CollapseAnimation(options,App.ANIMATION_DURATION, barHeight).animate();
 
 			new Handler().postDelayed(new Runnable() {
 				public void run() {

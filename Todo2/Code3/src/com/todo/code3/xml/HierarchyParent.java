@@ -9,12 +9,13 @@ import android.content.Context;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.todo.code3.R;
+import com.todo.code3.animation.CollapseAnimation;
+import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.misc.App;
 
@@ -135,17 +136,7 @@ public class HierarchyParent extends ScrollView {
 	}
 
 	private void expandView(final View view) {
-		Animation animation = new Animation() {
-			protected void applyTransformation(float time, Transformation t) {
-				if ((int) (itemHeight * time) == 0) view.getLayoutParams().height = 1;
-				else view.getLayoutParams().height = (int) (itemHeight * time);
-
-				view.requestLayout();
-			}
-		};
-
-		animation.setDuration(App.ANIMATION_DURATION);
-		view.startAnimation(animation);
+		new ExpandAnimation(view, App.ANIMATION_DURATION, itemHeight).animate();
 	}
 
 	public void collapseItem(int id) {
@@ -173,17 +164,7 @@ public class HierarchyParent extends ScrollView {
 
 		};
 
-		Animation animation = new Animation() {
-			protected void applyTransformation(float time, Transformation t) {
-				view.getLayoutParams().height = itemHeight - (int) (itemHeight * time);
-
-				view.requestLayout();
-			}
-		};
-
-		animation.setAnimationListener(al);
-		animation.setDuration(App.ANIMATION_DURATION);
-		view.startAnimation(animation);
+		new CollapseAnimation(view, App.ANIMATION_DURATION, itemHeight, al).animate();
 	}
 
 	public void selectItem(int id) {

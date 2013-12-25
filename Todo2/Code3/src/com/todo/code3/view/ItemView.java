@@ -11,20 +11,17 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ItemAdapter;
+import com.todo.code3.animation.CollapseAnimation;
+import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
 import com.todo.code3.item.TaskItem;
@@ -135,46 +132,11 @@ public class ItemView extends ContentView {
 	}
 
 	public void expandView(final View view) {
-		if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
-		else view.setLayoutParams(new ListView.LayoutParams(LayoutParams.FILL_PARENT, 1));
-
-		Animation animation = new Animation() {
-			protected void applyTransformation(float time, Transformation t) {
-				if ((int) (itemHeight * time) != 0) view.getLayoutParams().height = (int) (itemHeight * time);
-				else view.getLayoutParams().height = 1;
-
-				view.requestLayout();
-			}
-		};
-
-		animation.setDuration(App.ANIMATION_DURATION);
-		view.startAnimation(animation);
+		new ExpandAnimation(view, App.ANIMATION_DURATION, itemHeight).animate();
 	}
 
 	public void collapseView(final View view) {
-		AnimationListener al = new AnimationListener() {
-			public void onAnimationEnd(Animation a) {
-				view.setVisibility(View.GONE);
-			}
-
-			public void onAnimationRepeat(Animation a) {
-			}
-
-			public void onAnimationStart(Animation a) {
-			}
-		};
-
-		Animation animation = new Animation() {
-			protected void applyTransformation(float time, Transformation t) {
-				view.getLayoutParams().height = itemHeight - (int) (itemHeight * time);
-
-				view.requestLayout();
-			}
-		};
-
-		animation.setAnimationListener(al);
-		animation.setDuration(App.ANIMATION_DURATION);
-		view.startAnimation(animation);
+		new CollapseAnimation(view, App.ANIMATION_DURATION, itemHeight).animate();
 	}
 
 	public void updateContentItemsOrder() {
