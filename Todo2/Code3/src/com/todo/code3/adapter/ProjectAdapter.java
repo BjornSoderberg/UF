@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.item.ContentItem;
+import com.todo.code3.item.FolderItem;
 import com.todo.code3.view.ProjectView;
-import com.todo.code3.xml.FolderItem;
-import com.todo.code3.xml.ContentItem;
 
 public class ProjectAdapter extends BaseAdapter {
 

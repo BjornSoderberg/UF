@@ -9,10 +9,10 @@ import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.item.ContentItem;
+import com.todo.code3.item.FolderItem;
+import com.todo.code3.item.TaskItem;
 import com.todo.code3.view.ChecklistView;
-import com.todo.code3.xml.FolderItem;
-import com.todo.code3.xml.ContentItem;
-import com.todo.code3.xml.TaskItem;
 
 public class ChecklistAdapter extends BaseAdapter {
 

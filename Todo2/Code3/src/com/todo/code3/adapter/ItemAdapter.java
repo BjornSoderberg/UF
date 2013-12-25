@@ -1,26 +1,23 @@
 package com.todo.code3.adapter;
 
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.item.ContentItem;
+import com.todo.code3.item.FolderItem;
+import com.todo.code3.item.TaskItem;
 import com.todo.code3.view.ItemView;
-import com.todo.code3.xml.ContentItem;
-import com.todo.code3.xml.FolderItem;
-import com.todo.code3.xml.TaskItem;
 
 public class ItemAdapter extends BaseAdapter {
 
@@ -83,14 +80,16 @@ public class ItemAdapter extends BaseAdapter {
 	private View getOptionsView(int position, final ContentItem item) {
 		final View view = inflater.inflate(R.layout.options_item, null);
 
-		final ImageView iv = (ImageView) view.findViewById(R.id.item_checkbox);
+		final FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
+		final ImageView iv = (ImageView) fl.findViewById(R.id.checkbox);
+
 		if (itemView.isSelected(item.getId())) iv.setImageResource(R.drawable.checked);
 		else iv.setImageResource(R.drawable.box);
-		
+
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (edit)");
 
-		iv.setOnClickListener(new OnClickListener() {
+		fl.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
@@ -104,11 +103,13 @@ public class ItemAdapter extends BaseAdapter {
 	private View getTaskView(int position, final TaskItem item) {
 		final View view = inflater.inflate(R.layout.task_item, null);
 
-		ImageView iv = (ImageView) view.findViewById(R.id.item_checkbox);
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
 
-		iv.setOnClickListener(new OnClickListener() {
+		final FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
+		final ImageView iv = (ImageView) view.findViewById(R.id.checkbox);
+		
+		fl.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 

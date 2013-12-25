@@ -20,9 +20,9 @@ import android.widget.TextView;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.TaskAdapter;
+import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
 import com.todo.code3.xml.DynamicListView;
-import com.todo.code3.xml.TaskItem;
 
 public class TaskView extends ContentView {
 

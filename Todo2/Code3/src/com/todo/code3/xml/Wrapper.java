@@ -2,11 +2,10 @@ package com.todo.code3.xml;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
@@ -89,7 +88,7 @@ public class Wrapper extends RelativeLayout {
 					else activity.getFlyInMenu().hideMenu();
 				}
 			} else {
-				Button b = activity.getDragButton();
+				FrameLayout b = activity.getDragButton();
 
 				if (dragStartLocation == MENU_OPEN) activity.getFlyInMenu().hideMenu();
 				else if (b.getLeft() < startX && startX < b.getRight() //
@@ -111,7 +110,7 @@ public class Wrapper extends RelativeLayout {
 			return true;
 		}
 
-		Button b = activity.getDragButton();
+		FrameLayout b = activity.getDragButton();
 		// if the back button is visible and the user touches
 		// the button, the menu should not open
 		if (e.getRawX() < b.getRight() && e.getRawY() - App.getStatusBarHeight(activity.getResources()) < b.getBottom()) {

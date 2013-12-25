@@ -27,9 +27,10 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Transformation;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Scroller;
@@ -57,7 +58,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private EditText inputInAddDialog;
 	private OptionsBar options;
 
-	private Button dragButton, backButton;
+	private FrameLayout dragButton, backButton;
 
 	private JSONObject data;
 
@@ -171,8 +172,8 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		nameTV = (TextView) findViewById(R.id.name);
 
-		dragButton = (Button) findViewById(R.id.dragButton);
-		backButton = (Button) findViewById(R.id.backButton);
+		dragButton = (FrameLayout) findViewById(R.id.dragButton);
+		backButton = (FrameLayout) findViewById(R.id.backButton);
 
 		options = (OptionsBar) findViewById(R.id.bottomBar);
 		options.setMainActivity(this);
@@ -252,11 +253,14 @@ public class MainActivity extends FlyInFragmentActivity {
 		int buttonSize = barHeight;
 		int borderHeight = height / 120;
 
-		Button[] buttons = { dragButton, backButton, (Button) findViewById(R.id.addButton) };
+		FrameLayout[] buttons = { dragButton, backButton, (FrameLayout) findViewById(R.id.addButton) };
 
 		for (int i = 0; i < buttons.length; i++) {
 			buttons[i].getLayoutParams().height = buttonSize;
 			buttons[i].getLayoutParams().width = buttonSize;
+
+			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().height = (int) (buttonSize * 0.8);
+			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().width = (int) (buttonSize * 0.8);
 		}
 
 		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = buttonSize;
@@ -269,7 +273,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-//		Log.i("Updating data...", data.toString());
+		 Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
@@ -392,6 +396,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		//
 		// if (true) return;
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setNegativeButton("Cancel", null);
+
 		final AlertDialog alert = builder.create();
 		alert.setTitle("Add new");
 		alert.setMessage("Select type");
@@ -534,6 +540,17 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (update) updateData();
 	}
 
+	public void move(int id, int parentId) {
+		move(id, parentId, true);
+	}
+
+	public void move(int id, int parentId, boolean update) {
+		data = App.move(id, parentId, data);
+		editor.put(App.DATA, data.toString());
+
+		if (update) updateData();
+	}
+
 	public void removeWithChildren(int id) {
 		removeWithChildrenLoop(id);
 
@@ -557,8 +574,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 		data = App.remove(id, data);
 		editor.put(App.DATA, data.toString());
-
-		updateData();
 	}
 
 	public void groupItemsInNewFolder(String newFolderName, int[] itemIds) {
@@ -786,6 +801,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		options.addOptionsItem(App.OPTIONS_REMOVE);
 		options.addOptionsItem(App.OPTIONS_GROUP_ITEMS);
 		options.addOptionsItem(App.OPTIONS_SELECT_ALL);
+		options.addOptionsItem(App.OPTIONS_MOVE);
 
 		updateData();
 	}
@@ -810,11 +826,13 @@ public class MainActivity extends FlyInFragmentActivity {
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
 					options.setVisibility(View.GONE);
+
+					// Waits for the hide animation to finish before
+					// updating the data (and the views)
+					updateData();
 				}
 			}, App.ANIMATION_DURATION);
-		}
-
-		updateData();
+		} else updateData();
 	}
 
 	public void updateChildrenOrder(String children, int parentId) {
@@ -832,7 +850,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		}
 
-		if (posInWrapper == 0) {
+		if (posInWrapper == 0 && !isMoving) {
 			if (getFlyInMenu().isMenuVisible()) getFlyInMenu().hideMenu();
 			else super.onBackPressed();
 		} else {
@@ -878,7 +896,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		return posInWrapper;
 	}
 
-	public Button getDragButton() {
+	public FrameLayout getDragButton() {
 		return dragButton;
 	}
 

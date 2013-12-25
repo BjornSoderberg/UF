@@ -1,4 +1,4 @@
-package com.todo.code3.xml;
+package com.todo.code3.item;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -11,6 +11,7 @@ public class ContentItem {
 	//protected CharSequence mCondText;
 	protected int id;
 	protected int parentId;
+	protected String type;
 	
 	protected long timestampCreated = -1;
 	protected boolean mEnabled = true;
@@ -37,6 +38,10 @@ public class ContentItem {
 	
 	public long getTimestampCreated() {
 		return timestampCreated;
+	}
+	
+	public String getType() {
+		return type;
 	}
 
 //	public CharSequence getTitleCondensed() {
@@ -89,6 +94,11 @@ public class ContentItem {
 
 	public ContentItem setTimestampCreated(int i) {
 		timestampCreated = i;
+		return this;
+	}
+	
+	public ContentItem setType(String type) {
+		this.type = type;
 		return this;
 	}
 }

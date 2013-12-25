@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -60,6 +61,7 @@ public class App {
 	public static final int OPTIONS_REMOVE = 0;
 	public static final int OPTIONS_GROUP_ITEMS = 1;
 	public static final int OPTIONS_SELECT_ALL = 2;
+	public static final int OPTIONS_MOVE = 3;
 
 	// converting dp to pixels and vice versa
 	public static int dpToPx(int dp, Resources r) {
@@ -136,6 +138,43 @@ public class App {
 
 		data.remove(id + "");
 
+		return data;
+	}
+	
+	public static JSONObject move(int id, int parentId, JSONObject data) {
+		try {
+			Log.i("moving " + id, "to" + parentId);
+			
+			if(!data.has(id + "")) return data;
+			
+			JSONObject object = new JSONObject(data.getString(id + ""));
+			
+			if(object.has(App.PARENT_ID)) {
+				JSONObject oldParent = new JSONObject(data.getString(object.getInt(App.PARENT_ID) + ""));
+				String children = removeFromChildrenString(oldParent, object.getInt(App.ID));
+				oldParent.put(App.CHILDREN_IDS, children);
+				data.put(oldParent.getInt(App.ID)+ "", oldParent.toString());
+			} else {
+				String children = removeFromChildrenString(data, object.getInt(App.ID));
+				data.put(App.CHILDREN_IDS, children);
+			}
+			
+			object.put(App.PARENT_ID, parentId);
+			data.put(object.getInt(App.ID) + "", object.toString());
+			
+			if(parentId != -1) {
+				JSONObject newParent = new JSONObject(data.getString(object.getInt(App.PARENT_ID) + ""));
+				String children = addToChildrenString(newParent, id);
+				newParent.put(App.CHILDREN_IDS, children);
+				data.put(newParent.getInt(App.ID)+ "", newParent.toString());
+			} else {
+				String children = addToChildrenString(data, id);
+				data.put(App.CHILDREN_IDS, children);
+			}
+		} catch(JSONException e) {
+			e.printStackTrace();
+		}
+		
 		return data;
 	}
 

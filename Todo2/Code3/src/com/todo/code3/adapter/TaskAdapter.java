@@ -13,9 +13,9 @@ import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
 import com.todo.code3.view.TaskView;
-import com.todo.code3.xml.TaskItem;
 
 public class TaskAdapter extends BaseAdapter {
 

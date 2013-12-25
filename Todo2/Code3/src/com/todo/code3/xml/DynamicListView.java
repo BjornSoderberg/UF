@@ -44,6 +44,7 @@ import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ItemAdapter;
+import com.todo.code3.item.ContentItem;
 import com.todo.code3.view.ItemView;
 
 /**

@@ -1,4 +1,4 @@
-package com.todo.code3.xml;
+package com.todo.code3.item;
 
 
 public class FolderItem extends ContentItem {

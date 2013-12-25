@@ -80,8 +80,7 @@ public class FlyInMenu extends LinearLayout {
 
 	private void load() {
 
-		if (isInEditMode())
-			return;
+		if (isInEditMode()) return;
 
 		inflateLayout();
 
@@ -91,8 +90,7 @@ public class FlyInMenu extends LinearLayout {
 
 	private void inflateLayout() {
 		try {
-			LayoutInflater.from(getContext()).inflate(R.layout.fly_menu, this,
-					true);
+			LayoutInflater.from(getContext()).inflate(R.layout.fly_menu, this, true);
 		} catch (Exception e) {
 
 		}
@@ -107,23 +105,19 @@ public class FlyInMenu extends LinearLayout {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 				boolean hide = true;
 				if (callback != null) {
-					hide = callback.onFlyInItemClick(menuItems.get(position),
-							position);
+					hide = callback.onFlyInItemClick(menuItems.get(position), position);
 				}
 
-				if (hide)
-					hideMenu();
+				if (hide) hideMenu();
 			}
 
 		});
 
-		flyInMenuItemHeight = (int) activity.getResources().getDimension(
-				R.dimen.item_height);
+		flyInMenuItemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
 		listView.setFlyInFragmentActivity(activity);
 	}
 
@@ -208,15 +202,13 @@ public class FlyInMenu extends LinearLayout {
 	 *            resource id of the menu to be inflated
 	 */
 	public void setMenuItems() {
-		if (menuItems == null || menuItems.size() <= 0)
-			menuItems = new ArrayList<FlyInMenuItem>();
+		if (menuItems == null || menuItems.size() <= 0) menuItems = new ArrayList<FlyInMenuItem>();
 
 		if (menuItems != null && menuItems.size() > 0) {
 			if (adapter == null) {
 				adapter = new Adapter();
 				listView.setAdapter(adapter);
-			} else
-				adapter.notifyDataSetChanged();
+			} else adapter.notifyDataSetChanged();
 
 			listView.setMenuItems(menuItems);
 		}
@@ -241,13 +233,10 @@ public class FlyInMenu extends LinearLayout {
 		v = decorView.getChildAt(0);
 		x = decorView.getChildAt(1);
 
-		Interpolator decel = AnimationUtils.loadInterpolator(getContext(),
-				android.R.anim.decelerate_interpolator);
+		Interpolator decel = AnimationUtils.loadInterpolator(getContext(), android.R.anim.decelerate_interpolator);
 
-		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX",
-				contentOffset - width, 0);
-		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX",
-				contentOffset, width);
+		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX", contentOffset - width, 0);
+		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX", contentOffset, width);
 
 		flyIn.setInterpolator(decel);
 		activity.setInterpolator(decel);
@@ -270,13 +259,10 @@ public class FlyInMenu extends LinearLayout {
 		v = decorView.getChildAt(0);
 		x = decorView.getChildAt(1);
 
-		Interpolator decel = AnimationUtils.loadInterpolator(getContext(),
-				android.R.anim.decelerate_interpolator);
+		Interpolator decel = AnimationUtils.loadInterpolator(getContext(), android.R.anim.decelerate_interpolator);
 
-		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX",
-				contentOffset - width, -width);
-		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX",
-				contentOffset, 0);
+		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX", contentOffset - width, -width);
+		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX", contentOffset, 0);
 
 		flyIn.setInterpolator(decel);
 		activity.setInterpolator(decel);
@@ -300,12 +286,9 @@ public class FlyInMenu extends LinearLayout {
 	}
 
 	public void moveMenu(int dx) {
-		if (contentOffset + dx < 0)
-			dx = 0 - contentOffset;
-		if (contentOffset + dx > width)
-			dx = width - contentOffset;
-		if (dx == 0)
-			return;
+		if (contentOffset + dx < 0) dx = 0 - contentOffset;
+		if (contentOffset + dx > width) dx = width - contentOffset;
+		if (dx == 0) return;
 
 		hideKeyboard();
 
@@ -320,10 +303,8 @@ public class FlyInMenu extends LinearLayout {
 		v = decorView.getChildAt(0);
 		x = decorView.getChildAt(1);
 
-		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX",
-				contentOffset - width, contentOffset - width + dx);
-		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX",
-				contentOffset, contentOffset + dx);
+		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX", contentOffset - width, contentOffset - width + dx);
+		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX", contentOffset, contentOffset + dx);
 		flyIn.setInterpolator(new LinearInterpolator());
 		activity.setInterpolator(new LinearInterpolator());
 
@@ -336,24 +317,19 @@ public class FlyInMenu extends LinearLayout {
 	}
 
 	private void hideKeyboard() {
-		((InputMethodManager) activity
-				.getSystemService(Context.INPUT_METHOD_SERVICE))
-				.hideSoftInputFromWindow(mMenuHolder.getWindowToken(), 0);
+		((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(mMenuHolder.getWindowToken(), 0);
 
 	}
 
 	private void expandView(final View view) {
-		if (view.getLayoutParams() != null)
-			view.getLayoutParams().height = 1;
+		if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
 
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				if (view.getLayoutParams() != null)
-					view.getLayoutParams().height = 1;
+				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
 
 				Animation animation = new Animation() {
-					protected void applyTransformation(float time,
-							Transformation t) {
+					protected void applyTransformation(float time, Transformation t) {
 						if ((int) (flyInMenuItemHeight * time) != 0) {
 							view.getLayoutParams().height = (int) (flyInMenuItemHeight * time);
 						} else {
@@ -415,10 +391,8 @@ public class FlyInMenu extends LinearLayout {
 		SavedState ss = (SavedState) state;
 		super.onRestoreInstanceState(ss.getSuperState());
 
-		if (ss.bShowMenu)
-			showMenu();
-		else
-			hideMenu();
+		if (ss.bShowMenu) showMenu();
+		else hideMenu();
 	}
 
 	@Override
@@ -480,8 +454,7 @@ public class FlyInMenu extends LinearLayout {
 
 		@Override
 		public long getItemId(int position) {
-			if (position < 0 || position >= menuItems.size())
-				return -1;
+			if (position < 0 || position >= menuItems.size()) return -1;
 
 			FlyInMenuItem item = getItem(position);
 			return item.getId();
@@ -492,10 +465,8 @@ public class FlyInMenu extends LinearLayout {
 			// if (convertView == null || convertView instanceof TextView)
 			convertView = inflater.inflate(R.layout.fly_item, null);
 
-			ImageView icon = (ImageView) convertView
-					.findViewById(R.id.rbm_item_icon);
-			TextView text = (TextView) convertView
-					.findViewById(R.id.rbm_item_text);
+			ImageView icon = (ImageView) convertView.findViewById(R.id.rbm_item_icon);
+			TextView text = (TextView) convertView.findViewById(R.id.rbm_item_text);
 			FlyInMenuItem item = menuItems.get(position);
 
 			text.setText(item.getTitle());
@@ -505,18 +476,15 @@ public class FlyInMenu extends LinearLayout {
 				invalidateExpandingItemId();
 				expandView(convertView);
 
-				if (convertView.getLayoutParams() != null)
-					convertView.getLayoutParams().height = 1;
-				else
-					convertView.setLayoutParams(new ListView.LayoutParams(
-							ListView.LayoutParams.MATCH_PARENT, 1));
+				if (convertView.getLayoutParams() != null) convertView.getLayoutParams().height = 1;
+				else convertView.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
 			}
 
 			if (item.getId() == movingItemId) {
 				convertView.setVisibility(View.INVISIBLE);
 				movingItemId = -1;
 			}
-			
+
 			convertView.setId(item.getId());
 
 			return convertView;

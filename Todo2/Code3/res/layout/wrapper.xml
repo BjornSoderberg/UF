@@ -21,20 +21,36 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal" >
 
-        <Button
+        <FrameLayout
             android:id="@+id/dragButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/menu"
-            android:onClick="toggleMenu" />
+            android:onClick="toggleMenu" >
 
-        <Button
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="@dimen/item_image_width"
+                android:layout_height="@dimen/item_image_height"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/menu" />
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/backButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="#5DC6E5"
             android:onClick="goBack"
-            android:visibility="gone" />
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@id/icon"
+                android:layout_width="@dimen/item_image_width"
+                android:layout_height="@dimen/item_image_height"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/plus" />
+        </FrameLayout>
     </LinearLayout>
 
     <!-- Border lines for buttons -->
@@ -58,15 +74,22 @@
         android:orientation="horizontal" />
     <!-- End of border lines for buttons -->
 
-    <Button
+    <FrameLayout
         android:id="@+id/addButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="@drawable/plus"
-        android:onClick="viewAddTaskDialog"
-        android:textColor="#ffffff" />
+        android:onClick="viewAddTaskDialog" >
+
+        <ImageView
+            android:id="@id/icon"
+            android:layout_width="@dimen/item_image_width"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/plus" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/name"

@@ -20,8 +20,8 @@ import android.widget.TextView;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ChecklistAdapter;
+import com.todo.code3.item.FolderItem;
 import com.todo.code3.misc.App;
-import com.todo.code3.xml.FolderItem;
 import com.todo.code3.xml.DynamicListView;
 
 public class ChecklistView extends ContentView {

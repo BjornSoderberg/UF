@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Handler;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.Transformation;
@@ -24,11 +25,12 @@ import android.widget.TextView;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ItemAdapter;
+import com.todo.code3.item.ContentItem;
+import com.todo.code3.item.FolderItem;
+import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
-import com.todo.code3.xml.ContentItem;
 import com.todo.code3.xml.DynamicListView;
-import com.todo.code3.xml.FolderItem;
-import com.todo.code3.xml.TaskItem;
+import com.todo.code3.xml.HierarchyParent;
 
 public class ItemView extends ContentView {
 
@@ -50,16 +52,15 @@ public class ItemView extends ContentView {
 	}
 
 	protected void init() {
-		View v = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_view, null);
+		LayoutInflater.from(activity).inflate(R.layout.item_view, this, true);
 
 		LayoutParams params = new LayoutParams(activity.getContentWidth(), activity.getContentHeight());
-		v.setLayoutParams(params);
-		addView(v);
+		setLayoutParams(params);
 
 		contentItems = new ArrayList<ContentItem>();
 		selectedItems = new ArrayList<ContentItem>();
 
-		listView = (DynamicListView) v.findViewById(R.id.listview);
+		listView = (DynamicListView) findViewById(R.id.listview);
 		listView.setItemView(this);
 
 		adapter = new ItemAdapter(activity, this);
@@ -105,6 +106,7 @@ public class ItemView extends ContentView {
 					TaskItem item = new TaskItem();
 					item.setTitle(object.getString(App.NAME));
 					item.setId(object.getInt(App.ID));
+					item.setType(App.TASK);
 					item.setParentId(parentId);
 					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_CREATED));
 					if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
@@ -117,6 +119,7 @@ public class ItemView extends ContentView {
 					item.setTitle(object.getString(App.NAME));
 					item.setParentId(parentId);
 					item.setId(object.getInt(App.ID));
+					item.setType(App.FOLDER);
 					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
 
 					contentItems.add(item);
@@ -205,19 +208,22 @@ public class ItemView extends ContentView {
 	}
 
 	private void updateIcon(int id) {
-		if ((ImageView) getViewById(id).findViewById(R.id.item_checkbox) == null) return;
+		if ((ImageView) getViewById(id).findViewById(R.id.checkbox) == null) return;
 
-		if (isSelected(id)) ((ImageView) getViewById(id).findViewById(R.id.item_checkbox)).setImageResource(R.drawable.checked);
-		else ((ImageView) getViewById(id).findViewById(R.id.item_checkbox)).setImageResource(R.drawable.box);
+		if (isSelected(id)) ((ImageView) getViewById(id).findViewById(R.id.checkbox)).setImageResource(R.drawable.checked);
+		else ((ImageView) getViewById(id).findViewById(R.id.checkbox)).setImageResource(R.drawable.box);
 	}
 
 	public void performActionOnSelectedItems(int id) {
 		if (id == App.OPTIONS_REMOVE) removeSelectedItems();
 		if (id == App.OPTIONS_GROUP_ITEMS) groupSelectedItems();
 		if (id == App.OPTIONS_SELECT_ALL) toggleSelection();
+		if (id == App.OPTIONS_MOVE) moveSelectedItems();
 	}
 
 	private void removeSelectedItems() {
+		if (selectedItems.size() == 0) return;
+
 		for (ContentItem i : selectedItems) {
 			View v = getViewById(i.getId());
 			if (v != null) collapseView(v);
@@ -237,7 +243,9 @@ public class ItemView extends ContentView {
 		}, App.ANIMATION_DURATION);
 	}
 
-	public void groupSelectedItems() {
+	private void groupSelectedItems() {
+		if (selectedItems.size() == 0) return;
+
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 		alert.setTitle("Name the new folder");
 
@@ -278,6 +286,56 @@ public class ItemView extends ContentView {
 
 		for (ContentItem i : contentItems)
 			updateIcon(i.getId());
+	}
+
+	private void moveSelectedItems() {
+		if (selectedItems.size() == 0) return;
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+		builder.setTitle("Select a folder to move to");
+
+		// The actions when pressing "move" are defined later
+		// (set onclick for BUTTON1)
+		builder.setPositiveButton("Move", null);
+		builder.setNegativeButton("Cancel", null);
+
+		final AlertDialog alert = builder.create();
+
+		final HierarchyParent p = new HierarchyParent(activity, activity.getData(), selectedItems) {
+			public void onItemSelected(int id, boolean selected) {
+				alert.getButton(Dialog.BUTTON1).setEnabled(selected);
+			}
+		};
+
+		p.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 1000));
+		alert.setView(p);
+
+		alert.show();
+		// This sets the position and prevents the alert dialog from
+		// "lagging" when its children are animated
+		alert.getWindow().setLayout(-1, activity.getContentHeight());
+
+		alert.getButton(Dialog.BUTTON1).setEnabled(false);
+		alert.getButton(Dialog.BUTTON1).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				alert.dismiss();
+
+				for (ContentItem i : selectedItems)
+					collapseView(getViewById(i.getId()));
+
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						for (ContentItem i : selectedItems) {
+							// Checks that the parent id is not the same
+							if (i.getParentId() != p.getSelectedItem()) activity.move(i.getId(), p.getSelectedItem());
+						}
+
+						selectedItems.clear();
+					}
+				}, App.ANIMATION_DURATION);
+			}
+		});
 	}
 
 	private View getViewById(int id) {

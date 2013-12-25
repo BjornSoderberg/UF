@@ -8,13 +8,14 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.todo.code3.misc.App;
 
 public class FolderHierarchyViewer extends LinearLayout {
-
+	
 	private JSONObject data;
 	private ArrayList<FolderHierarchyViewer> items;
 	private int id = -1;
@@ -44,15 +45,33 @@ public class FolderHierarchyViewer extends LinearLayout {
 		setOrientation(LinearLayout.VERTICAL);
 
 		try {
+			LinearLayout l = new LinearLayout(getContext());
+			l.setOrientation(LinearLayout.HORIZONTAL);
+
 			TextView t = new TextView(getContext());
 			String s = "";
 			for (int i = 0; i < level; i++)
 				s += "     ";
+
+			Button b = new Button(getContext());
+
 			if (data.has(id + "")) {
 				t.setText(s + new JSONObject(data.getString(id + "")).getString(App.NAME) + " is here");
-				t.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 50));
-				addView(t);
+				t.setLayoutParams(new LayoutParams(200, 50));
+				l.addView(t);
+
+				b.setText("+");
+				l.addView(b);
 			}
+
+			t.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					setBackgroundColor(0xffffff00);
+					onItemSelected(id);
+				}
+			});
+
+			addView(l);
 
 			String[] childrenIds;
 			if (id == -1) childrenIds = data.getString(App.CHILDREN_IDS).split(",");
@@ -72,6 +91,8 @@ public class FolderHierarchyViewer extends LinearLayout {
 				}
 			}
 
+			if (items.size() == 0) b.setVisibility(View.GONE);
+
 			for (FolderHierarchyViewer f : items) {
 				addView(f);
 			}
@@ -80,16 +101,16 @@ public class FolderHierarchyViewer extends LinearLayout {
 				for (FolderHierarchyViewer f : items) {
 					f.setVisibility(View.GONE);
 				}
-				
-				setOnClickListener(new OnClickListener() {
+
+				b.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
-						if(items.size() > 0) {
-							
+						if (items.size() > 0) {
+
 							int visibility = 0;
-							if(items.get(0).getVisibility() == View.VISIBLE) visibility = View.GONE;
+							if (items.get(0).getVisibility() == View.VISIBLE) visibility = View.GONE;
 							else visibility = View.VISIBLE;
-							
-							for(FolderHierarchyViewer f : items) {
+
+							for (FolderHierarchyViewer f : items) {
 								f.setVisibility(visibility);
 							}
 						}
@@ -99,5 +120,28 @@ public class FolderHierarchyViewer extends LinearLayout {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected void onItemSelected(int id) {
+		FolderHierarchyViewer v = this;
+
+		while (true) {
+			if (v.getParent() instanceof FolderHierarchyViewer) {
+				v = (FolderHierarchyViewer) v.getParent();
+				v.onItemUnselected();
+				
+				if(v.getChildCount() > 2) {
+					
+				}
+			} else break;
+		}
+		
+		while(true) {
+			break;
+		}
+	}
+
+	protected void onItemUnselected() {
+		setBackgroundColor(0x222222 * level + 0xff000000);
 	}
 }
