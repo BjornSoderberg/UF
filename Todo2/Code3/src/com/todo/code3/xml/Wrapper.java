@@ -2,16 +2,18 @@ package com.todo.code3.xml;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
+import com.todo.code3.gesture.SimpleGestureFilter;
+import com.todo.code3.gesture.SimpleGestureFilter.SimpleGestureListener;
 import com.todo.code3.misc.App;
 
-public class Wrapper extends RelativeLayout {
+public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 	private int x, y, startX, startY, lastX;
 
@@ -26,17 +28,23 @@ public class Wrapper extends RelativeLayout {
 	private boolean hasStarted = false;
 
 	private ViewConfiguration viewConfig;
-
 	private MainActivity activity;
+	private SimpleGestureFilter detector;
 
 	public Wrapper(Context context) {
 		super(context);
-		viewConfig = ViewConfiguration.get(context);
+		init();
 	}
 
 	public Wrapper(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		viewConfig = ViewConfiguration.get(context);
+		
+		init();
+	}
+	
+	private void init() {
+		viewConfig = ViewConfiguration.get(getContext());
+		detector = new SimpleGestureFilter(getContext(), this);
 	}
 
 	public boolean onTouchEvent(MotionEvent e) {
@@ -58,8 +66,8 @@ public class Wrapper extends RelativeLayout {
 			if (activity.getMenuWidth() < e.getRawX()) dragStartLocation = MENU_OPEN;
 
 		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-			if(!hasStarted) return true;
-			
+			if (!hasStarted) return true;
+
 			x = (int) e.getRawX();
 			y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
 
@@ -74,8 +82,8 @@ public class Wrapper extends RelativeLayout {
 				}
 			}
 		} else if (e.getAction() == MotionEvent.ACTION_UP) {
-			if(!hasStarted) return true;
-			
+			if (!hasStarted) return true;
+
 			if (isDragging) {
 				// delta time
 				double dt = (System.currentTimeMillis() - startTime) / 1000D;
@@ -127,5 +135,14 @@ public class Wrapper extends RelativeLayout {
 
 	public void setActivity(MainActivity a) {
 		activity = a;
+	}
+
+	public boolean dispatchTouchEvent(MotionEvent e) {
+		detector.onTouchEvent(e);
+		return super.dispatchTouchEvent(e);
+	}
+
+	public void onSwipe(int direction) {
+		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_RIGHT) activity.getFlyInMenu().showMenu();
 	}
 }

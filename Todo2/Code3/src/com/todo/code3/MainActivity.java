@@ -132,7 +132,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			boolean hasOpened = false;
 
-			String[] childrenIds = data.getString(App.CHILDREN_IDS).split(",");
+			String[] childrenIds;
+			if (data.has(App.CHILDREN_IDS)) childrenIds = data.getString(App.CHILDREN_IDS).split(",");
+			else childrenIds = new String[0];
+			
 			for (int i = 0; i < childrenIds.length; i++) {
 				if (data.has(childrenIds[i])) {
 					JSONObject o = new JSONObject(data.getString(childrenIds[i]));
@@ -273,7 +276,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void updateData() {
-		 Log.i("Updating data...", data.toString());
+		Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
@@ -786,8 +789,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		options.getLayoutParams().height = 1;
 
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).enterOptionsMode();
-		
-		new ExpandAnimation(options,App.ANIMATION_DURATION, barHeight).animate();
+
+		new ExpandAnimation(options, App.ANIMATION_DURATION, barHeight).animate();
 
 		options.clearOptionsItems();
 		options.addOptionsItem(App.OPTIONS_REMOVE);
@@ -804,7 +807,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		// Makes the hide animation only if the view is not already hidden
 		if (options.getVisibility() != View.GONE) {
-			new CollapseAnimation(options,App.ANIMATION_DURATION, barHeight).animate();
+			new CollapseAnimation(options, App.ANIMATION_DURATION, barHeight).animate();
 
 			new Handler().postDelayed(new Runnable() {
 				public void run() {

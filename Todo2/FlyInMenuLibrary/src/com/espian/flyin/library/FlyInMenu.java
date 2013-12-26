@@ -7,7 +7,9 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -25,12 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.Animator.AnimatorListener;
+import com.espian.flyin.library.SimpleGestureFilter.SimpleGestureListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
-public class FlyInMenu extends LinearLayout {
+public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 
 	public static final int FLY_IN_WITH_ACTIVITY = 0;
 	public static final int FLY_IN_OVER_ACTIVITY = 1;
@@ -42,17 +43,18 @@ public class FlyInMenu extends LinearLayout {
 	// private View mWrappedSearchView;
 	// private boolean hasSearchView = false;
 	private FlyInFragmentActivity activity;
-
 	private Adapter adapter;
+	private SimpleGestureFilter detector;
 
 	private final int EXPAND_ANIMATION_DURATION = 300;
 	private int flyInMenuItemHeight;
 	private int expandingItemId = -1;
-
 	private int contentOffset = 0;
 	private int width;
 	private int animationDuration = 300;
 	private int movingItemId = -1;
+	
+	private boolean isDragging = false;
 
 	private OnFlyInItemClickListener callback;
 
@@ -85,6 +87,8 @@ public class FlyInMenu extends LinearLayout {
 		inflateLayout();
 
 		initUi();
+		
+		detector = new SimpleGestureFilter(getContext(), this);
 
 	}
 
@@ -103,10 +107,7 @@ public class FlyInMenu extends LinearLayout {
 		mMenuHolder = (LinearLayout) findViewById(R.id.fly_menu_holder);
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
 				boolean hide = true;
 				if (callback != null) {
 					hide = callback.onFlyInItemClick(menuItems.get(position), position);
@@ -246,6 +247,8 @@ public class FlyInMenu extends LinearLayout {
 		showFlyIn.setDuration(animationDuration).start();
 
 		contentOffset = width;
+		
+		isDragging = false;
 	}
 
 	public void hideMenu() {
@@ -269,7 +272,6 @@ public class FlyInMenu extends LinearLayout {
 
 		AnimatorSet showFlyIn = new AnimatorSet();
 		showFlyIn.playTogether(flyIn, activity);
-		showFlyIn.addListener(new VisibilityHelper());
 		showFlyIn.setDuration(animationDuration).start();
 
 		// Hides the menu views when the animation has ended
@@ -279,6 +281,8 @@ public class FlyInMenu extends LinearLayout {
 				if (mCustomView != null) {
 					mCustomView.setVisibility(View.GONE);
 				}
+				
+				isDragging = false;
 			}
 		}, animationDuration);
 
@@ -291,6 +295,8 @@ public class FlyInMenu extends LinearLayout {
 		if (dx == 0) return;
 
 		hideKeyboard();
+		
+		isDragging = true;
 
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
@@ -310,7 +316,6 @@ public class FlyInMenu extends LinearLayout {
 
 		AnimatorSet showFlyIn = new AnimatorSet();
 		showFlyIn.playTogether(flyIn, activity);
-		showFlyIn.addListener(new VisibilityHelper());
 		showFlyIn.setDuration(0).start();
 
 		contentOffset += dx;
@@ -492,29 +497,14 @@ public class FlyInMenu extends LinearLayout {
 		}
 
 	}
+	
+	public boolean dispatchTouchEvent(MotionEvent e) {
+		detector.onTouchEvent(e);
+		return super.dispatchTouchEvent(e);
+	}
 
-	public class VisibilityHelper implements AnimatorListener {
-
-		@Override
-		public void onAnimationStart(Animator animation) {
-		}
-
-		@Override
-		public void onAnimationEnd(Animator animation) {
-			// mOutsideView.setVisibility(View.GONE);
-			// mMenuHolder.setVisibility(View.GONE);
-			// if (mCustomView != null) {
-			// mCustomView.setVisibility(View.GONE);
-			// }
-		}
-
-		@Override
-		public void onAnimationCancel(Animator animation) {
-		}
-
-		@Override
-		public void onAnimationRepeat(Animator animation) {
-		}
-
+	public void onSwipe(int direction) {
+		Log.i("" + isDragging, direction + "");
+		if(!isDragging) if(direction == SimpleGestureFilter.SWIPE_LEFT) hideMenu();
 	}
 }

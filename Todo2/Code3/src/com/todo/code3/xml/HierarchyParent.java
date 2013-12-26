@@ -88,7 +88,7 @@ public class HierarchyParent extends ScrollView {
 
 		if (!onlyContainsFolders()) {
 			moveToMenuButton.setEnabled(false);
-			moveToMenuButton.setText("You cannot move tasks and notes the the menu.");
+			moveToMenuButton.setText("You cannot move tasks and notes to the menu.");
 		}
 
 		contentHolder.addView(moveToMenuButton);
@@ -96,8 +96,31 @@ public class HierarchyParent extends ScrollView {
 		itemHeight = (int) getContext().getResources().getDimension(R.dimen.item_height);
 	}
 
+	// Same as the other function, but lists the items reversed.
+	// This one is used for the first items (menu items) and are therefore reversed
 	private void addChildren(String[] childrenIds) {
-		addChildren(childrenIds, 0);
+		int level = 0;
+
+		for (int i = childrenIds.length - 1; i >= 0; i--) {
+			String id = childrenIds[i];
+
+			if (!data.has(id)) continue;
+
+			try {
+				JSONObject object = new JSONObject(data.getString(id));
+				if (!object.getString(App.TYPE).equals(App.FOLDER)) continue;
+
+				HierarchyChild child = new HierarchyChild(getContext(), object, level, this);
+
+				// If the item is not selected, it is added
+				// (Folders cannot be moved into themselves)
+				if (!isSelected(object.getInt(App.ID))) children.add(child);
+
+				if (object.has(App.CHILDREN_IDS)) addChildren(object.getString(App.CHILDREN_IDS).split(","), level + 1);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void addChildren(String[] childrenIds, int level) {

@@ -10,6 +10,7 @@
         android:layout_width="@dimen/item_height"
         android:layout_height="@dimen/item_height"
         android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/item_padding_leftright"
         android:layout_centerVertical="true" >
 
         <ImageView
