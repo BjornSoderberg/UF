@@ -29,6 +29,7 @@ public class HierarchyParent extends ScrollView {
 	private ArrayList<ContentItem> selectedItems;
 
 	private Button moveToMenuButton;
+	private Button alertDialogButton;
 
 	private int selectedItem = -2;
 	private int itemHeight;
@@ -59,6 +60,7 @@ public class HierarchyParent extends ScrollView {
 			e.printStackTrace();
 		}
 
+		// only the menu items are visible
 		for (HierarchyChild i : children) {
 			contentHolder.addView(i);
 			if (i.getItemLevel() != 0) {
@@ -176,7 +178,6 @@ public class HierarchyParent extends ScrollView {
 		AnimationListener al = new AnimationListener() {
 			public void onAnimationEnd(Animation animation) {
 				view.setVisibility(View.GONE);
-				view.getLayoutParams().height = itemHeight;
 			}
 
 			public void onAnimationRepeat(Animation animation) {
@@ -234,6 +235,10 @@ public class HierarchyParent extends ScrollView {
 
 	public int getSelectedItem() {
 		return selectedItem;
+	}
+	
+	public void setAlertDialogButton(Button b) {
+		alertDialogButton = b;
 	}
 
 	public void onItemSelected(int selectedId, boolean selected) {

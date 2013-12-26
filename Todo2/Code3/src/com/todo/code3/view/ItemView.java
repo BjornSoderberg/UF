@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,12 +18,13 @@ import com.todo.code3.R;
 import com.todo.code3.adapter.ItemAdapter;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
+import com.todo.code3.dialog.FolderSelectionDialog;
+import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
 import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
 import com.todo.code3.xml.DynamicListView;
-import com.todo.code3.xml.HierarchyParent;
 
 public class ItemView extends ContentView {
 
@@ -208,14 +205,12 @@ public class ItemView extends ContentView {
 	private void groupSelectedItems() {
 		if (selectedItems.size() == 0) return;
 
-		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-		alert.setTitle("Name the new folder");
+		TextLineDialog d = new TextLineDialog(activity, "Name the new folder", null, true, "Add", "Cancel") {
+			protected void onResult(Object result, boolean positive) {
+				final String name;
+				if (result instanceof Object) name = (String) result;
+				else name = "";
 
-		final EditText et = new EditText(activity);
-		alert.setView(et);
-		alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				final String name = et.getText().toString();
 				final int[] selectedItemIds = new int[selectedItems.size()];
 
 				for (int i = 0; i < selectedItems.size(); i++) {
@@ -232,11 +227,9 @@ public class ItemView extends ContentView {
 					}
 				}, App.ANIMATION_DURATION);
 			}
-		});
+		};
 
-		alert.setNegativeButton("Cancel", null);
-
-		alert.show();
+		d.show();
 
 	}
 
@@ -253,35 +246,13 @@ public class ItemView extends ContentView {
 	private void moveSelectedItems() {
 		if (selectedItems.size() == 0) return;
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		FolderSelectionDialog d = new FolderSelectionDialog(activity, "Select a folder to move to", null, false, selectedItems, activity.getData(), "Move", "Cancel") {
+			protected void onResult(Object result, boolean positive) {
+				getAlertDialog().dismiss();
 
-		builder.setTitle("Select a folder to move to");
-
-		// The actions when pressing "move" are defined later
-		// (set onclick for BUTTON1)
-		builder.setPositiveButton("Move", null);
-		builder.setNegativeButton("Cancel", null);
-
-		final AlertDialog alert = builder.create();
-
-		final HierarchyParent p = new HierarchyParent(activity, activity.getData(), selectedItems) {
-			public void onItemSelected(int id, boolean selected) {
-				alert.getButton(Dialog.BUTTON1).setEnabled(selected);
-			}
-		};
-
-		p.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 1000));
-		alert.setView(p);
-
-		alert.show();
-		// This sets the position and prevents the alert dialog from
-		// "lagging" when its children are animated
-		alert.getWindow().setLayout(-1, activity.getContentHeight());
-
-		alert.getButton(Dialog.BUTTON1).setEnabled(false);
-		alert.getButton(Dialog.BUTTON1).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				alert.dismiss();
+				final Integer id;
+				if (result instanceof Integer) id = (Integer) result;
+				else return;
 
 				for (ContentItem i : selectedItems)
 					collapseView(getViewById(i.getId()));
@@ -290,14 +261,16 @@ public class ItemView extends ContentView {
 					public void run() {
 						for (ContentItem i : selectedItems) {
 							// Checks that the parent id is not the same
-							if (i.getParentId() != p.getSelectedItem()) activity.move(i.getId(), p.getSelectedItem());
+							if (i.getParentId() != id) activity.move(i.getId(), id);
 						}
 
 						selectedItems.clear();
 					}
 				}, App.ANIMATION_DURATION);
 			}
-		});
+		};
+
+		d.show();
 	}
 
 	private View getViewById(int id) {

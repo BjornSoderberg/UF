@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -41,6 +40,9 @@ import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
+import com.todo.code3.dialog.AddItemDialog;
+import com.todo.code3.dialog.Dialog;
+import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
 import com.todo.code3.view.ContentView;
@@ -85,6 +87,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	private long scrollFps = 1000 / 60;
 
 	private int width, height, menuWidth, barHeight;
+
+	private Dialog dialogBoxForOnActivityResult;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -137,7 +141,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			String[] childrenIds;
 			if (data.has(App.CHILDREN_IDS)) childrenIds = data.getString(App.CHILDREN_IDS).split(",");
 			else childrenIds = new String[0];
-			
+
 			for (int i = 0; i < childrenIds.length; i++) {
 				if (data.has(childrenIds[i])) {
 					JSONObject o = new JSONObject(data.getString(childrenIds[i]));
@@ -184,43 +188,43 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		options = (OptionsBar) findViewById(R.id.bottomBar);
 		options.setMainActivity(this);
-		
+
 		saveButton = (Button) findViewById(R.id.saveButton);
-		
+
 		saveButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				nameTV.setVisibility(View.VISIBLE);
 				nameET.setVisibility(View.GONE);
 				saveButton.setVisibility(View.GONE);
-				
+
 				focusDummy.requestFocus();
-				
+
 				setNewName(nameET.getText().toString(), openObjectId);
 				nameTV.setText(nameET.getText().toString());
 			}
 		});
-		
+
 		nameTV.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				nameTV.setVisibility(View.GONE);
 				nameET.setVisibility(View.VISIBLE);
 				saveButton.setVisibility(View.VISIBLE);
-				
+
 				nameET.setText(nameTV.getText());
 				nameET.requestFocus();
 			}
 		});
-		
+
 		nameET.setOnFocusChangeListener(new OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus) {
-				if(hasFocus) App.showKeyboard(MainActivity.this);
+				if (hasFocus) App.showKeyboard(MainActivity.this);
 				else App.hideKeyboard(MainActivity.this, focusDummy);
 			}
 		});
-		
+
 		focusDummy.setOnFocusChangeListener(new OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus) {
-				if(hasFocus) App.hideKeyboard(MainActivity.this, focusDummy);
+				if (hasFocus) App.hideKeyboard(MainActivity.this, focusDummy);
 			}
 		});
 
@@ -239,54 +243,15 @@ public class MainActivity extends FlyInFragmentActivity {
 		addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.rbm_item_text_color));
 		addFolderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-				alert.setTitle("Add new folder");
+				TextLineDialog b = new TextLineDialog(MainActivity.this, "Add new folder", null, true, "Add", "Cancel") {
+					protected void onResult(Object result, boolean positive) {
+						super.onResult(result, positive);
 
-				// Set the views in the alert dialog
-				LinearLayout l = new LinearLayout(MainActivity.this);
-				Button button = new Button(MainActivity.this);
-				button.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-				inputInAddDialog = new EditText(MainActivity.this);
-
-				// Checks if voice recognition is present
-				PackageManager pm = getPackageManager();
-				List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-
-				if (activities.size() != 0 && App.isNetworkAvailable(MainActivity.this)) {
-					button.setText("Press me to speak");
-					button.setOnClickListener(new OnClickListener() {
-						public void onClick(View v) {
-							try {
-								Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-								i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-								i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Add a new folder.");
-
-								startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
-							} catch (Exception e) {
-								Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recongizer.", Toast.LENGTH_LONG).show();
-							}
-						}
-					});
-
-					l.addView(button);
-				}
-
-				l.setOrientation(LinearLayout.VERTICAL);
-				l.addView(inputInAddDialog);
-
-				alert.setView(l);
-				alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						String name = inputInAddDialog.getText().toString();
-						addMenuItem(name, App.FOLDER);
-
-						inputInAddDialog = null;
+						if (positive && result instanceof String) addMenuItem((String) result, App.FOLDER);
 					}
-				});
+				};
 
-				alert.setNegativeButton("Cancel", null);
-
-				alert.show();
+				b.show();
 			}
 		});
 
@@ -441,107 +406,15 @@ public class MainActivity extends FlyInFragmentActivity {
 		// ti.startAnimation(animation);
 		//
 		// if (true) return;
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setNegativeButton("Cancel", null);
-
-		final AlertDialog alert = builder.create();
-		alert.setTitle("Add new");
-		alert.setMessage("Select type");
-
-		LinearLayout l = new LinearLayout(this);
-
-		Button task = new Button(this);
-		task.setText("Task");
-		task.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				askForName(App.TASK);
-				alert.cancel();
+		
+		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
+			public void onResult(String name, String type, boolean positive) {
+				super.onResult(name, type, positive);
+					add(name, type);
 			}
-		});
-		Button folder = new Button(this);
-		folder.setText("Folder");
-		folder.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				askForName(App.FOLDER);
-				alert.cancel();
-			}
-		});
-		Button note = new Button(this);
-		note.setText("Note");
-		note.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				askForName(App.NOTE);
-				alert.cancel();
-			}
-		});
-
-		l.addView(task);
-		l.addView(folder);
-		l.addView(note);
-
-		alert.setView(l);
-
-		alert.show();
-	}
-
-	private void askForName(final String type) {
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-		if (type.equals(App.TASK)) {
-			builder.setTitle("Add new task");
-			builder.setMessage("What do you have to do?");
-		}
-		if (type.equals(App.FOLDER)) {
-			builder.setTitle("Add new folder");
-			builder.setMessage("Name your folder!");
-		}
-		if (type.equals(App.NOTE)) {
-			builder.setTitle("Add new note");
-			builder.setMessage("What's on your mind?");
-		}
-
-		LinearLayout l = new LinearLayout(this);
-		Button button = new Button(this);
-		if (button.getLayoutParams() != null) button.getLayoutParams().width = LayoutParams.FILL_PARENT;
-		inputInAddDialog = new EditText(this);
-
-		// Checks if voice recognition is present
-		PackageManager pm = getPackageManager();
-		List activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-		if (activities.size() != 0 && App.isNetworkAvailable(this)) {
-			button.setText("Press me to speak");
-			button.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					try {
-						Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-						i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-						i.putExtra(RecognizerIntent.EXTRA_PROMPT, "What do you have to do?");
-
-						startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
-					} catch (Exception e) {
-						Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recognizer.", Toast.LENGTH_LONG).show();
-					}
-				}
-			});
-			l.addView(button);
-		}
-
-		l.setOrientation(LinearLayout.VERTICAL);
-		l.addView(inputInAddDialog);
-
-		builder.setView(l);
-		builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				String name = inputInAddDialog.getText().toString();
-				add(name, type);
-
-				inputInAddDialog = null;
-			}
-		});
-
-		builder.setNegativeButton("Cancel", null);
-
-		builder.show();
+		};
+		
+		i.show();
 	}
 
 	private void add(String name, String type) {
@@ -674,7 +547,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
-	
+
 	public void setNewName(String name, int id) {
 		data = App.setProperty(App.NAME, name, id, data);
 		editor.put(App.DATA, data.toString());
@@ -903,10 +776,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == App.VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
-			ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-			inputInAddDialog.setText(App.capitalizeFirstWordInSentences(results.get(0)));
-		}
+		if (dialogBoxForOnActivityResult != null) dialogBoxForOnActivityResult.onActivityResult(requestCode, resultCode, data);
 
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -937,6 +807,20 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public ContentView getOpenContentView() {
 		return contentViews.get(posInWrapper);
+	}
+
+	public void startVoiceRecognition(Dialog b, String message) {
+		dialogBoxForOnActivityResult = b;
+
+		try {
+			Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+			i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+			if (message != null) i.putExtra(RecognizerIntent.EXTRA_PROMPT, message);
+
+			startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
+		} catch (Exception e) {
+			Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recongizer.", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	public void updateContentItemsOrder() {

@@ -109,11 +109,13 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/barBorder"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_toLeftOf="@+id/saveButton"
+        android:layout_toRightOf="@+id/l"
         android:ems="10"
         android:gravity="center"
         android:singleLine="true"
         android:visibility="gone" >
+
     </EditText>
 
     <Button
