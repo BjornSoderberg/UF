@@ -205,8 +205,9 @@ public class ItemView extends ContentView {
 	private void groupSelectedItems() {
 		if (selectedItems.size() == 0) return;
 
-		TextLineDialog d = new TextLineDialog(activity, "Name the new folder", null, true, "Add", "Cancel") {
-			protected void onResult(Object result, boolean positive) {
+		TextLineDialog d = new TextLineDialog(activity, "Group items in new folder", "Name the new folder", true, "Add", "Cancel") {
+			protected void onResult(Object result) {
+				
 				final String name;
 				if (result instanceof Object) name = (String) result;
 				else name = "";
@@ -246,8 +247,8 @@ public class ItemView extends ContentView {
 	private void moveSelectedItems() {
 		if (selectedItems.size() == 0) return;
 
-		FolderSelectionDialog d = new FolderSelectionDialog(activity, "Select a folder to move to", null, false, selectedItems, activity.getData(), "Move", "Cancel") {
-			protected void onResult(Object result, boolean positive) {
+		FolderSelectionDialog d = new FolderSelectionDialog(activity, "Move selected items", "Select a folder to move to", false, selectedItems, activity.getData(), "Move", "Cancel") {
+			protected void onResult(Object result) {
 				getAlertDialog().dismiss();
 
 				final Integer id;

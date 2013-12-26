@@ -89,18 +89,18 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 				double dt = (System.currentTimeMillis() - startTime) / 1000D;
 
 				if (Math.abs(x - startX) / dt > viewConfig.getScaledMinimumFlingVelocity() * 4) {
-					if (dragStartLocation == MENU_OPEN) activity.getFlyInMenu().hideMenu();
-					else activity.getFlyInMenu().showMenu();
+					if (dragStartLocation == MENU_OPEN) activity.hideMenu();
+					else activity.showMenu();
 				} else {
-					if (activity.getFlyInMenu().getContentOffset() > activity.getContentWidth() / 2) activity.getFlyInMenu().showMenu();
-					else activity.getFlyInMenu().hideMenu();
+					if (activity.getFlyInMenu().getContentOffset() > activity.getContentWidth() / 2) activity.showMenu();
+					else activity.hideMenu();
 				}
 			} else {
 				FrameLayout b = activity.getDragButton();
 
-				if (dragStartLocation == MENU_OPEN) activity.getFlyInMenu().hideMenu();
+				if (dragStartLocation == MENU_OPEN) activity.hideMenu();
 				else if (b.getLeft() < startX && startX < b.getRight() //
-						&& b.getTop() < startY && startY < b.getBottom()) activity.getFlyInMenu().toggleMenu();
+						&& b.getTop() < startY && startY < b.getBottom()) activity.toggleMenu();
 
 			}
 
@@ -143,6 +143,6 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public void onSwipe(int direction) {
-		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_RIGHT) activity.getFlyInMenu().showMenu();
+		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_RIGHT) activity.showMenu();
 	}
 }

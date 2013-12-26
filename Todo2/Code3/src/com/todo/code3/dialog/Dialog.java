@@ -91,7 +91,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 	private void setPositiveButton() {
 		setPositiveButton(posButtonString, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				onResult(getResult(), true);
+				onResult(getResult());
 			}
 		});
 	}
@@ -99,11 +99,14 @@ public abstract class Dialog extends AlertDialog.Builder {
 	private void setNegativeButton() {
 		setNegativeButton(negButtonString, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				onResult(getResult(), false);
+				onCancel();
 			}
 		});
 	}
 
-	protected void onResult(Object result, boolean positive) {
+	protected void onResult(Object result) {
+	}
+	
+	protected void onCancel() {
 	}
 }

@@ -90,43 +90,48 @@
             android:scaleType="fitCenter"
             android:src="@drawable/plus" />
     </FrameLayout>
+    
+    <!-- Title  -->
 
-    <TextView
-        android:id="@+id/name"
+    <RelativeLayout
+        android:id="@+id/nameTouchArea"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/barBorder"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="Folder"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffff" />
+        android:layout_alignLeft="@+id/line1"
+        android:layout_alignRight="@+id/line2" >
 
-    <EditText
-        android:id="@+id/nameET"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/barBorder"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/saveButton"
-        android:layout_toRightOf="@+id/l"
-        android:ems="10"
-        android:gravity="center"
-        android:singleLine="true"
-        android:visibility="gone" >
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#ffffff" />
 
-    </EditText>
+        <EditText
+            android:id="@+id/nameET"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/saveButton"
+            android:ems="10"
+            android:gravity="center"
+            android:singleLine="true"
+            android:visibility="gone" >
+        </EditText>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/barBorder"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/line2"
-        android:text="Save"
-        android:visibility="gone" />
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:text="Save"
+            android:visibility="gone" />
+    </RelativeLayout>
+    
+    
+    <!-- End of title -->
 
     <LinearLayout
         android:id="@+id/barBorder"

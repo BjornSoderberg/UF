@@ -69,11 +69,11 @@ public class AddItemDialog extends Dialog {
 
 	public void askForName(final String type) {
 		TextLineDialog d = new TextLineDialog(activity, "Add new " + type, null, true, "Add", "Cancel") {
-			protected void onResult(Object result, boolean positive) {
-				super.onResult(result, positive);
+			protected void onResult(Object result) {
+				super.onResult(result);
 
-				if (result instanceof String) AddItemDialog.this.onResult((String) result, type, positive);
-				else AddItemDialog.this.onResult("", type, positive);
+				if (result instanceof String) AddItemDialog.this.onResult((String) result, type);
+				else AddItemDialog.this.onResult("", type);
 			}
 		};
 		
@@ -83,7 +83,7 @@ public class AddItemDialog extends Dialog {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	}
 
-	public void onResult(String name, String type, boolean positive) {
+	public void onResult(String name, String type) {
 
 	}
 

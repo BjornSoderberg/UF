@@ -2,17 +2,13 @@ package com.todo.code3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -31,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +55,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private LinearLayout wrapper;
 	private TextView nameTV;
-	private EditText inputInAddDialog, focusDummy, nameET;
+	private EditText focusDummy, nameET;
 	private OptionsBar options;
 	private Button saveButton;
 
@@ -193,25 +190,15 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		saveButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				nameTV.setVisibility(View.VISIBLE);
-				nameET.setVisibility(View.GONE);
-				saveButton.setVisibility(View.GONE);
-
-				focusDummy.requestFocus();
-
-				setNewName(nameET.getText().toString(), openObjectId);
-				nameTV.setText(nameET.getText().toString());
+				endEditTitle(true);
 			}
 		});
 
-		nameTV.setOnClickListener(new OnClickListener() {
+		
+		// This is the view that encapsulates the title
+		((RelativeLayout) findViewById(R.id.nameTouchArea)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				nameTV.setVisibility(View.GONE);
-				nameET.setVisibility(View.VISIBLE);
-				saveButton.setVisibility(View.VISIBLE);
-
-				nameET.setText(nameTV.getText());
-				nameET.requestFocus();
+				startEditTitle();
 			}
 		});
 
@@ -244,10 +231,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		addFolderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				TextLineDialog b = new TextLineDialog(MainActivity.this, "Add new folder", null, true, "Add", "Cancel") {
-					protected void onResult(Object result, boolean positive) {
-						super.onResult(result, positive);
+					protected void onResult(Object result) {
+						super.onResult(result);
 
-						if (positive && result instanceof String) addMenuItem((String) result, App.FOLDER);
+						if (result instanceof String) addMenuItem((String) result, App.FOLDER);
 					}
 				};
 
@@ -360,8 +347,19 @@ public class MainActivity extends FlyInFragmentActivity {
 		return true;
 	}
 
-	public void toggleMenu(View v) {
+	public void toggleMenu() {
 		if (!isMoving) getFlyInMenu().toggleMenu();
+	}
+
+	public void showMenu() {
+		if (!isMoving) getFlyInMenu().showMenu();
+
+		hideOptions();
+		if (isEditingTitle()) endEditTitle(false);
+	}
+
+	public void hideMenu() {
+		if (!isMoving) getFlyInMenu().hideMenu();
 	}
 
 	public void viewAddTaskDialog(View v) {
@@ -406,14 +404,14 @@ public class MainActivity extends FlyInFragmentActivity {
 		// ti.startAnimation(animation);
 		//
 		// if (true) return;
-		
+
 		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
-			public void onResult(String name, String type, boolean positive) {
-				super.onResult(name, type, positive);
-					add(name, type);
+			public void onResult(String name, String type) {
+				super.onResult(name, type);
+				add(name, type);
 			}
 		};
-		
+
 		i.show();
 	}
 
@@ -579,7 +577,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void open(int id) {
 		if (isMoving) return;
+
 		hideOptions();
+		if (isEditingTitle()) endEditTitle(false);
 
 		try {
 			openObjectId = id;
@@ -613,7 +613,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void goBack() {
 		if (isMoving) return;
+
 		hideOptions();
+		if (isEditingTitle()) endEditTitle(false);
 
 		// hides the keyboard if it is open
 		App.hideKeyboard(this, new Button(this));
@@ -701,12 +703,40 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
+	private void startEditTitle() {
+		nameTV.setVisibility(View.GONE);
+		nameET.setVisibility(View.VISIBLE);
+		saveButton.setVisibility(View.VISIBLE);
+
+		nameET.setText(nameTV.getText());
+		nameET.requestFocus();
+	}
+
+	private void endEditTitle(boolean save) {
+		nameTV.setVisibility(View.VISIBLE);
+		nameET.setVisibility(View.GONE);
+		saveButton.setVisibility(View.GONE);
+
+		focusDummy.requestFocus();
+
+		if (save) {
+			setNewName(nameET.getText().toString(), openObjectId);
+			nameTV.setText(nameET.getText().toString());
+		}
+	}
+
+	private boolean isEditingTitle() {
+		return nameET.getVisibility() == View.VISIBLE;
+	}
+
 	public void toggleOptions() {
 		if (options.getVisibility() == View.GONE) showOptions();
 		else hideOptions();
 	}
 
 	public void showOptions() {
+		if (isEditingTitle()) endEditTitle(false);
+
 		options.setVisibility(View.VISIBLE);
 		options.getLayoutParams().height = 1;
 
@@ -751,6 +781,18 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void onBackPressed() {
+		if (isMoving) return;
+
+		if (getFlyInMenu().isMenuVisible()) {
+			hideMenu();
+			return;
+		}
+
+		if (isEditingTitle()) {
+			endEditTitle(true);
+			return;
+		}
+
 		if (contentViews.get(posInWrapper) instanceof ItemView) {
 			if (((ItemView) contentViews.get(posInWrapper)).isInOptionsMode()) {
 				hideOptions();
@@ -758,12 +800,12 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		}
 
-		if (posInWrapper == 0 && !isMoving) {
-			if (getFlyInMenu().isMenuVisible()) getFlyInMenu().hideMenu();
-			else super.onBackPressed();
-		} else {
+		if (posInWrapper != 0) {
 			goBack();
+			return;
 		}
+		
+		super.onBackPressed();
 	}
 
 	protected class AnimationRunnable implements Runnable {
