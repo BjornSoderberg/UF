@@ -15,7 +15,7 @@ public class SimpleGestureFilter extends SimpleOnGestureListener {
 	
 	private static final int MIN_SWIPE_DISTANCE = 16;
 	private static final int MAX_SWIPE_DISTANCE = 1000;
-	private static final int MIN_FLING_VELOCITY = 1000;
+	private static final int MIN_FLING_VELOCITY = 700;
 
 	private Context context;
 	private GestureDetector detector;
@@ -34,8 +34,6 @@ public class SimpleGestureFilter extends SimpleOnGestureListener {
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float vx, float vy) {
 		float dx = Math.abs(e1.getX() - e2.getX());
 		float dy = Math.abs(e1.getY() - e2.getY());
-		
-		Log.i(vx + "", vy + "");
 
 		if (dx > MAX_SWIPE_DISTANCE || dy > MAX_SWIPE_DISTANCE) return false;
 		

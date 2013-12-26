@@ -43,7 +43,7 @@ public final class R {
         public static final int backButton=0x7f07001b;
         public static final int barBorder=0x7f070020;
         public static final int bigWrapper=0x7f070016;
-        public static final int bottomBar=0x7f070022;
+        public static final int bottomBar=0x7f070023;
         public static final int button=0x7f07000a;
         public static final int checkbox=0x7f070010;
         public static final int descET=0x7f070012;
@@ -66,13 +66,14 @@ public final class R {
         public static final int line2=0x7f07001d;
         public static final int listview=0x7f070002;
         public static final int name=0x7f07001f;
+        public static final int nameET=0x7f070021;
         public static final int rbm_item_icon=0x7f070003;
         public static final int rbm_item_text=0x7f070004;
         public static final int saveButton=0x7f070013;
         public static final int stats=0x7f070011;
         public static final int title=0x7f07000b;
         public static final int topBar=0x7f070017;
-        public static final int wrapper=0x7f070021;
+        public static final int wrapper=0x7f070022;
     }
     public static final class layout {
         public static final int checklist_view=0x7f030000;

@@ -23,6 +23,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -55,8 +56,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private LinearLayout wrapper;
 	private TextView nameTV;
-	private EditText inputInAddDialog;
+	private EditText inputInAddDialog, focusDummy, nameET;
 	private OptionsBar options;
+	private Button saveButton;
 
 	private FrameLayout dragButton, backButton;
 
@@ -174,12 +176,53 @@ public class MainActivity extends FlyInFragmentActivity {
 		wrapper = (LinearLayout) findViewById(R.id.wrapper);
 
 		nameTV = (TextView) findViewById(R.id.name);
+		nameET = (EditText) findViewById(R.id.nameET);
+		focusDummy = (EditText) findViewById(R.id.focusDummy);
 
 		dragButton = (FrameLayout) findViewById(R.id.dragButton);
 		backButton = (FrameLayout) findViewById(R.id.backButton);
 
 		options = (OptionsBar) findViewById(R.id.bottomBar);
 		options.setMainActivity(this);
+		
+		saveButton = (Button) findViewById(R.id.saveButton);
+		
+		saveButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				nameTV.setVisibility(View.VISIBLE);
+				nameET.setVisibility(View.GONE);
+				saveButton.setVisibility(View.GONE);
+				
+				focusDummy.requestFocus();
+				
+				setNewName(nameET.getText().toString(), openObjectId);
+				nameTV.setText(nameET.getText().toString());
+			}
+		});
+		
+		nameTV.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				nameTV.setVisibility(View.GONE);
+				nameET.setVisibility(View.VISIBLE);
+				saveButton.setVisibility(View.VISIBLE);
+				
+				nameET.setText(nameTV.getText());
+				nameET.requestFocus();
+			}
+		});
+		
+		nameET.setOnFocusChangeListener(new OnFocusChangeListener() {
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(hasFocus) App.showKeyboard(MainActivity.this);
+				else App.hideKeyboard(MainActivity.this, focusDummy);
+			}
+		});
+		
+		focusDummy.setOnFocusChangeListener(new OnFocusChangeListener() {
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(hasFocus) App.hideKeyboard(MainActivity.this, focusDummy);
+			}
+		});
 
 		initAddButtons();
 	}
@@ -628,6 +671,12 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void setTaskDescription(String desc, int id) {
 		data = App.setProperty(App.DESCRIPTION, desc, id, data);
+		editor.put(App.DATA, data.toString());
+		updateData();
+	}
+	
+	public void setNewName(String name, int id) {
+		data = App.setProperty(App.NAME, name, id, data);
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
