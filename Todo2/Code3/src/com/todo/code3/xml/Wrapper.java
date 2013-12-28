@@ -38,10 +38,10 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 	public Wrapper(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
+
 		init();
 	}
-	
+
 	private void init() {
 		viewConfig = ViewConfiguration.get(getContext());
 		detector = new SimpleGestureFilter(getContext(), this);
@@ -143,6 +143,11 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public void onSwipe(int direction) {
-		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_RIGHT) activity.showMenu();
+		if (!isDragging) {
+			if (direction == SimpleGestureFilter.SWIPE_RIGHT) {
+				if(activity.getPosInWrapper() == 0) activity.showMenu();
+				else activity.goBack();
+			}
+		}
 	}
 }

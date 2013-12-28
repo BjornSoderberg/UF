@@ -144,6 +144,8 @@ public class DynamicListView extends ListView {
 	};
 
 	public void startDragging() {
+		if (isDragging()) return;
+
 		mTotalOffset = 0;
 
 		int position = pointToPosition(mDownX, mDownY);
@@ -312,7 +314,7 @@ public class DynamicListView extends ListView {
 			break;
 		case MotionEvent.ACTION_CANCEL:
 			touchEventsEnded();
-//			touchEventsCancelled();
+			// touchEventsCancelled();
 			break;
 		case MotionEvent.ACTION_POINTER_UP:
 			/*
@@ -426,16 +428,18 @@ public class DynamicListView extends ListView {
 				return;
 			}
 
-			mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mobileView.getTop());
+			if (mobileView != null) {
+				mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left, mobileView.getTop());
 
-			ObjectAnimator a = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
-			a.addUpdateListener(new AnimatorUpdateListener() {
-				public void onAnimationUpdate(ValueAnimator v) {
-					invalidate();
-				}
-			});
-			a.setDuration(MOVE_DURATION);
-			a.start();
+				ObjectAnimator a = ObjectAnimator.ofObject(mHoverCell, "bounds", sBoundEvaluator, mHoverCellCurrentBounds);
+				a.addUpdateListener(new AnimatorUpdateListener() {
+					public void onAnimationUpdate(ValueAnimator v) {
+						invalidate();
+					}
+				});
+				a.setDuration(MOVE_DURATION);
+				a.start();
+			}
 
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
@@ -443,7 +447,7 @@ public class DynamicListView extends ListView {
 					mAboveItemId = INVALID_ID;
 					mMobileItemId = INVALID_ID;
 					mBelowItemId = INVALID_ID;
-					mobileView.setVisibility(VISIBLE);
+					if(mobileView != null) mobileView.setVisibility(VISIBLE);
 					mHoverCell = null;
 					setEnabled(true);
 					invalidate();

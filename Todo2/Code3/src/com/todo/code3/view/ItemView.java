@@ -8,14 +8,18 @@ import org.json.JSONObject;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ItemAdapter;
+import com.todo.code3.animation.ChangeSizeAnimation;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.dialog.FolderSelectionDialog;
@@ -167,6 +171,7 @@ public class ItemView extends ContentView {
 	}
 
 	private void updateIcon(int id) {
+		if (getViewById(id) == null) return;
 		if ((ImageView) getViewById(id).findViewById(R.id.checkbox) == null) return;
 
 		if (isSelected(id)) ((ImageView) getViewById(id).findViewById(R.id.checkbox)).setImageResource(R.drawable.checked);
@@ -207,7 +212,7 @@ public class ItemView extends ContentView {
 
 		TextLineDialog d = new TextLineDialog(activity, "Group items in new folder", "Name the new folder", true, "Add", "Cancel") {
 			protected void onResult(Object result) {
-				
+
 				final String name;
 				if (result instanceof Object) name = (String) result;
 				else name = "";
@@ -294,10 +299,17 @@ public class ItemView extends ContentView {
 		optionsMode = true;
 		// Clears the selected items every time the options mode is entered
 		selectedItems.clear();
+
+		// Makes the list view smaller (no animation is needed)
+		// Earlier, the content at the bottom was hidden by the options bar
+		listView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, activity.getContentHeight() - activity.getBarHeight()));
+		listView.requestLayout();
 	}
 
 	public void exitOptionsMode() {
 		optionsMode = false;
+
+		new ChangeSizeAnimation(listView, App.ANIMATION_DURATION, activity.getContentHeight() - activity.getBarHeight(), activity.getBarHeight()).animate();
 	}
 
 	public boolean isInOptionsMode() {

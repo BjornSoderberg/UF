@@ -3,7 +3,7 @@ package com.todo.code3.item;
 public class TaskItem extends ContentItem {
 
 	protected boolean isChecklistChild;
-	protected boolean isCompleted;
+	protected boolean isCompleted = false;
 	protected long timestampChecked = -1;
 	
 	public boolean isChecklistChild() {

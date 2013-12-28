@@ -1,7 +1,5 @@
 package com.todo.code3.animation;
 
-import java.security.PublicKey;
-
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
