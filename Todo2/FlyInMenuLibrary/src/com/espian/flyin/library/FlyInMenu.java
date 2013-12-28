@@ -293,8 +293,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		if (contentOffset + dx < 0) dx = 0 - contentOffset;
 		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
-
-		hideKeyboard();
 		
 		isDragging = true;
 
@@ -319,11 +317,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		showFlyIn.setDuration(0).start();
 
 		contentOffset += dx;
-	}
-
-	private void hideKeyboard() {
-		((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(mMenuHolder.getWindowToken(), 0);
-
 	}
 
 	private void expandView(final View view) {

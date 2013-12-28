@@ -1,7 +1,6 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,12 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
+import com.todo.code3.animation.ChangeSizeAnimation;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.dialog.AddItemDialog;
@@ -58,18 +60,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	private EditText focusDummy, nameET;
 	private OptionsBar options;
 	private Button saveButton;
-
 	private FrameLayout dragButton, backButton;
 
 	private JSONObject data;
-
-	// the first folder should always be the inbox folder
-	// this folder is selected in getDataFromSharedPreferences();
-	// this may later be alterable
-	// private int currentFolder = -1;
-	// private int currentChecklist = -1;
-	// private int currentTask = -1;
-	// private String folderContentType;
+	
 	private int openObjectId = -1;
 
 	public ArrayList<ContentView> contentViews;
@@ -83,14 +77,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	private int posInWrapper = 0;
 	private long scrollFps = 1000 / 60;
 
-	private int width, height, menuWidth, barHeight;
+	private int width, height, barHeight;
 
 	private Dialog dialogBoxForOnActivityResult;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// this makes the app go fullscreen
-		// this solved the issue about the wrapper being to big
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 		// WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -103,7 +96,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		width = dm.widthPixels;
 		height = dm.heightPixels - App.getStatusBarHeight(getResources());
-		menuWidth = (int) (width * 0.8);
 
 		setContentView(R.layout.wrapper);
 
@@ -151,8 +143,10 @@ public class MainActivity extends FlyInFragmentActivity {
 				}
 			}
 
+			// Opens the folder at the top of the menu
+			// The order is reversed since the order of the menu is reversed
 			if (!hasOpened) {
-				for (int i = 0; i < childrenIds.length; i++) {
+				for (int i = childrenIds.length - 1; i >= 0; i--) {
 					if (data.has(childrenIds[i])) {
 						JSONObject o = new JSONObject(data.getString(childrenIds[i]));
 						if (/* o.getString(App.TYPE).equals(App.PROJECT) || */o.getString(App.TYPE).equals(App.FOLDER)) {
@@ -194,7 +188,6 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		
 		// This is the view that encapsulates the title
 		((RelativeLayout) findViewById(R.id.nameTouchArea)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -215,10 +208,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		initAddButtons();
+		initAddButton();
 	}
 
-	private void initAddButtons() {
+	private void initAddButton() {
 		// Makes the custom view
 		LinearLayout customView = new LinearLayout(this);
 		customView.setOrientation(LinearLayout.VERTICAL);
@@ -356,6 +349,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
+		App.hideKeyboard(this, focusDummy);
 	}
 
 	public void hideMenu() {
@@ -517,8 +511,6 @@ public class MainActivity extends FlyInFragmentActivity {
 				}
 			}
 
-			Log.i(Arrays.toString(itemIds), newChildrenString);
-
 			newChildrenString = newChildrenString.substring(0, newChildrenString.length() - 1);
 			data = App.setProperty(App.CHILDREN_IDS, newChildrenString, newFolder.getInt(App.ID), data);
 
@@ -555,6 +547,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void openMenuItem(int id) {
 		if (isMoving) return;
 		hideOptions();
+		App.hideKeyboard(this, focusDummy);
 
 		try {
 			if (openObjectId == id) return;
@@ -580,6 +573,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
+		App.hideKeyboard(this, focusDummy);
 
 		try {
 			openObjectId = id;
@@ -616,9 +610,8 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
-
-		// hides the keyboard if it is open
-		App.hideKeyboard(this, new Button(this));
+		App.hideKeyboard(this, focusDummy);
+		
 
 		try {
 			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
@@ -756,7 +749,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void hideOptions() {
 		if (0 <= posInWrapper && posInWrapper < contentViews.size()) //
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).exitOptionsMode();
-
+		
 		// Makes the hide animation only if the view is not already hidden
 		if (options.getVisibility() != View.GONE) {
 			new CollapseAnimation(options, App.ANIMATION_DURATION, barHeight).animate();
@@ -828,7 +821,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public int getMenuWidth() {
-		return menuWidth;
+		if(width * 0.8 > App.dpToPx(300, getResources()) && App.dpToPx(300, getResources()) < width) return App.dpToPx(300, getResources());
+		else return (int) (width*0.8);
 	}
 
 	public boolean isMoving() {
@@ -849,6 +843,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public ContentView getOpenContentView() {
 		return contentViews.get(posInWrapper);
+	}
+	
+	public int getBarHeight() {
+		return barHeight;
 	}
 
 	public void startVoiceRecognition(Dialog b, String message) {
