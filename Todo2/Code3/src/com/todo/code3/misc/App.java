@@ -18,27 +18,16 @@ public class App {
 
 	public static final String DATA = "data";
 	public static final String NAME = "name";
+	
 	public static final String ID = "id";
 	public static final String PARENT_ID = "parentId";
 	public static final String CHILDREN_IDS = "childrenIds";
-
-	// public static final String NUM_CHILDREN = "numChildren";
-	// public static final String NUM_TASKS = "numTasks";
-	// public static final String NUM_CHECKLISTS = "numChecklists";
-	// public static final String NUM_FOLDERS = "numFolders";
 	public static final String NUM_IDS = "numIds";
 
-	// public static final String REMOVABLE = "removable";
 	public static final String REMOVED = "removed";
 	public static final String COMPLETED = "completed";
-
-	public static final boolean CHECKED = true;
-	public static final boolean UNCHECKED = false;
-
 	public static final String TYPE = "type";
 
-	// public static final String FOLDER = "folder";
-	// public static final String PROJECT = "project";
 	public static final String FOLDER = "folder";
 	public static final String TASK = "task";
 	public static final String NOTE = "note";
@@ -51,10 +40,10 @@ public class App {
 	public static final String TIMESTAMP_LAST_UPDATED = "timestampLastUpdated";
 
 	public static final String DESCRIPTION = "description";
+	public static final String PRIORITIZED = "prioritized";
+	
 	public static final int BEZEL_AREA_DP = 16;
-
 	public static final int ANIMATION_DURATION = 300;
-
 	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1337;
 
 	// Ids for the options menu

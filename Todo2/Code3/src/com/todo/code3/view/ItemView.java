@@ -106,6 +106,10 @@ public class ItemView extends ContentView {
 					item.setId(object.getInt(App.ID));
 					item.setType(App.TASK);
 					item.setParentId(parentId);
+					
+					if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+					else item.isPrioritized(false);
+
 					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_CREATED));
 					if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
 					if (object.has(App.COMPLETED) && object.getBoolean(App.COMPLETED)) item.completed(true);
@@ -119,6 +123,9 @@ public class ItemView extends ContentView {
 					item.setId(object.getInt(App.ID));
 					item.setType(App.FOLDER);
 					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
+					
+					if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+					else item.isPrioritized(false);
 
 					contentItems.add(item);
 				}
@@ -302,8 +309,12 @@ public class ItemView extends ContentView {
 
 		// Makes the list view smaller (no animation is needed)
 		// Earlier, the content at the bottom was hidden by the options bar
-		listView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, activity.getContentHeight() - activity.getBarHeight()));
-		listView.requestLayout();
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				listView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, activity.getContentHeight() - activity.getBarHeight()));
+				listView.requestLayout();
+			}
+		}, App.ANIMATION_DURATION);
 	}
 
 	public void exitOptionsMode() {

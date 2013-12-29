@@ -486,6 +486,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		data = App.remove(id, data);
 		editor.put(App.DATA, data.toString());
 	}
+	
+	public void prioritize(int id, boolean prioritized) {
+		data = App.setProperty(App.PRIORITIZED, prioritized, id, data);
+		editor.put(App.DATA, data.toString());
+		
+		updateData();
+	}
 
 	public void groupItemsInNewFolder(String newFolderName, int[] itemIds) {
 		add(newFolderName, App.FOLDER);

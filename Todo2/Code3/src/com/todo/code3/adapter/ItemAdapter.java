@@ -1,9 +1,11 @@
 package com.todo.code3.adapter;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
@@ -12,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
@@ -23,14 +24,12 @@ public class ItemAdapter extends BaseAdapter {
 
 	private LayoutInflater inflater;
 	private ItemView itemView;
-	private MainActivity activity;
 
 	private int movingId = -1;
 
-	public ItemAdapter(MainActivity a, ItemView c) {
-		inflater = LayoutInflater.from(a);
-		activity = a;
-		itemView = c;
+	public ItemAdapter(Context c, ItemView i) {
+		inflater = LayoutInflater.from(c);
+		itemView = i;
 	}
 
 	public int getCount() {
@@ -78,16 +77,28 @@ public class ItemAdapter extends BaseAdapter {
 	}
 
 	private View getOptionsView(int position, final ContentItem item) {
-		final View view = inflater.inflate(R.layout.options_item, null);
+		View view = inflater.inflate(R.layout.options_item, null);
 
-		final FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
-		final ImageView iv = (ImageView) fl.findViewById(R.id.checkbox);
+		FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
+		ImageView iv = (ImageView) fl.findViewById(R.id.checkbox);
 
 		if (itemView.isSelected(item.getId())) iv.setImageResource(R.drawable.checked);
 		else iv.setImageResource(R.drawable.box);
 
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (edit)");
+
+		// All touches that are not consumed are interpreted as actions for
+		// dragging the item. There is an area to the right of this view which
+		// is "empty". By holding there, the user can drag and reorder the
+		// items. This on long click listener both consumes the touch event and
+		// toggles the options
+		text.setOnLongClickListener(new OnLongClickListener() {
+			public boolean onLongClick(View v) {
+				itemView.getActivity().toggleOptions();
+				return true;
+			}
+		});
 
 		fl.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -101,20 +112,38 @@ public class ItemAdapter extends BaseAdapter {
 	}
 
 	private View getTaskView(int position, final TaskItem item) {
-		final View view = inflater.inflate(R.layout.task_item, null);
+		View view = inflater.inflate(R.layout.task_item, null);
 
+		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
-
-		final FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
-		final ImageView iv = (ImageView) view.findViewById(R.id.checkbox);
 		
+		// Is prio
+		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
+		ImageView i = (ImageView) view.findViewById(R.id.icon);
+		
+		prio.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if(itemView.getActivity().isMoving()) return;
+				
+				boolean shouldPrio = !item.isPrioritized();
+				itemView.getActivity().prioritize(item.getId(), shouldPrio);
+			}
+		});
+		
+		if(item.isPrioritized()) i.setImageResource(R.drawable.checked);
+		else i.setImageResource(R.drawable.box);
+
+		// Checkbox and image
+		FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
+		ImageView iv = (ImageView) view.findViewById(R.id.checkbox);
+
 		fl.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
 				boolean shouldCheck = !item.isCompleted();
-				activity.checkTask(item.getId(), item.getParentId(), shouldCheck);
+				itemView.getActivity().checkTask(item.getId(), item.getParentId(), shouldCheck);
 			}
 		});
 
@@ -131,9 +160,26 @@ public class ItemAdapter extends BaseAdapter {
 		return view;
 	}
 
-	private View getFolderView(int position, FolderItem item) {
+	private View getFolderView(int position, final FolderItem item) {
 		View view = inflater.inflate(R.layout.folder_item, null);
-
+		
+		// Init prio
+		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
+		ImageView i = (ImageView) view.findViewById(R.id.icon);
+		
+		prio.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if(itemView.getActivity().isMoving()) return;
+				
+				boolean shouldPrio = !item.isPrioritized();
+				itemView.getActivity().prioritize(item.getId(), shouldPrio);
+			}
+		});
+		
+		if(item.isPrioritized()) i.setImageResource(R.drawable.checked);
+		else i.setImageResource(R.drawable.box);
+		
+		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
 

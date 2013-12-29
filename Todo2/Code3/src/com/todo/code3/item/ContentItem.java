@@ -8,11 +8,12 @@ public class ContentItem {
 	protected Intent mIntent;
 	protected int mIconId;
 	protected CharSequence title;
-	//protected CharSequence mCondText;
+	// protected CharSequence mCondText;
 	protected int id;
 	protected int parentId;
 	protected String type;
-	
+	protected boolean prioritized = false;
+
 	protected long timestampCreated = -1;
 	protected boolean mEnabled = true;
 
@@ -31,22 +32,22 @@ public class ContentItem {
 	public CharSequence getTitle() {
 		return title;
 	}
-	
+
 	public int getParentId() {
 		return parentId;
 	}
-	
+
 	public long getTimestampCreated() {
 		return timestampCreated;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
 
-//	public CharSequence getTitleCondensed() {
-//		return mCondText;
-//	}
+	public boolean isPrioritized() {
+		return prioritized;
+	}
 
 	public boolean isEnabled() {
 		return mEnabled;
@@ -77,16 +78,16 @@ public class ContentItem {
 		return this;
 	}
 
-//	public ContentItem setTitleCondensed(CharSequence title) {
-//		mCondText = title;
-//		return this;
-//	}
+	public ContentItem isPrioritized(boolean b) {
+		prioritized = b;
+		return this;
+	}
 
 	public ContentItem setId(int id) {
 		this.id = id;
 		return this;
 	}
-	
+
 	public ContentItem setParentId(int i) {
 		parentId = i;
 		return this;
@@ -96,7 +97,7 @@ public class ContentItem {
 		timestampCreated = i;
 		return this;
 	}
-	
+
 	public ContentItem setType(String type) {
 		this.type = type;
 		return this;
