@@ -53,7 +53,7 @@ public class App {
 	public static final int OPTIONS_MOVE = 3;
 
 	// converting dp to pixels and vice versa
-	public static int dpToPx(int dp, Resources r) {
+	public static int dpToPx(float dp, Resources r) {
 		DisplayMetrics displayMetrics = r.getDisplayMetrics();
 		int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
 		return px;

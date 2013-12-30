@@ -19,6 +19,9 @@ public final class R {
         public static final int divider_color=0x7f050002;
         public static final int rbm_item_text_color=0x7f050001;
         public static final int rbm_menu_background=0x7f050000;
+        public static final int selected_light_gray=0x7f050003;
+        public static final int selected_semi_transparent=0x7f050004;
+        public static final int transparent=0x7f050005;
     }
     public static final class dimen {
         public static final int divider_height=0x7f060007;
@@ -29,6 +32,8 @@ public final class R {
         public static final int item_padding_topbottom=0x7f060000;
         public static final int item_text_padding_left=0x7f060005;
         public static final int item_text_size=0x7f060004;
+        public static final int text_large=0x7f060009;
+        public static final int text_normal=0x7f060008;
     }
     public static final class drawable {
         public static final int box=0x7f020000;
@@ -36,43 +41,44 @@ public final class R {
         public static final int ic_launcher=0x7f020002;
         public static final int menu=0x7f020003;
         public static final int plus=0x7f020004;
+        public static final int transparent_item_selector=0x7f020005;
+        public static final int white_item_selector=0x7f020006;
     }
     public static final class id {
-        public static final int addButton=0x7f07001c;
-        public static final int backButton=0x7f070019;
-        public static final int barBorder=0x7f07001e;
-        public static final int bigWrapper=0x7f070015;
-        public static final int bottomBar=0x7f070022;
-        public static final int checkbox=0x7f07000e;
-        public static final int descET=0x7f070011;
-        public static final int descTV=0x7f070013;
-        public static final int drag=0x7f070010;
-        public static final int dragButton=0x7f070018;
-        public static final int empty=0x7f07000c;
-        public static final int expand=0x7f07000a;
-        public static final int expandIcon=0x7f07000b;
-        public static final int fly_custom=0x7f070005;
-        public static final int fly_listview=0x7f070004;
-        public static final int fly_menu_holder=0x7f070003;
+        public static final int addButton=0x7f07001b;
+        public static final int backButton=0x7f070018;
+        public static final int barBorder=0x7f07001d;
+        public static final int bigWrapper=0x7f070014;
+        public static final int bottomBar=0x7f070021;
+        public static final int checkbox=0x7f07000d;
+        public static final int descET=0x7f070010;
+        public static final int descTV=0x7f070012;
+        public static final int drag=0x7f07000f;
+        public static final int dragButton=0x7f070017;
+        public static final int empty=0x7f07000b;
+        public static final int expand=0x7f070009;
+        public static final int expandIcon=0x7f07000a;
+        public static final int fly_custom=0x7f070004;
+        public static final int fly_listview=0x7f070003;
+        public static final int fly_menu_holder=0x7f070002;
         public static final int fly_searchview=0x7f070000;
-        public static final int focusDummy=0x7f070014;
-        public static final int icon=0x7f070008;
-        public static final int item_checkbox=0x7f070009;
-        public static final int item_drag=0x7f07000f;
-        public static final int item_prio=0x7f070007;
-        public static final int item_text=0x7f070006;
-        public static final int l=0x7f070017;
-        public static final int line1=0x7f07001a;
-        public static final int line2=0x7f07001b;
-        public static final int listview=0x7f07000d;
-        public static final int name=0x7f07001f;
-        public static final int nameET=0x7f070020;
-        public static final int nameTouchArea=0x7f07001d;
-        public static final int rbm_item_icon=0x7f070001;
-        public static final int rbm_item_text=0x7f070002;
-        public static final int saveButton=0x7f070012;
-        public static final int topBar=0x7f070016;
-        public static final int wrapper=0x7f070021;
+        public static final int focusDummy=0x7f070013;
+        public static final int icon=0x7f070007;
+        public static final int item_checkbox=0x7f070008;
+        public static final int item_drag=0x7f07000e;
+        public static final int item_prio=0x7f070006;
+        public static final int item_text=0x7f070005;
+        public static final int l=0x7f070016;
+        public static final int line1=0x7f070019;
+        public static final int line2=0x7f07001a;
+        public static final int listview=0x7f07000c;
+        public static final int name=0x7f07001e;
+        public static final int nameET=0x7f07001f;
+        public static final int nameTouchArea=0x7f07001c;
+        public static final int rbm_item_text=0x7f070001;
+        public static final int saveButton=0x7f070011;
+        public static final int topBar=0x7f070015;
+        public static final int wrapper=0x7f070020;
     }
     public static final class layout {
         public static final int fly_item=0x7f030000;
@@ -87,5 +93,11 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f080000;
+    }
+    public static final class style {
+        public static final int MyTheme=0x7f090001;
+        public static final int NextAppStyle=0x7f090000;
+        public static final int editText=0x7f090003;
+        public static final int textView=0x7f090002;
     }
 }

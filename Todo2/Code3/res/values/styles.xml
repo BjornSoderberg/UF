@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="NextAppStyle" parent="@android:style/Theme.Black.NoTitleBar"></style>
+
+    <style name="MyTheme" parent="android:Theme">
+        <item name="android:editTextStyle">@style/editText</item>
+        <item name="android:textViewStyle">@style/textView</item>
+    </style>
+
+    <style name="textView" parent="android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/text_normal</item>
+    </style>
+
+    <style name="editText" parent="android:style/Widget.EditText">
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+</resources>

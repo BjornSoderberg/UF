@@ -56,6 +56,9 @@ public class ItemAdapter extends BaseAdapter {
 		else if (item instanceof TaskItem) view = getTaskView(position, (TaskItem) item);
 		else if (item instanceof FolderItem) view = getFolderView(position, (FolderItem) item);
 		if (view == null) return null;
+		
+		// Sets the background (which is dependent on its state (pressed, focused etc.))
+		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
 
 		// Assures that all the views have the same height
 		if (view.getLayoutParams() != null) view.getLayoutParams().height = itemView.getItemHeight();
@@ -117,21 +120,21 @@ public class ItemAdapter extends BaseAdapter {
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
-		
+
 		// Is prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
 		ImageView i = (ImageView) view.findViewById(R.id.icon);
 		
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if(itemView.getActivity().isMoving()) return;
-				
+				if (itemView.getActivity().isMoving()) return;
+
 				boolean shouldPrio = !item.isPrioritized();
 				itemView.getActivity().prioritize(item.getId(), shouldPrio);
 			}
 		});
-		
-		if(item.isPrioritized()) i.setImageResource(R.drawable.checked);
+
+		if (item.isPrioritized()) i.setImageResource(R.drawable.checked);
 		else i.setImageResource(R.drawable.box);
 
 		// Checkbox and image
@@ -162,23 +165,23 @@ public class ItemAdapter extends BaseAdapter {
 
 	private View getFolderView(int position, final FolderItem item) {
 		View view = inflater.inflate(R.layout.folder_item, null);
-		
+
 		// Init prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
 		ImageView i = (ImageView) view.findViewById(R.id.icon);
-		
+
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if(itemView.getActivity().isMoving()) return;
-				
+				if (itemView.getActivity().isMoving()) return;
+
 				boolean shouldPrio = !item.isPrioritized();
 				itemView.getActivity().prioritize(item.getId(), shouldPrio);
 			}
 		});
-		
-		if(item.isPrioritized()) i.setImageResource(R.drawable.checked);
+
+		if (item.isPrioritized()) i.setImageResource(R.drawable.checked);
 		else i.setImageResource(R.drawable.box);
-		
+
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());

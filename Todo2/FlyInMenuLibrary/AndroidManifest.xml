@@ -6,7 +6,6 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18"
-        android:theme="@android:style/Theme.Black.NoTitleBar" />
+        android:targetSdkVersion="18" />
 
 </manifest>

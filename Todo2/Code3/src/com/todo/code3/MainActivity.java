@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
@@ -63,7 +64,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private FrameLayout dragButton, backButton;
 
 	private JSONObject data;
-	
+
 	private int openObjectId = -1;
 
 	public ArrayList<ContentView> contentViews;
@@ -77,18 +78,15 @@ public class MainActivity extends FlyInFragmentActivity {
 	private int posInWrapper = 0;
 	private long scrollFps = 1000 / 60;
 
-	private int width, height, barHeight;
+	private int width, height;
 
 	private Dialog dialogBoxForOnActivityResult;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		// WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		// scroller = new Scroller(this, new SmoothInterpolator());
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 		scroller = new Scroller(this, AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
 		scrollRunnable = new AnimationRunnable();
 		scrollHandler = new Handler();
@@ -198,7 +196,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		nameET.setOnFocusChangeListener(new OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (hasFocus) App.showKeyboard(MainActivity.this);
-				else App.hideKeyboard(MainActivity.this, focusDummy);
+				else {
+					App.hideKeyboard(MainActivity.this, focusDummy);
+					endEditTitle(true);
+				}
 			}
 		});
 
@@ -240,31 +241,32 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void initBars() {
-		barHeight = height / 12 - height / 120;
-		int buttonSize = barHeight;
-		int borderHeight = height / 120;
+		// Together the button height and the border
+		// height are as high as the bar
+		int barContentHeight = getBarHeight() * 9 / 10;
+		int borderHeight = getBarHeight() * 1 / 10;
 
 		FrameLayout[] buttons = { dragButton, backButton, (FrameLayout) findViewById(R.id.addButton) };
 
 		for (int i = 0; i < buttons.length; i++) {
-			buttons[i].getLayoutParams().height = buttonSize;
-			buttons[i].getLayoutParams().width = buttonSize;
+			buttons[i].getLayoutParams().height = barContentHeight;
+			buttons[i].getLayoutParams().width = barContentHeight;
 
-			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().height = (int) (buttonSize * 0.8);
-			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().width = (int) (buttonSize * 0.8);
+			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().height = (int) (barContentHeight * 0.8);
+			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().width = (int) (barContentHeight * 0.8);
 		}
 
-		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = buttonSize;
-		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = buttonSize;
+		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = barContentHeight;
+		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = barContentHeight;
 
 		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
-		((LinearLayout) findViewById(R.id.topBar)).getLayoutParams().height = barHeight;
+		((LinearLayout) findViewById(R.id.topBar)).getLayoutParams().height = barContentHeight;
 
-		options.getLayoutParams().height = buttonSize;
+		options.getLayoutParams().height = getBarHeight();
 	}
 
 	private void updateData() {
-		Log.i("Updating data...", data.toString());
+		// Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
 		// to the right of the view the user sees
@@ -486,11 +488,11 @@ public class MainActivity extends FlyInFragmentActivity {
 		data = App.remove(id, data);
 		editor.put(App.DATA, data.toString());
 	}
-	
+
 	public void prioritize(int id, boolean prioritized) {
 		data = App.setProperty(App.PRIORITIZED, prioritized, id, data);
 		editor.put(App.DATA, data.toString());
-		
+
 		updateData();
 	}
 
@@ -618,7 +620,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
-		
 
 		try {
 			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
@@ -647,20 +648,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
-	public int getContentWidth() {
-		return width;
-	}
-
-	public int getContentHeight() {
-		// the height of the bar (including the border) is 1 / 12 of the height
-		// (see @initBar())
-		return height * 11 / 12;
-	}
-
-	public JSONObject getData() {
-		return data;
-	}
-
 	private void adjustContentPosition(boolean isAnimationOngoing) {
 		int offset = scroller.getCurrX();
 
@@ -683,24 +670,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private void setTitle(String name) {
 		nameTV.setText(name);
-
-		Rect bounds = new Rect();
-		Paint paint = nameTV.getPaint();
-		paint.getTextBounds(name, 0, name.length(), bounds);
-		int w = bounds.width();
-
-		// The add button has the same width as the drag button
-		// The *0.8 is added to get some margins
-		while (w >= (width - dragButton.getWidth() * 2) * 0.8) {
-			bounds = new Rect();
-			paint = nameTV.getPaint();
-			paint.getTextBounds(name, 0, name.length(), bounds);
-
-			w = bounds.width();
-
-			name = name.substring(0, name.length() - 1);
-			nameTV.setText(name + "...");
-		}
 	}
 
 	private void startEditTitle() {
@@ -708,7 +677,17 @@ public class MainActivity extends FlyInFragmentActivity {
 		nameET.setVisibility(View.VISIBLE);
 		saveButton.setVisibility(View.VISIBLE);
 
-		nameET.setText(nameTV.getText());
+		String name = nameTV.getText().toString();
+
+		// Gets the real name of the open object (just in case)
+		try {
+			JSONObject o = new JSONObject(data.getString(openObjectId + ""));
+			if (o.has(App.NAME)) name = o.getString(App.NAME);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		nameET.setText(name);
 		nameET.requestFocus();
 	}
 
@@ -742,7 +721,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).enterOptionsMode();
 
-		new ExpandAnimation(options, App.ANIMATION_DURATION, barHeight).animate();
+		new ExpandAnimation(options, App.ANIMATION_DURATION, getBarHeight()).animate();
 
 		options.clearOptionsItems();
 		options.addOptionsItem(App.OPTIONS_REMOVE);
@@ -756,10 +735,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void hideOptions() {
 		if (0 <= posInWrapper && posInWrapper < contentViews.size()) //
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).exitOptionsMode();
-		
+
 		// Makes the hide animation only if the view is not already hidden
 		if (options.getVisibility() != View.GONE) {
-			new CollapseAnimation(options, App.ANIMATION_DURATION, barHeight).animate();
+			new CollapseAnimation(options, App.ANIMATION_DURATION, getBarHeight()).animate();
 
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
@@ -804,7 +783,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			goBack();
 			return;
 		}
-		
+
 		super.onBackPressed();
 	}
 
@@ -828,8 +807,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public int getMenuWidth() {
-		if(width * 0.8 > App.dpToPx(300, getResources()) && App.dpToPx(300, getResources()) < width) return App.dpToPx(300, getResources());
-		else return (int) (width*0.8);
+		if (width * 0.8 > App.dpToPx(300, getResources()) && App.dpToPx(300, getResources()) < width) return App.dpToPx(300, getResources());
+		else return (int) (width * 0.8);
 	}
 
 	public boolean isMoving() {
@@ -851,9 +830,22 @@ public class MainActivity extends FlyInFragmentActivity {
 	public ContentView getOpenContentView() {
 		return contentViews.get(posInWrapper);
 	}
-	
+
 	public int getBarHeight() {
-		return barHeight;
+		if (getResources().getDimension(R.dimen.item_height) < height * 1 / 12) return height * 1 / 12;
+		else return (int) getResources().getDimension(R.dimen.item_height);
+	}
+
+	public int getContentWidth() {
+		return width;
+	}
+
+	public int getContentHeight() {
+		return height - getBarHeight();
+	}
+
+	public JSONObject getData() {
+		return data;
 	}
 
 	public void startVoiceRecognition(Dialog b, String message) {
@@ -883,5 +875,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		order = order.substring(0, order.length() - 1);
 
 		updateChildrenOrder(order, -1);
+	}
+
+	protected void onStart() {
+		super.onResume();
+		App.hideKeyboard(this, focusDummy);
 	}
 }

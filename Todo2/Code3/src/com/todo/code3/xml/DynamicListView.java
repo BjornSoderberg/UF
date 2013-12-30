@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.todo.code3.xml;
 
 import java.util.ArrayList;
@@ -47,28 +31,6 @@ import com.todo.code3.adapter.ItemAdapter;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.view.ItemView;
 
-/**
- * The dynamic listview is an extension of listview that supports cell dragging
- * and swapping.
- * 
- * This layout is in charge of positioning the hover cell in the correct
- * location on the screen in response to user touch events. It uses the position
- * of the hover cell to determine when two cells should be swapped. If two cells
- * should be swapped, all the corresponding data set and layout changes are
- * handled here.
- * 
- * If no cell is selected, all the touch events are passed down to the listview
- * and behave normally. If one of the items in the listview experiences a long
- * press event, the contents of its current visible state are captured as a
- * bitmap and its visibility is set to INVISIBLE. A hover cell is then created
- * and added to this layout as an overlaying BitmapDrawable above the listview.
- * Once the hover cell is translated some distance to signify an item swap, a
- * data set change accompanied by animation takes place. When the user releases
- * the hover cell, it animates into its corresponding position in the listview.
- * 
- * When the hover cell is either above or below the bounds of the listview, this
- * listview also scrolls on its own so as to reveal additional content.
- */
 public class DynamicListView extends ListView {
 
 	private final int SMOOTH_SCROLL_AMOUNT_AT_EDGE = 45;
@@ -127,14 +89,8 @@ public class DynamicListView extends ListView {
 		mSmoothScrollAmountAtEdge = (int) (SMOOTH_SCROLL_AMOUNT_AT_EDGE / metrics.density);
 	}
 
-	/**
-	 * Listens for long clicks on any items in the listview. When a cell has
-	 * been selected, the hover cell is created and set up.
-	 */
 	private AdapterView.OnItemLongClickListener mOnItemLongClickListener = new AdapterView.OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
-			// startDragging();
-
 			itemView.getActivity().toggleOptions();
 			// Selects the pressed item
 			itemView.toggleItem(view.getId());
@@ -145,6 +101,10 @@ public class DynamicListView extends ListView {
 
 	public void startDragging() {
 		if (isDragging()) return;
+
+		// Checks if the touch location in x is greater than the width - the
+		// width of the "reorder button"
+		if (itemView.getActivity().getContentWidth() - getContext().getResources().getDimension(R.dimen.item_height) > mDownX) return;
 
 		mTotalOffset = 0;
 
@@ -176,6 +136,9 @@ public class DynamicListView extends ListView {
 		int h = v.getHeight();
 		int top = v.getTop();
 		int left = v.getLeft();
+
+		// Makes the selected view light gray
+		v.setBackgroundColor(getResources().getColor(R.color.selected_light_gray));
 
 		Bitmap b = getBitmapWithBorder(v);
 
@@ -265,14 +228,6 @@ public class DynamicListView extends ListView {
 			mHoverCell.draw(canvas);
 		}
 	}
-
-	// public boolean onInterceptTouchEvent(MotionEvent e) {
-	// Log.i("asd", "here " + isDragging());
-	//
-	// if (isDragging()) return true;
-	//
-	// return super.onInterceptTouchEvent(e);
-	// }
 
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
@@ -447,7 +402,7 @@ public class DynamicListView extends ListView {
 					mAboveItemId = INVALID_ID;
 					mMobileItemId = INVALID_ID;
 					mBelowItemId = INVALID_ID;
-					if(mobileView != null) mobileView.setVisibility(VISIBLE);
+					if (mobileView != null) mobileView.setVisibility(VISIBLE);
 					mHoverCell = null;
 					setEnabled(true);
 					invalidate();
@@ -541,7 +496,7 @@ public class DynamicListView extends ListView {
 	}
 
 	public boolean isDragging() {
-		return mCellIsMobile && mHoverCell != null;
+		return mCellIsMobile || mHoverCell != null;
 	}
 
 	/**

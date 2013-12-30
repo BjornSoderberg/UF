@@ -463,12 +463,10 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 			// if (convertView == null || convertView instanceof TextView)
 			convertView = inflater.inflate(R.layout.fly_item, null);
 
-			ImageView icon = (ImageView) convertView.findViewById(R.id.rbm_item_icon);
 			TextView text = (TextView) convertView.findViewById(R.id.rbm_item_text);
 			FlyInMenuItem item = menuItems.get(position);
 
-			text.setText(item.getTitle());
-			icon.setImageResource(item.getIconId());
+			text.setText(item.getTitle());;
 
 			if (item.getId() == getExpandingItemId()) {
 				invalidateExpandingItemId();

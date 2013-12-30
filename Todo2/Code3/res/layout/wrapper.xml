@@ -90,8 +90,8 @@
             android:scaleType="fitCenter"
             android:src="@drawable/plus" />
     </FrameLayout>
-    
-    <!-- Title  -->
+
+    <!-- Title -->
 
     <RelativeLayout
         android:id="@+id/nameTouchArea"
@@ -106,19 +106,24 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:singleLine="true"
             android:text="Title"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_large" />
 
         <EditText
             android:id="@+id/nameET"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_toLeftOf="@+id/saveButton"
             android:layout_alignParentLeft="true"
-            android:ems="10"
+            android:layout_toLeftOf="@+id/saveButton"
             android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:singleLine="true"
+            android:textColor="#ffffff"
             android:visibility="gone" >
         </EditText>
 
@@ -130,8 +135,7 @@
             android:text="Save"
             android:visibility="gone" />
     </RelativeLayout>
-    
-    
+
     <!-- End of title -->
 
     <LinearLayout
