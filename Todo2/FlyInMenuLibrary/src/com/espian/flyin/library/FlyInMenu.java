@@ -126,7 +126,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		this.callback = callback;
 	}
 
-	public void setMenuWidth(int w) {
+	public void setMenuSize(int w) {
 		width = w;
 		LayoutParams p = (LayoutParams) mMenuHolder.getLayoutParams();
 		p.width = w;
@@ -223,6 +223,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	}
 
 	public void showMenu() {
+		if(getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
+		
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -252,6 +254,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	}
 
 	public void hideMenu() {
+		if(getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
+		
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
 			mCustomView.setVisibility(View.VISIBLE);
@@ -290,6 +294,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	}
 
 	public void moveMenu(int dx) {
+		if(getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
+		
 		if (contentOffset + dx < 0) dx = 0 - contentOffset;
 		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
@@ -440,17 +446,14 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 			inflater = LayoutInflater.from(getContext());
 		}
 
-		@Override
 		public int getCount() {
 			return menuItems.size();
 		}
 
-		@Override
 		public FlyInMenuItem getItem(int position) {
 			return menuItems.get(position);
 		}
 
-		@Override
 		public long getItemId(int position) {
 			if (position < 0 || position >= menuItems.size()) return -1;
 
@@ -458,32 +461,33 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 			return item.getId();
 		}
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// if (convertView == null || convertView instanceof TextView)
-			convertView = inflater.inflate(R.layout.fly_item, null);
+			View view = inflater.inflate(R.layout.fly_item, null);
 
-			TextView text = (TextView) convertView.findViewById(R.id.rbm_item_text);
+			TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
 			FlyInMenuItem item = menuItems.get(position);
 
 			text.setText(item.getTitle());;
 
 			if (item.getId() == getExpandingItemId()) {
 				invalidateExpandingItemId();
-				expandView(convertView);
+				expandView(view);
 
-				if (convertView.getLayoutParams() != null) convertView.getLayoutParams().height = 1;
-				else convertView.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
+				if (view.getLayoutParams() != null) view.getLayoutParams().height = 1;
+				else view.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
 			}
 
 			if (item.getId() == movingItemId) {
-				convertView.setVisibility(View.INVISIBLE);
+				view.setVisibility(View.INVISIBLE);
 				movingItemId = -1;
 			}
+			
+			if(item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));
 
-			convertView.setId(item.getId());
+			view.setId(item.getId());
 
-			return convertView;
+			return view;
 
 		}
 

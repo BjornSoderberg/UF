@@ -12,6 +12,7 @@ public class FlyInMenuItem {
 	private int id;
 	private String contentType;
 	private long timestampCreated = -1;
+	private boolean isOpen = false;
 
 	private boolean mEnabled;
 
@@ -26,7 +27,7 @@ public class FlyInMenuItem {
 	public int getId() {
 		return id;
 	}
-	
+
 	public String getType() {
 		return contentType;
 	}
@@ -38,13 +39,17 @@ public class FlyInMenuItem {
 	public CharSequence getTitleCondensed() {
 		return mCondText;
 	}
-	
+
 	public long getTimestampCreated() {
 		return timestampCreated;
 	}
 
 	public boolean isEnabled() {
 		return mEnabled;
+	}
+
+	public boolean isOpen() {
+		return isOpen;
 	}
 
 	public FlyInMenuItem setEnabled(boolean enabled) {
@@ -71,7 +76,7 @@ public class FlyInMenuItem {
 		mText = resc.getString(title);
 		return this;
 	}
-	
+
 	public FlyInMenuItem setType(String contentType) {
 		this.contentType = contentType;
 		return this;
@@ -86,10 +91,14 @@ public class FlyInMenuItem {
 		this.id = id;
 		return this;
 	}
-	
+
 	public FlyInMenuItem setTimestampCreated(int i) {
 		timestampCreated = i;
 		return this;
 	}
 
+	public FlyInMenuItem isOpen(boolean b) {
+		isOpen = b;
+		return this;
+	}
 }

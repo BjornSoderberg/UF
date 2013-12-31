@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="#393C3B"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <com.espian.flyin.library.DynamicListView
             android:id="@+id/fly_listview"
@@ -28,7 +28,7 @@
             android:id="@+id/fly_custom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </LinearLayout>
 
 </LinearLayout>

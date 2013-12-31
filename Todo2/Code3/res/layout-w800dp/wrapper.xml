@@ -24,7 +24,8 @@
         <FrameLayout
             android:id="@+id/dragButton"
             android:layout_width="40dp"
-            android:layout_height="40dp" >
+            android:layout_height="40dp"
+            android:visibility="gone" >
 
             <ImageView
                 android:id="@+id/icon"
@@ -61,8 +62,7 @@
         android:layout_alignRight="@+id/l"
         android:background="#298DA9"
         android:enabled="false"
-        android:orientation="horizontal"
-        android:visibility="visible" />
+        android:orientation="horizontal" />
 
     <LinearLayout
         android:id="@+id/line2"

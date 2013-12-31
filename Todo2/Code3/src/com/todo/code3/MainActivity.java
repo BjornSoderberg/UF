@@ -86,6 +86,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.wrapper);
 
 		scroller = new Scroller(this, AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
 		scrollRunnable = new AnimationRunnable();
@@ -95,7 +96,17 @@ public class MainActivity extends FlyInFragmentActivity {
 		width = dm.widthPixels;
 		height = dm.heightPixels - App.getStatusBarHeight(getResources());
 
-		setContentView(R.layout.wrapper);
+		// Recalculates the size of the content (and offsets it) if the screen
+		// is wide enough to show the master view (the menu is visible at all
+		// times)
+		if (isInMasterView()) {
+			width -= getMenuWidth();
+			FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) ((Wrapper) findViewById(R.id.bigWrapper)).getLayoutParams();
+			p.width = width;
+			p.setMargins(getMenuWidth(), 0, 0, 0);
+			((Wrapper) findViewById(R.id.bigWrapper)).setLayoutParams(p);
+			((Wrapper) findViewById(R.id.bigWrapper)).requestLayout();
+		}
 
 		prefs = getSharedPreferences(App.PREFERENCES_NAME, Context.MODE_PRIVATE);
 		editor = new SPEditor(prefs);
@@ -221,7 +232,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		addFolderButton.setText("+  Add new folder");
 		// Makes it transparent
 		addFolderButton.setBackgroundColor(0);
-		addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.rbm_item_text_color));
+		addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.item_text_color));
 		addFolderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				TextLineDialog b = new TextLineDialog(MainActivity.this, "Add new folder", null, true, "Add", "Cancel") {
@@ -238,6 +249,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		customView.addView(addFolderButton);
 		getFlyInMenu().setCustomView(customView);
+		getFlyInMenu().getCustomView().setVisibility(View.VISIBLE);
 	}
 
 	private void initBars() {
@@ -316,7 +328,7 @@ public class MainActivity extends FlyInFragmentActivity {
 						mi.setTitle(folder.getString(App.NAME) + " - " + numChildren + " (" + folder.getString(App.TYPE) + ")");
 						mi.setId(folder.getInt(App.ID));
 						mi.setType(folder.getString(App.TYPE));
-						// mi.setIcon(res id);
+						mi.isOpen(App.isParentOf(openObjectId, folder.getInt(App.ID), data));
 						menu.addMenuItem(mi);
 					}
 				}
@@ -633,7 +645,8 @@ public class MainActivity extends FlyInFragmentActivity {
 				JSONObject o = new JSONObject(data.getString(openObjectId + ""));
 				if (!o.has(App.PARENT_ID) || o.getInt(App.PARENT_ID) == -1) {
 					backButton.setVisibility(View.GONE);
-					dragButton.setVisibility(View.VISIBLE);
+
+					if (!isInMasterView()) dragButton.setVisibility(View.VISIBLE);
 				}
 			}
 
@@ -819,6 +832,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		isMoving = b;
 	}
 
+	public boolean isInMasterView() {
+		return getResources().getString(com.espian.flyin.library.R.string.is_in_master_view).equals("true");
+	}
+
 	public int getPosInWrapper() {
 		return posInWrapper;
 	}
@@ -877,8 +894,19 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateChildrenOrder(order, -1);
 	}
 
-	protected void onStart() {
-		super.onResume();
-		App.hideKeyboard(this, focusDummy);
+	// These functions saves the open item and opens it when the app is
+	// recreated (eg. when the device is tilted)
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+
+		savedInstanceState.putInt(App.OPEN_OBJECT_ID, openObjectId);
+		savedInstanceState.putInt("posInWrapper", posInWrapper);
+	}
+
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		open(savedInstanceState.getInt(App.OPEN_OBJECT_ID));
+		posInWrapper = savedInstanceState.getInt("posInWrapper");
 	}
 }

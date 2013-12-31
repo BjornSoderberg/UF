@@ -68,7 +68,7 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	 */
 	protected void loadFlyInMenu(int menuWidth) {
 		flyMenuView.setMenuItems();
-		flyMenuView.setMenuWidth(menuWidth);
+		flyMenuView.setMenuSize(menuWidth);
 		flyMenuView.setOnFlyInItemClickListener(this);
 		((ViewGroup) getWindow().getDecorView()).removeView(flyMenuView);
 		((ViewGroup) getWindow().getDecorView()).addView(flyMenuView);

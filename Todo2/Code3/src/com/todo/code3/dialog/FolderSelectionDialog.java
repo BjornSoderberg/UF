@@ -62,7 +62,7 @@ public class FolderSelectionDialog extends Dialog {
 		
 		// This sets the position and prevents the alert dialog from
 		// "lagging" when its children are animated
-		alert.getWindow().setLayout(-1, activity.getContentHeight());
+		alert.getWindow().setLayout(activity.getMenuWidth(), activity.getContentHeight());
 		
 		// The move button is disabled as default
 		alert.getButton(android.app.Dialog.BUTTON1).setEnabled(false);

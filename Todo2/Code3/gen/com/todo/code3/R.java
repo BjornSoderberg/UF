@@ -16,12 +16,14 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int divider_color=0x7f050002;
-        public static final int rbm_item_text_color=0x7f050001;
-        public static final int rbm_menu_background=0x7f050000;
-        public static final int selected_light_gray=0x7f050003;
-        public static final int selected_semi_transparent=0x7f050004;
-        public static final int transparent=0x7f050005;
+        public static final int divider_color=0x7f050004;
+        public static final int item_color_dark=0x7f050002;
+        public static final int item_color_light=0x7f050003;
+        public static final int item_text_color=0x7f050001;
+        public static final int menu_background=0x7f050000;
+        public static final int selected_light_gray=0x7f050005;
+        public static final int selected_semi_transparent=0x7f050006;
+        public static final int transparent=0x7f050007;
     }
     public static final class dimen {
         public static final int divider_height=0x7f060007;
@@ -38,11 +40,13 @@ public final class R {
     public static final class drawable {
         public static final int box=0x7f020000;
         public static final int checked=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int menu=0x7f020003;
-        public static final int plus=0x7f020004;
-        public static final int transparent_item_selector=0x7f020005;
-        public static final int white_item_selector=0x7f020006;
+        public static final int fly_item_background=0x7f020002;
+        public static final int fly_item_background_light=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int menu=0x7f020005;
+        public static final int plus=0x7f020006;
+        public static final int transparent_item_selector=0x7f020007;
+        public static final int white_item_selector=0x7f020008;
     }
     public static final class id {
         public static final int addButton=0x7f07001b;
@@ -92,7 +96,8 @@ public final class R {
         public static final int wrapper=0x7f030008;
     }
     public static final class string {
-        public static final int app_name=0x7f080000;
+        public static final int app_name=0x7f080001;
+        public static final int is_in_master_view=0x7f080000;
     }
     public static final class style {
         public static final int MyTheme=0x7f090001;

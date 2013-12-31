@@ -106,7 +106,7 @@ public class ItemView extends ContentView {
 					item.setId(object.getInt(App.ID));
 					item.setType(App.TASK);
 					item.setParentId(parentId);
-					
+
 					if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
 					else item.isPrioritized(false);
 
@@ -123,7 +123,7 @@ public class ItemView extends ContentView {
 					item.setId(object.getInt(App.ID));
 					item.setType(App.FOLDER);
 					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
-					
+
 					if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
 					else item.isPrioritized(false);
 
@@ -318,9 +318,11 @@ public class ItemView extends ContentView {
 	}
 
 	public void exitOptionsMode() {
-		optionsMode = false;
+		// only if already in the options mode, the list view will become
+		// smaller
+		if (optionsMode) new ChangeSizeAnimation(listView, App.ANIMATION_DURATION, activity.getContentHeight() - activity.getBarHeight(), activity.getBarHeight()).animate();
 
-		new ChangeSizeAnimation(listView, App.ANIMATION_DURATION, activity.getContentHeight() - activity.getBarHeight(), activity.getBarHeight()).animate();
+		optionsMode = false;
 	}
 
 	public boolean isInOptionsMode() {
