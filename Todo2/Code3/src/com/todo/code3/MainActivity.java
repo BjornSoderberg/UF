@@ -1,6 +1,7 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -48,6 +48,11 @@ import com.todo.code3.view.ItemView;
 import com.todo.code3.view.TaskContentView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
+
+import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
+import com.sleepbot.datetimepicker.time.RadialPickerLayout;
+import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 public class MainActivity extends FlyInFragmentActivity {
 
@@ -230,18 +235,20 @@ public class MainActivity extends FlyInFragmentActivity {
 		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				int position = sortSpinner.getSelectedItemPosition();
-				
+
 				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
-				
+
 				updateData();
 			}
 
 			public void onNothingSelected(AdapterView<?> arg0) {
 				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
-				
+
 				updateData();
 			}
 		});
+		
+		sortSpinner.setVisibility(View.GONE);
 	}
 
 	private void initAddButton() {
@@ -393,6 +400,27 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void addDialog(View v) {
+		final Calendar calendar = Calendar.getInstance();
+
+		DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
+			public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
+				Toast.makeText(MainActivity.this, "new date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
+			}
+		};
+
+		TimePickerDialog.OnTimeSetListener l = new TimePickerDialog.OnTimeSetListener() {
+			public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
+				Toast.makeText(MainActivity.this, "new time:" + hourOfDay + "-" + minute, Toast.LENGTH_LONG).show();
+			}
+		};
+
+		final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
+		final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(l, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
+
+		datePickerDialog.setYearRange(1910, 2000);
+		datePickerDialog.show(getSupportFragmentManager(), "asd");
+		
+		if (true) return;
 		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
 			public void onResult(String name, String type) {
 				super.onResult(name, type);
