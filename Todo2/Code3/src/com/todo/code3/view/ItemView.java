@@ -26,6 +26,7 @@ import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
 import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
+import com.todo.code3.misc.Sort;
 import com.todo.code3.xml.DynamicListView;
 
 public class ItemView extends ContentView {
@@ -40,8 +41,11 @@ public class ItemView extends ContentView {
 
 	private int itemHeight;
 	private int expandingItemId = -1;
+	private int sortType;
 
 	private boolean optionsMode = false;
+	private boolean sortPrioritized = false;
+	private boolean includeSubFolders = false;
 
 	public ItemView(MainActivity activity, int parentId) {
 		super(activity, parentId);
@@ -84,49 +88,14 @@ public class ItemView extends ContentView {
 		try {
 			contentItems.clear();
 
-			if (!data.has(parentId + "")) return;
-			JSONObject parent = new JSONObject(data.getString(parentId + ""));
-
-			String childrenIds[];
-
-			if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
-			else childrenIds = new String[0];
-
-			for (String id : childrenIds) {
-				if (!data.has(id)) continue;
-
-				JSONObject object = new JSONObject(data.getString(id));
-
-				if (object.getString(App.TYPE).equals(App.TASK)) {
-					TaskItem item = new TaskItem();
-					item.setTitle(object.getString(App.NAME));
-					item.setId(object.getInt(App.ID));
-					item.setType(App.TASK);
-					item.setParentId(parentId);
-
-					if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
-					else item.isPrioritized(false);
-
-					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_CREATED));
-					if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
-					if (object.has(App.COMPLETED) && object.getBoolean(App.COMPLETED)) item.completed(true);
-					else item.completed(false);
-
-					contentItems.add(item);
-				} else if (object.getString(App.TYPE).equals(App.FOLDER)) {
-					FolderItem item = new FolderItem();
-					item.setTitle(object.getString(App.NAME));
-					item.setParentId(parentId);
-					item.setId(object.getInt(App.ID));
-					item.setType(App.FOLDER);
-					if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
-
-					if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
-					else item.isPrioritized(false);
-
-					contentItems.add(item);
+			if (includeSubFolders || sortType == 3) {
+				if (data.has(parentId + "")) {
+					JSONObject parent = new JSONObject(data.getString(parentId + ""));
+					if (parent.has(App.CHILDREN_IDS)) getItemsIncludingSubFolders(data, parent.getString(App.CHILDREN_IDS).split(","));
 				}
-			}
+			} else getItemsFromThisFolder(data);
+
+			sortItems();
 
 			adapter.notifyDataSetChanged();
 
@@ -134,7 +103,81 @@ public class ItemView extends ContentView {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
 
+	private void getItemsIncludingSubFolders(JSONObject data, String[] childrenIds) throws JSONException {
+		for (String id : childrenIds) {
+			if (!data.has(id)) continue;
+
+			JSONObject child = new JSONObject(data.getString(id));
+
+			if (child.getString(App.TYPE).equals(App.FOLDER)) getItemsIncludingSubFolders(data, child.getString(App.CHILDREN_IDS).split(","));
+			else {
+				if (child.getString(App.TYPE).equals(App.TASK)) {
+					TaskItem item = new TaskItem();
+					item.setTitle(child.getInt(App.PARENT_ID) + " : " +child.getString(App.NAME));
+					item.setId(child.getInt(App.ID));
+					item.setType(App.TASK);
+					item.setParentId(parentId);
+
+					if (child.has(App.PRIORITIZED) && child.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+					else item.isPrioritized(false);
+
+					if (child.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(child.getInt(App.TIMESTAMP_CREATED));
+					if (child.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(child.getInt(App.TIMESTAMP_COMPLETED));
+					if (child.has(App.COMPLETED) && child.getBoolean(App.COMPLETED)) item.completed(true);
+					else item.completed(false);
+
+					contentItems.add(item);
+				}
+			}
+		}
+	}
+
+	private void getItemsFromThisFolder(JSONObject data) throws JSONException {
+		if (!data.has(parentId + "")) return;
+		JSONObject parent = new JSONObject(data.getString(parentId + ""));
+
+		String childrenIds[];
+
+		if (parent.has(App.CHILDREN_IDS)) childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+		else childrenIds = new String[0];
+
+		for (String id : childrenIds) {
+			if (!data.has(id)) continue;
+
+			JSONObject object = new JSONObject(data.getString(id));
+
+			if (object.getString(App.TYPE).equals(App.TASK)) {
+				TaskItem item = new TaskItem();
+				item.setTitle(object.getString(App.NAME));
+				item.setId(object.getInt(App.ID));
+				item.setType(App.TASK);
+				item.setParentId(parentId);
+
+				if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+				else item.isPrioritized(false);
+
+				if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
+				if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
+				if (object.has(App.COMPLETED) && object.getBoolean(App.COMPLETED)) item.completed(true);
+				else item.completed(false);
+
+				contentItems.add(item);
+			} else if (object.getString(App.TYPE).equals(App.FOLDER)) {
+				FolderItem item = new FolderItem();
+				item.setTitle(object.getString(App.NAME));
+				item.setParentId(parentId);
+				item.setId(object.getInt(App.ID));
+				item.setType(App.FOLDER);
+				if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
+
+				if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+				else item.isPrioritized(false);
+
+				contentItems.add(item);
+			}
+		}
 	}
 
 	public void expandView(final View view) {
@@ -284,6 +327,23 @@ public class ItemView extends ContentView {
 		d.show();
 	}
 
+	private void sortItems() {
+		if (sortType == App.SORT_PRIORITIZED) {
+			Sort.sortPrioritized(contentItems, sortPrioritized);
+			// sortPrioritized = !sortPrioritized;
+		} else if (sortType == App.SORT_TIMESTAMP_CREATED) {
+			Sort.sortTimestampCreated(contentItems);
+		} else if(sortType == App.SORT_COMPLETED) {
+			Sort.sortCompleted(contentItems);
+		}
+	}
+
+	public void setSortType(int type) {
+		sortType = type;
+
+//		sortPrioritized = false;
+	}
+
 	private View getViewById(int id) {
 		for (int i = 0; i < listView.getChildCount(); i++) {
 			View v = listView.getChildAt(i);
@@ -341,7 +401,7 @@ public class ItemView extends ContentView {
 	public DynamicListView getListView() {
 		return listView;
 	}
-	
+
 	public int getParentId() {
 		return parentId;
 	}

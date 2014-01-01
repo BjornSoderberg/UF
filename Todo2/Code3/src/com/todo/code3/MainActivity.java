@@ -8,21 +8,19 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -31,13 +29,13 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
-import com.todo.code3.animation.ChangeSizeAnimation;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.dialog.AddItemDialog;
@@ -62,6 +60,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private OptionsBar options;
 	private Button saveButton;
 	private FrameLayout dragButton, backButton;
+	private Spinner sortSpinner;
 
 	private JSONObject data;
 
@@ -220,6 +219,29 @@ public class MainActivity extends FlyInFragmentActivity {
 		});
 
 		initAddButton();
+
+		String[] paths = { "Prio", "Created", "Completed", "Include subtasks" };
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
+		sortSpinner.setAdapter(adapter);
+		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				int position = sortSpinner.getSelectedItemPosition();
+				
+				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
+				
+				updateData();
+			}
+
+			public void onNothingSelected(AdapterView<?> arg0) {
+				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
+				
+				updateData();
+			}
+		});
 	}
 
 	private void initAddButton() {
@@ -595,10 +617,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
-		for (ContentView i : contentViews) {
-			Log.i("asdasd", contentViews.indexOf(i) + "");
-		}
 	}
 
 	public void goBack(View v) {
@@ -903,7 +921,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		// Opens the first item as a menu item (since the first item among the
 		// content items should be a menu item)
 		openMenuItem(parentIds[0]);
-		
+
 		// Opens all the items without animating
 		for (int i = 1; i < parentIds.length; i++) {
 			open(parentIds[i], false);

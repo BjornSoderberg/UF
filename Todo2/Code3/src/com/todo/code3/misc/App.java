@@ -53,6 +53,11 @@ public class App {
 	public static final int OPTIONS_GROUP_ITEMS = 1;
 	public static final int OPTIONS_SELECT_ALL = 2;
 	public static final int OPTIONS_MOVE = 3;
+	
+	// Ids for sorting
+	public static final int SORT_PRIORITIZED = 0;
+	public static final int SORT_TIMESTAMP_CREATED = 1;
+	public static final int SORT_COMPLETED = 2;
 
 	// converting dp to pixels and vice versa
 	public static int dpToPx(float dp, Resources r) {
