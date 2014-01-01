@@ -16,28 +16,28 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int add_folder_text_color=0x7f050009;
-        public static final int divider_color=0x7f050005;
-        public static final int item_color_dark=0x7f050002;
-        public static final int item_color_light=0x7f050003;
-        public static final int item_text_color=0x7f050001;
-        public static final int main_color=0x7f050004;
-        public static final int menu_background=0x7f050000;
-        public static final int selected_light_gray=0x7f050006;
-        public static final int selected_semi_transparent=0x7f050007;
-        public static final int transparent=0x7f050008;
+        public static final int add_folder_text_color=0x7f060009;
+        public static final int divider_color=0x7f060005;
+        public static final int item_color_dark=0x7f060002;
+        public static final int item_color_light=0x7f060003;
+        public static final int item_text_color=0x7f060001;
+        public static final int main_color=0x7f060004;
+        public static final int menu_background=0x7f060000;
+        public static final int selected_light_gray=0x7f060006;
+        public static final int selected_semi_transparent=0x7f060007;
+        public static final int transparent=0x7f060008;
     }
     public static final class dimen {
-        public static final int divider_height=0x7f060007;
-        public static final int item_height=0x7f060006;
-        public static final int item_image_height=0x7f060002;
-        public static final int item_image_width=0x7f060003;
-        public static final int item_padding_leftright=0x7f060001;
-        public static final int item_padding_topbottom=0x7f060000;
-        public static final int item_text_padding_left=0x7f060005;
-        public static final int item_text_size=0x7f060004;
-        public static final int text_large=0x7f060009;
-        public static final int text_normal=0x7f060008;
+        public static final int divider_height=0x7f070007;
+        public static final int item_height=0x7f070006;
+        public static final int item_image_height=0x7f070002;
+        public static final int item_image_width=0x7f070003;
+        public static final int item_padding_leftright=0x7f070001;
+        public static final int item_padding_topbottom=0x7f070000;
+        public static final int item_text_padding_left=0x7f070005;
+        public static final int item_text_size=0x7f070004;
+        public static final int text_large=0x7f070009;
+        public static final int text_normal=0x7f070008;
     }
     public static final class drawable {
         public static final int box=0x7f020000;
@@ -51,41 +51,43 @@ public final class R {
         public static final int white_item_selector=0x7f020008;
     }
     public static final class id {
-        public static final int addButton=0x7f07001b;
-        public static final int backButton=0x7f070018;
-        public static final int barBorder=0x7f07001e;
-        public static final int bigWrapper=0x7f070014;
-        public static final int bottomBar=0x7f070022;
-        public static final int checkbox=0x7f07000d;
-        public static final int descET=0x7f070010;
-        public static final int descTV=0x7f070012;
-        public static final int drag=0x7f07000f;
-        public static final int dragButton=0x7f070017;
-        public static final int empty=0x7f07000b;
-        public static final int expand=0x7f070009;
-        public static final int expandIcon=0x7f07000a;
-        public static final int fly_custom=0x7f070004;
-        public static final int fly_listview=0x7f070003;
-        public static final int fly_menu_holder=0x7f070002;
-        public static final int fly_searchview=0x7f070000;
-        public static final int focusDummy=0x7f070013;
-        public static final int icon=0x7f070007;
-        public static final int item_checkbox=0x7f070008;
-        public static final int item_drag=0x7f07000e;
-        public static final int item_prio=0x7f070006;
-        public static final int item_text=0x7f070005;
-        public static final int l=0x7f070016;
-        public static final int line1=0x7f070019;
-        public static final int line2=0x7f07001a;
-        public static final int listview=0x7f07000c;
-        public static final int name=0x7f07001f;
-        public static final int nameET=0x7f070020;
-        public static final int nameTouchArea=0x7f07001d;
-        public static final int rbm_item_text=0x7f070001;
-        public static final int saveButton=0x7f070011;
-        public static final int sortSpinner=0x7f07001c;
-        public static final int topBar=0x7f070015;
-        public static final int wrapper=0x7f070021;
+        public static final int addButton=0x7f08001d;
+        public static final int backButton=0x7f08001a;
+        public static final int barBorder=0x7f080020;
+        public static final int bigWrapper=0x7f080016;
+        public static final int bottomBar=0x7f080024;
+        public static final int button=0x7f080014;
+        public static final int checkbox=0x7f08000d;
+        public static final int descET=0x7f080010;
+        public static final int descTV=0x7f080012;
+        public static final int drag=0x7f08000f;
+        public static final int dragButton=0x7f080019;
+        public static final int editText=0x7f080015;
+        public static final int empty=0x7f08000b;
+        public static final int expand=0x7f080009;
+        public static final int expandIcon=0x7f08000a;
+        public static final int fly_custom=0x7f080004;
+        public static final int fly_listview=0x7f080003;
+        public static final int fly_menu_holder=0x7f080002;
+        public static final int fly_searchview=0x7f080000;
+        public static final int focusDummy=0x7f080013;
+        public static final int icon=0x7f080007;
+        public static final int item_checkbox=0x7f080008;
+        public static final int item_drag=0x7f08000e;
+        public static final int item_prio=0x7f080006;
+        public static final int item_text=0x7f080005;
+        public static final int l=0x7f080018;
+        public static final int line1=0x7f08001b;
+        public static final int line2=0x7f08001c;
+        public static final int listview=0x7f08000c;
+        public static final int name=0x7f080021;
+        public static final int nameET=0x7f080022;
+        public static final int nameTouchArea=0x7f08001f;
+        public static final int rbm_item_text=0x7f080001;
+        public static final int saveButton=0x7f080011;
+        public static final int sortSpinner=0x7f08001e;
+        public static final int topBar=0x7f080017;
+        public static final int wrapper=0x7f080023;
     }
     public static final class layout {
         public static final int fly_item=0x7f030000;
@@ -96,16 +98,21 @@ public final class R {
         public static final int options_item=0x7f030005;
         public static final int task_content_view=0x7f030006;
         public static final int task_item=0x7f030007;
-        public static final int wrapper=0x7f030008;
+        public static final int widget_config=0x7f030008;
+        public static final int widget_layout=0x7f030009;
+        public static final int wrapper=0x7f03000a;
     }
     public static final class string {
-        public static final int app_name=0x7f080001;
-        public static final int is_in_master_view=0x7f080000;
+        public static final int app_name=0x7f090001;
+        public static final int is_in_master_view=0x7f090000;
     }
     public static final class style {
-        public static final int MyTheme=0x7f090001;
-        public static final int NextAppStyle=0x7f090000;
-        public static final int editText=0x7f090003;
-        public static final int textView=0x7f090002;
+        public static final int MyTheme=0x7f0a0001;
+        public static final int NextAppStyle=0x7f0a0000;
+        public static final int editText=0x7f0a0003;
+        public static final int textView=0x7f0a0002;
+    }
+    public static final class xml {
+        public static final int widget=0x7f050000;
     }
 }

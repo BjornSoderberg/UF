@@ -2,6 +2,8 @@ package com.todo.code3.misc;
 
 import java.util.ArrayList;
 
+import android.os.AsyncTask;
+
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.TaskItem;
 
