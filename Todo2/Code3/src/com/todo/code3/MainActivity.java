@@ -100,9 +100,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		// is wide enough to show the master view (the menu is visible at all
 		// times)
 		if (isInMasterView()) {
-			width -= getMenuWidth();
 			FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) ((Wrapper) findViewById(R.id.bigWrapper)).getLayoutParams();
-			p.width = width;
+			p.width = getContentWidth();
 			p.setMargins(getMenuWidth(), 0, 0, 0);
 			((Wrapper) findViewById(R.id.bigWrapper)).setLayoutParams(p);
 			((Wrapper) findViewById(R.id.bigWrapper)).requestLayout();
@@ -232,7 +231,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		addFolderButton.setText("+  Add new folder");
 		// Makes it transparent
 		addFolderButton.setBackgroundColor(0);
-		addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.item_text_color));
+		// addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.item_text_color));
+		addFolderButton.setTextColor(getResources().getColorStateList(R.color.add_folder_text_color));
 		addFolderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				TextLineDialog b = new TextLineDialog(MainActivity.this, "Add new folder", null, true, "Add", "Cancel") {
@@ -370,49 +370,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (!isMoving) getFlyInMenu().hideMenu();
 	}
 
-	public void viewAddTaskDialog(View v) {
-		// RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
-		// FolderHierarchyViewer f = new FolderHierarchyViewer(this, data, -1,
-		// 0);
-		// f.setLayoutParams(new
-		// RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
-		// LayoutParams.FILL_PARENT));
-		// f.setBackgroundColor(0xffff00ff);
-		// r.addView(f);
-		//
-		// if (true) return;
-
-		// RelativeLayout r = (RelativeLayout) findViewById(R.id.bigWrapper);
-		// final FormParent ti = new FormParent(this);
-		// r.addView(ti);
-		//
-		// ti.addItem("Name", "Enter a task name", FormChild.TEXT_LINE);
-		// ti.addItem("Other thing", "Enter another thing",
-		// FormChild.TEXT_LINE);
-		//
-		// ti.setLayoutParams(new
-		// RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 1));
-		// ti.setBackgroundColor(0x33000000);
-		// ti.setOnClickListener(new OnClickListener() {
-		// public void onClick(View v) {
-		// ti.setBackgroundColor(0xff0000ff);
-		// }
-		// });
-		//
-		// Animation animation = new Animation() {
-		// protected void applyTransformation(float time, Transformation t) {
-		// if ((int) (height * time) != 0) ti.getLayoutParams().height = (int)
-		// (height * time);
-		// else ti.getLayoutParams().height = 1;
-		//
-		// ti.requestLayout();
-		// }
-		// };
-		// animation.setDuration(500);
-		// ti.startAnimation(animation);
-		//
-		// if (true) return;
-
+	public void addDialog(View v) {
 		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
 			public void onResult(String name, String type) {
 				super.onResult(name, type);
@@ -424,7 +382,21 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void add(String name, String type) {
-		data = App.add(name, type, openObjectId, data);
+		int parent = -1;
+		try {
+			JSONObject o = new JSONObject(data.getString(openObjectId + ""));
+			while (o.getString(App.TYPE).equals(App.TASK)) {
+				if (!data.has(o.getString(App.PARENT_ID))) break;
+
+				o = new JSONObject(data.getString(o.getString(App.PARENT_ID)));
+			}
+
+			parent = o.getInt(App.ID);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if (parent == -1) return;
+		data = App.add(name, type, parent, data);
 		editor.put(App.DATA, data.toString());
 
 		try {
@@ -575,7 +547,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			openObjectId = id;
 
-			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
+			JSONObject object = new JSONObject(data.getString(id + ""));
 
 			setTitle(object.getString(App.NAME));
 
@@ -590,8 +562,11 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void open(int id) {
-		if (isMoving) return;
+		open(id, true);
+	}
 
+	public void open(int id, boolean animate) {
+		if (isMoving && animate) return;
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
@@ -603,15 +578,15 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			setTitle(object.getString(App.NAME));
 
-			scroller.startScroll(currentContentOffset, 0, -width, 0, App.ANIMATION_DURATION);
-			scrollHandler.postDelayed(scrollRunnable, scrollFps);
+			if (animate) {
+				scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, App.ANIMATION_DURATION);
+				scrollHandler.postDelayed(scrollRunnable, scrollFps);
+			}
 
 			posInWrapper++;
 
-			if (contentViews.size() > posInWrapper) contentViews.remove(posInWrapper);
-
 			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskContentView(this, openObjectId));
-			else contentViews.add(posInWrapper, new ItemView(this, openObjectId));
+			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 
 			backButton.setVisibility(View.VISIBLE);
 			dragButton.setVisibility(View.GONE);
@@ -619,6 +594,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		} catch (JSONException e) {
 			e.printStackTrace();
+		}
+
+		for (ContentView i : contentViews) {
+			Log.i("asdasd", contentViews.indexOf(i) + "");
 		}
 	}
 
@@ -636,9 +615,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		try {
 			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
 
-			setTitle(new JSONObject(data.getString(object.getInt(App.PARENT_ID) + "")).getString(App.NAME));
+			if (object.has(App.PARENT_ID + "") && data.has(object.getInt(App.PARENT_ID) + "")) setTitle(new JSONObject(data.getString(object.getInt(App.PARENT_ID) + "")).getString(App.NAME));
 
 			openObjectId = object.getInt(App.PARENT_ID);
+
 			object = new JSONObject(data.getString(openObjectId + ""));
 
 			if (object.getString(App.TYPE).equals(App.FOLDER)) {
@@ -650,11 +630,14 @@ public class MainActivity extends FlyInFragmentActivity {
 				}
 			}
 
-			scroller.startScroll(currentContentOffset, 0, width, 0, App.ANIMATION_DURATION);
+			scroller.startScroll(currentContentOffset, 0, getContentWidth(), 0, App.ANIMATION_DURATION);
 			scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
-			contentViews.get(posInWrapper).leave();
+			if (contentViews.size() > posInWrapper) contentViews.get(posInWrapper).leave();
 			posInWrapper--;
+
+			if (posInWrapper >= 0 && posInWrapper < contentViews.size()) if (contentViews.get(posInWrapper) == null) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
+
 			updateData();
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -664,10 +647,12 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void adjustContentPosition(boolean isAnimationOngoing) {
 		int offset = scroller.getCurrX();
 
-		LayoutParams params = new LayoutParams(width, height);
-
-		params.setMargins(offset, 0, -offset, 0);
 		for (int i = 0; i < wrapper.getChildCount(); i++) {
+			LayoutParams params;
+			if (wrapper.getChildAt(i).getLayoutParams() != null) params = (LayoutParams) wrapper.getChildAt(i).getLayoutParams();
+			else params = new LayoutParams(getContentWidth(), LayoutParams.FILL_PARENT);
+
+			params.setMargins(offset, 0, -offset, 0);
 			wrapper.getChildAt(i).setLayoutParams(params);
 		}
 
@@ -775,7 +760,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void onBackPressed() {
 		if (isMoving) return;
 
-		if (getFlyInMenu().isMenuVisible()) {
+		if (getFlyInMenu().isVisible()) {
 			hideMenu();
 			return;
 		}
@@ -785,7 +770,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			return;
 		}
 
-		if (contentViews.get(posInWrapper) instanceof ItemView) {
+		if (posInWrapper < contentViews.size()) if (contentViews.get(posInWrapper) instanceof ItemView) {
 			if (((ItemView) contentViews.get(posInWrapper)).isInOptionsMode()) {
 				hideOptions();
 				return;
@@ -854,7 +839,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public int getContentWidth() {
-		return width;
+		if (isInMasterView()) return width - getMenuWidth();
+		else return width;
 	}
 
 	public int getContentHeight() {
@@ -899,14 +885,32 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 
-		savedInstanceState.putInt(App.OPEN_OBJECT_ID, openObjectId);
-		savedInstanceState.putInt("posInWrapper", posInWrapper);
+		// Saves all the parent ids of the content views from the first to the
+		// visible view (posInWrapper)
+		int[] parentIds = new int[posInWrapper + 1];
+		for (int i = 0; i < parentIds.length; i++) {
+			parentIds[i] = contentViews.get(i).getParentId();
+		}
+
+		savedInstanceState.putIntArray("contentViewsOpen", parentIds);
 	}
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
-		open(savedInstanceState.getInt(App.OPEN_OBJECT_ID));
-		posInWrapper = savedInstanceState.getInt("posInWrapper");
+		int parentIds[] = savedInstanceState.getIntArray("contentViewsOpen");
+
+		// Opens the first item as a menu item (since the first item among the
+		// content items should be a menu item)
+		openMenuItem(parentIds[0]);
+		
+		// Opens all the items without animating
+		for (int i = 1; i < parentIds.length; i++) {
+			open(parentIds[i], false);
+		}
+
+		// Scrolls to the content view which should be visible
+		scroller.startScroll(currentContentOffset, 0, -posInWrapper * getContentWidth(), 0);
+		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 	}
 }

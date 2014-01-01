@@ -13,7 +13,6 @@
     </style>
 
     <style name="editText" parent="android:style/Widget.EditText">
-        <item name="android:background">@color/transparent</item>
     </style>
 
 </resources>

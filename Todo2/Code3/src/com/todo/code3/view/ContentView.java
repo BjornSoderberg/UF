@@ -36,6 +36,8 @@ public abstract class ContentView extends LinearLayout {
 	
 	public abstract void updateContentItemsOrder();
 	
+	public abstract int getParentId();
+	
 	public MainActivity getActivity() {
 		return activity;
 	}

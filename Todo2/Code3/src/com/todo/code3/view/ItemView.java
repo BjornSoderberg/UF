@@ -6,20 +6,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.ItemAdapter;
-import com.todo.code3.animation.ChangeSizeAnimation;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.dialog.FolderSelectionDialog;
@@ -52,8 +50,7 @@ public class ItemView extends ContentView {
 	protected void init() {
 		LayoutInflater.from(activity).inflate(R.layout.item_view, this, true);
 
-		LayoutParams params = new LayoutParams(activity.getContentWidth(), activity.getContentHeight());
-		setLayoutParams(params);
+		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
 		contentItems = new ArrayList<ContentItem>();
 		selectedItems = new ArrayList<ContentItem>();
@@ -137,6 +134,7 @@ public class ItemView extends ContentView {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	public void expandView(final View view) {
@@ -306,22 +304,9 @@ public class ItemView extends ContentView {
 		optionsMode = true;
 		// Clears the selected items every time the options mode is entered
 		selectedItems.clear();
-
-		// Makes the list view smaller (no animation is needed)
-		// Earlier, the content at the bottom was hidden by the options bar
-		new Handler().postDelayed(new Runnable() {
-			public void run() {
-				listView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, activity.getContentHeight() - activity.getBarHeight()));
-				listView.requestLayout();
-			}
-		}, App.ANIMATION_DURATION);
 	}
 
 	public void exitOptionsMode() {
-		// only if already in the options mode, the list view will become
-		// smaller
-		if (optionsMode) new ChangeSizeAnimation(listView, App.ANIMATION_DURATION, activity.getContentHeight() - activity.getBarHeight(), activity.getBarHeight()).animate();
-
 		optionsMode = false;
 	}
 
@@ -355,5 +340,9 @@ public class ItemView extends ContentView {
 
 	public DynamicListView getListView() {
 		return listView;
+	}
+	
+	public int getParentId() {
+		return parentId;
 	}
 }

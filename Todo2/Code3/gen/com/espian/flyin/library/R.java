@@ -13,9 +13,11 @@ public final class R {
 		public static final int rbm_out_to_left = 0x7f040002;
 	}
 	public static final class color {
+		public static final int add_folder_text_color = 0x7f050009;
 		public static final int item_color_dark = 0x7f050002;
 		public static final int item_color_light = 0x7f050003;
 		public static final int item_text_color = 0x7f050001;
+		public static final int main_color = 0x7f050004;
 		public static final int menu_background = 0x7f050000;
 	}
 	public static final class dimen {

@@ -179,7 +179,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	public void setCustomView(int rid) {
 		mCustomStub.setLayoutResource(rid);
 		mCustomView = mCustomStub.inflate();
-		mCustomView.setVisibility(isMenuVisible() ? View.VISIBLE : View.GONE);
+		mCustomView.setVisibility(isVisible() ? View.VISIBLE : View.GONE);
 		requestLayout();
 	}
 
@@ -192,7 +192,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	public void setCustomView(View view) {
 		mMenuHolder.removeView(mCustomStub);
 		mMenuHolder.addView(mCustomView = view);
-		mCustomView.setVisibility(isMenuVisible() ? View.VISIBLE : View.GONE);
+		mCustomView.setVisibility(isVisible() ? View.VISIBLE : View.GONE);
 		requestLayout();
 	}
 
@@ -374,7 +374,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		expandingItemId = -1;
 	}
 
-	public boolean isMenuVisible() {
+	public boolean isVisible() {
 		return contentOffset != 0;
 	}
 
@@ -404,7 +404,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		Parcelable superState = super.onSaveInstanceState();
 		SavedState ss = new SavedState(superState);
 
-		ss.bShowMenu = isMenuVisible();
+		ss.bShowMenu = isVisible();
 
 		return ss;
 	}

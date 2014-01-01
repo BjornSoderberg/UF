@@ -114,7 +114,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	public boolean onInterceptTouchEvent(MotionEvent e) {
 		// If the menu is visible, the user is able to drag,
 		// as long as he does not drag on the menu
-		if (!isDragging && activity.getFlyInMenu().isMenuVisible()) {
+		if (!isDragging && activity.getFlyInMenu().isVisible()) {
 			return true;
 		}
 

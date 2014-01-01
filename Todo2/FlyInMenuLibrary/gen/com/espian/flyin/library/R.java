@@ -16,9 +16,11 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
+        public static int add_folder_text_color=0x7f050005;
         public static int item_color_dark=0x7f050002;
         public static int item_color_light=0x7f050003;
         public static int item_text_color=0x7f050001;
+        public static int main_color=0x7f050004;
         public static int menu_background=0x7f050000;
     }
     public static final class dimen {

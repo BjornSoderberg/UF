@@ -8,7 +8,7 @@
     <EditText
         android:id="@+id/descET"
         android:layout_width="match_parent"
-        android:layout_height="414dp"
+        android:layout_height="match_parent"
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"

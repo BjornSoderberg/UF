@@ -16,14 +16,16 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int divider_color=0x7f050004;
+        public static final int add_folder_text_color=0x7f050009;
+        public static final int divider_color=0x7f050005;
         public static final int item_color_dark=0x7f050002;
         public static final int item_color_light=0x7f050003;
         public static final int item_text_color=0x7f050001;
+        public static final int main_color=0x7f050004;
         public static final int menu_background=0x7f050000;
-        public static final int selected_light_gray=0x7f050005;
-        public static final int selected_semi_transparent=0x7f050006;
-        public static final int transparent=0x7f050007;
+        public static final int selected_light_gray=0x7f050006;
+        public static final int selected_semi_transparent=0x7f050007;
+        public static final int transparent=0x7f050008;
     }
     public static final class dimen {
         public static final int divider_height=0x7f060007;
