@@ -20,13 +20,6 @@ public abstract class ContentView extends LinearLayout {
 		
 		init();
 	}
-	
-	public ContentView(MainActivity activity){
-		super(activity);
-		this.activity = activity;
-		
-		init();
-	}
 
 	protected abstract void init();
 	
@@ -36,7 +29,9 @@ public abstract class ContentView extends LinearLayout {
 	
 	public abstract void updateContentItemsOrder();
 	
-	public abstract int getParentId();
+	public int getParentId() {
+		return parentId;
+	}
 	
 	public MainActivity getActivity() {
 		return activity;

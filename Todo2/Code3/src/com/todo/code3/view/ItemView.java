@@ -401,8 +401,4 @@ public class ItemView extends ContentView {
 	public DynamicListView getListView() {
 		return listView;
 	}
-
-	public int getParentId() {
-		return parentId;
-	}
 }

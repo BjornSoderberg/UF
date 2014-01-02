@@ -43,6 +43,9 @@ public class App {
 	public static final String PRIORITIZED = "prioritized";
 
 	public static final String OPEN_OBJECT_ID = "openObjectId";
+	
+	public static final String DUE_DATE = "dueDate";
+	public static final String REMINDER = "reminder";
 
 	public static final int BEZEL_AREA_DP = 16;
 	public static final int ANIMATION_DURATION = 300;

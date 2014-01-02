@@ -6,11 +6,11 @@
     android:orientation="vertical" >
 
     <Button
-        android:id="@id/done"
+        android:id="@+id/cancel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dip"
-        android:text="@string/done_label"
+        android:text="@string/cancel_label"
         android:textColor="@color/done_text_color"
         android:textSize="@dimen/done_label_size" />
 

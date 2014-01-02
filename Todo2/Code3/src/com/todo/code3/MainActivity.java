@@ -247,7 +247,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				updateData();
 			}
 		});
-		
+
 		sortSpinner.setVisibility(View.GONE);
 	}
 
@@ -400,27 +400,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void addDialog(View v) {
-		final Calendar calendar = Calendar.getInstance();
-
-		DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
-			public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
-				Toast.makeText(MainActivity.this, "new date:" + year + "-" + month + "-" + day, Toast.LENGTH_LONG).show();
-			}
-		};
-
-		TimePickerDialog.OnTimeSetListener l = new TimePickerDialog.OnTimeSetListener() {
-			public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
-				Toast.makeText(MainActivity.this, "new time:" + hourOfDay + "-" + minute, Toast.LENGTH_LONG).show();
-			}
-		};
-
-		final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false);
-		final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(l, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false, false);
-
-		datePickerDialog.setYearRange(1910, 2000);
-		datePickerDialog.show(getSupportFragmentManager(), "asd");
-		
-		if (true) return;
 		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
 			public void onResult(String name, String type) {
 				super.onResult(name, type);
@@ -575,8 +554,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateData();
 	}
 
-	public void setTaskDescription(String desc, int id) {
-		data = App.setProperty(App.DESCRIPTION, desc, id, data);
+	public void setProperty(String key, Object value, int id) {
+		data = App.setProperty(key, value, id, data);
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}

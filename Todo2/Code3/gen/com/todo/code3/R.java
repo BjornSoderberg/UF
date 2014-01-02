@@ -99,97 +99,103 @@ public final class R {
         public static final int white_item_selector=0x7f020008;
     }
     public static final class id {
-        public static final int addButton=0x7f090031;
-        public static final int ampm_hitspace=0x7f090023;
-        public static final int ampm_label=0x7f090024;
+        public static final int addButton=0x7f090035;
+        public static final int ampm_hitspace=0x7f090026;
+        public static final int ampm_label=0x7f090027;
         public static final int animator=0x7f090007;
-        public static final int backButton=0x7f09002e;
-        public static final int barBorder=0x7f090034;
-        public static final int bigWrapper=0x7f09002a;
-        public static final int bottomBar=0x7f090038;
-        public static final int button=0x7f090028;
-        public static final int center_view=0x7f09001d;
-        public static final int checkbox=0x7f090016;
+        public static final int backButton=0x7f090032;
+        public static final int barBorder=0x7f090038;
+        public static final int bigWrapper=0x7f09002e;
+        public static final int bottomBar=0x7f09003c;
+        public static final int button=0x7f09002c;
+        public static final int cancel=0x7f09000a;
+        public static final int cancel_button=0x7f09002a;
+        public static final int center_view=0x7f090020;
+        public static final int checkbox=0x7f090017;
         public static final int date_picker_day=0x7f090005;
         public static final int date_picker_header=0x7f090001;
         public static final int date_picker_month=0x7f090004;
         public static final int date_picker_month_and_day=0x7f090003;
         public static final int date_picker_year=0x7f090006;
         public static final int day_picker_selected_date_layout=0x7f090002;
-        public static final int descET=0x7f090019;
-        public static final int descTV=0x7f09001b;
+        public static final int descET=0x7f09001a;
+        public static final int descTV=0x7f09001c;
         public static final int done=0x7f090000;
-        public static final int done_button=0x7f090027;
-        public static final int drag=0x7f090018;
-        public static final int dragButton=0x7f09002d;
-        public static final int editText=0x7f090029;
-        public static final int empty=0x7f090014;
-        public static final int expand=0x7f090012;
-        public static final int expandIcon=0x7f090013;
-        public static final int fly_custom=0x7f09000d;
-        public static final int fly_listview=0x7f09000c;
-        public static final int fly_menu_holder=0x7f09000b;
+        public static final int done_button=0x7f09002b;
+        public static final int drag=0x7f090019;
+        public static final int dragButton=0x7f090031;
+        public static final int dueButton=0x7f09001e;
+        public static final int editText=0x7f09002d;
+        public static final int empty=0x7f090015;
+        public static final int expand=0x7f090013;
+        public static final int expandIcon=0x7f090014;
+        public static final int fly_custom=0x7f09000e;
+        public static final int fly_listview=0x7f09000d;
+        public static final int fly_menu_holder=0x7f09000c;
         public static final int fly_searchview=0x7f090009;
-        public static final int focusDummy=0x7f09001c;
-        public static final int hour_space=0x7f09001e;
-        public static final int hours=0x7f090020;
-        public static final int icon=0x7f090010;
-        public static final int item_checkbox=0x7f090011;
-        public static final int item_drag=0x7f090017;
-        public static final int item_prio=0x7f09000f;
-        public static final int item_text=0x7f09000e;
-        public static final int l=0x7f09002c;
-        public static final int line1=0x7f09002f;
-        public static final int line2=0x7f090030;
-        public static final int listview=0x7f090015;
-        public static final int minutes=0x7f090022;
-        public static final int minutes_space=0x7f090021;
+        public static final int focusDummy=0x7f09001d;
+        public static final int hour_space=0x7f090021;
+        public static final int hours=0x7f090023;
+        public static final int icon=0x7f090011;
+        public static final int item_checkbox=0x7f090012;
+        public static final int item_drag=0x7f090018;
+        public static final int item_prio=0x7f090010;
+        public static final int item_text=0x7f09000f;
+        public static final int l=0x7f090030;
+        public static final int line1=0x7f090033;
+        public static final int line2=0x7f090034;
+        public static final int listview=0x7f090016;
+        public static final int minutes=0x7f090025;
+        public static final int minutes_space=0x7f090024;
         public static final int month_text_view=0x7f090008;
-        public static final int name=0x7f090035;
-        public static final int nameET=0x7f090036;
-        public static final int nameTouchArea=0x7f090033;
-        public static final int rbm_item_text=0x7f09000a;
-        public static final int saveButton=0x7f09001a;
-        public static final int separator=0x7f09001f;
-        public static final int sortSpinner=0x7f090032;
-        public static final int time_picker=0x7f090026;
-        public static final int time_picker_dialog=0x7f090025;
-        public static final int topBar=0x7f09002b;
-        public static final int wrapper=0x7f090037;
+        public static final int name=0x7f090039;
+        public static final int nameET=0x7f09003a;
+        public static final int nameTouchArea=0x7f090037;
+        public static final int rbm_item_text=0x7f09000b;
+        public static final int reminderButton=0x7f09001f;
+        public static final int saveButton=0x7f09001b;
+        public static final int separator=0x7f090022;
+        public static final int sortSpinner=0x7f090036;
+        public static final int time_picker=0x7f090029;
+        public static final int time_picker_dialog=0x7f090028;
+        public static final int topBar=0x7f09002f;
+        public static final int wrapper=0x7f09003b;
     }
     public static final class layout {
-        public static final int date_picker_dialog=0x7f030000;
-        public static final int date_picker_done_button=0x7f030001;
-        public static final int date_picker_header_view=0x7f030002;
-        public static final int date_picker_selected_date=0x7f030003;
-        public static final int date_picker_view_animator=0x7f030004;
-        public static final int fly_item=0x7f030005;
-        public static final int fly_menu=0x7f030006;
-        public static final int folder_item=0x7f030007;
-        public static final int hierarchy_item=0x7f030008;
-        public static final int item_view=0x7f030009;
-        public static final int options_item=0x7f03000a;
-        public static final int task_content_view=0x7f03000b;
-        public static final int task_item=0x7f03000c;
-        public static final int time_header_label=0x7f03000d;
-        public static final int time_picker_dialog=0x7f03000e;
-        public static final int widget_config=0x7f03000f;
-        public static final int widget_layout=0x7f030010;
-        public static final int wrapper=0x7f030011;
-        public static final int year_label_text_view=0x7f030012;
+        public static final int date_picker_cancel_button=0x7f030000;
+        public static final int date_picker_dialog=0x7f030001;
+        public static final int date_picker_done_button=0x7f030002;
+        public static final int date_picker_header_view=0x7f030003;
+        public static final int date_picker_selected_date=0x7f030004;
+        public static final int date_picker_view_animator=0x7f030005;
+        public static final int fly_item=0x7f030006;
+        public static final int fly_menu=0x7f030007;
+        public static final int folder_item=0x7f030008;
+        public static final int hierarchy_item=0x7f030009;
+        public static final int item_view=0x7f03000a;
+        public static final int options_item=0x7f03000b;
+        public static final int task_content_view=0x7f03000c;
+        public static final int task_item=0x7f03000d;
+        public static final int time_header_label=0x7f03000e;
+        public static final int time_picker_dialog=0x7f03000f;
+        public static final int widget_config=0x7f030010;
+        public static final int widget_layout=0x7f030011;
+        public static final int wrapper=0x7f030012;
+        public static final int year_label_text_view=0x7f030013;
     }
     public static final class string {
         public static final int ampm_circle_radius_multiplier=0x7f080003;
-        public static final int app_name=0x7f08001b;
+        public static final int app_name=0x7f08001c;
+        public static final int cancel_label=0x7f08000b;
         public static final int circle_radius_multiplier=0x7f080000;
         public static final int circle_radius_multiplier_24HourMode=0x7f080001;
         /**  DO NOT TRANSLATE 
          */
-        public static final int day_of_week_label_typeface=0x7f080011;
-        public static final int day_picker_description=0x7f08000b;
+        public static final int day_of_week_label_typeface=0x7f080012;
+        public static final int day_picker_description=0x7f08000c;
         /**  Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] 
          */
-        public static final int deleted_key=0x7f080014;
+        public static final int deleted_key=0x7f080015;
         public static final int done_label=0x7f08000a;
         /** 
          Content description for the hour selector in the time picker, which displays
@@ -197,32 +203,32 @@ public final class R {
          [CHAR LIMIT=50]
     
          */
-        public static final int hour_picker_description=0x7f080015;
-        public static final int is_in_master_view=0x7f08001a;
-        public static final int item_is_selected=0x7f08000f;
+        public static final int hour_picker_description=0x7f080016;
+        public static final int is_in_master_view=0x7f08001b;
+        public static final int item_is_selected=0x7f080010;
         /** 
          Content description for the minute selector in the time picker, which displays
          selectable five-minute intervals along the inside edge of a circle, as in an analog clock.
          [CHAR LIMIT=50]
     
          */
-        public static final int minute_picker_description=0x7f080016;
+        public static final int minute_picker_description=0x7f080017;
         public static final int numbers_radius_multiplier_inner=0x7f080005;
         public static final int numbers_radius_multiplier_normal=0x7f080004;
         public static final int numbers_radius_multiplier_outer=0x7f080006;
-        public static final int radial_numbers_typeface=0x7f080017;
-        public static final int sans_serif=0x7f080010;
-        public static final int select_day=0x7f08000d;
-        public static final int select_hours=0x7f080018;
-        public static final int select_minutes=0x7f080019;
-        public static final int select_year=0x7f08000e;
+        public static final int radial_numbers_typeface=0x7f080018;
+        public static final int sans_serif=0x7f080011;
+        public static final int select_day=0x7f08000e;
+        public static final int select_hours=0x7f080019;
+        public static final int select_minutes=0x7f08001a;
+        public static final int select_year=0x7f08000f;
         public static final int selection_radius_multiplier=0x7f080002;
         public static final int text_size_multiplier_inner=0x7f080008;
         public static final int text_size_multiplier_normal=0x7f080007;
         public static final int text_size_multiplier_outer=0x7f080009;
-        public static final int time_placeholder=0x7f080012;
-        public static final int time_separator=0x7f080013;
-        public static final int year_picker_description=0x7f08000c;
+        public static final int time_placeholder=0x7f080013;
+        public static final int time_separator=0x7f080014;
+        public static final int year_picker_description=0x7f08000d;
     }
     public static final class style {
         /** 

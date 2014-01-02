@@ -3,42 +3,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    android:orientation="vertical" >
+    android:orientation="horizontal" >
 
-    <EditText
-        android:id="@+id/descET"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:ems="10"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:visibility="gone" >
+    <LinearLayout
+        android:layout_width="230dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-    </EditText>
+        <EditText
+            android:id="@+id/descET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:visibility="gone" >
+        </EditText>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:visibility="gone" />
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/descTV"
+        <TextView
+            android:id="@+id/descTV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Tap to write a description" />
+
+        <EditText
+            android:id="@+id/focusDummy"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:visibility="gone" >
+
+            <requestFocus />
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="Tap to write a description" />
-    
-    <EditText
-        android:id="@+id/focusDummy"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:ems="10"
-        android:visibility="gone"
-        android:inputType="textMultiLine" >
+        android:orientation="vertical" >
 
-        <requestFocus />
-    </EditText>
+        <Button
+            android:id="@+id/dueButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set due date" />
+
+        <Button
+            android:id="@+id/reminderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set reminder" />
+
+    </LinearLayout>
 
 </LinearLayout>
