@@ -1,5 +1,7 @@
 package com.todo.code3.misc;
 
+import java.util.Calendar;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,7 +45,7 @@ public class App {
 	public static final String PRIORITIZED = "prioritized";
 
 	public static final String OPEN_OBJECT_ID = "openObjectId";
-	
+
 	public static final String DUE_DATE = "dueDate";
 	public static final String REMINDER = "reminder";
 
@@ -56,7 +58,7 @@ public class App {
 	public static final int OPTIONS_GROUP_ITEMS = 1;
 	public static final int OPTIONS_SELECT_ALL = 2;
 	public static final int OPTIONS_MOVE = 3;
-	
+
 	// Ids for sorting
 	public static final int SORT_PRIORITIZED = 0;
 	public static final int SORT_TIMESTAMP_CREATED = 1;
@@ -350,6 +352,33 @@ public class App {
 		}
 
 		return sb.toString();
+	}
+
+	public static int[] getDifferenceBetweenTimestamps(long t1, long t2) {
+		if(t1 > t2) return null;
+		
+		// years, months, days, hours, minutes
+		int[] time = new int[5];
+		
+		Calendar c1 = Calendar.getInstance();
+		Calendar c2 = Calendar.getInstance();
+		
+		c1.setTimeInMillis(t1 * 1000);
+		c2.setTimeInMillis(t2 * 1000);
+		
+		int years = c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR);
+		int months = c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
+		int days = c2.get(Calendar.DAY_OF_YEAR) - c1.get(Calendar.DAY_OF_YEAR);
+		int hours = c2.get(Calendar.HOUR_OF_DAY) - c1.get(Calendar.HOUR_OF_DAY);
+		int minutes = c2.get(Calendar.MINUTE) - c1.get(Calendar.MINUTE);
+		
+		time[0] = years;
+		time[1] = months;
+		time[2] = days;
+		time[3] = hours;
+		time[4] = minutes;
+
+		return time;
 	}
 
 	public static void showKeyboard(Context c) {

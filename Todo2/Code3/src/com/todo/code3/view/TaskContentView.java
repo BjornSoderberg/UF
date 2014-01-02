@@ -5,8 +5,7 @@ import java.util.Calendar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -24,7 +24,7 @@ import com.sleepbot.datetimepicker.time.TimePickerDialog.OnTimeSetListener;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.misc.App;
-import com.todo.code3.notification.NotificationService;
+import com.todo.code3.notification.NotificationReceiver;
 
 public class TaskContentView extends ContentView {
 
@@ -102,7 +102,7 @@ public class TaskContentView extends ContentView {
 				if (task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(task.getLong(App.DUE_DATE) * 1000);
-					setDueDateButton.setText("Due date:" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR));
+					setDueDateButton.setText("Due date:" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR) + "(at " + calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE) + ")");
 				}
 
 				if (task.has(App.REMINDER) && task.getLong(App.REMINDER) != -1) {
@@ -156,23 +156,23 @@ public class TaskContentView extends ContentView {
 					date[0] = year;
 					date[1] = month;
 					date[2] = day;
-					selectTime(tsl);
+					selectTime(tsl, type);
 				}
 			}
 		};
 
-		selectDate(dsl);
+		selectDate(dsl, type);
 	}
 
-	private void selectDate(OnDateSetListener dsl) {
+	private void selectDate(OnDateSetListener dsl, String type) {
 		Calendar calendar = Calendar.getInstance();
 		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 		try {
-			if (task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) {
-				calendar.setTimeInMillis(task.getLong(App.DUE_DATE) * 1000);
+			if (task.has(type) && task.getLong(type) != -1) {
+				calendar.setTimeInMillis(task.getLong(type) * 1000);
 
 				year = calendar.get(Calendar.YEAR);
 				month = calendar.get(Calendar.MONTH);
@@ -187,14 +187,14 @@ public class TaskContentView extends ContentView {
 		dpd.show(activity.getSupportFragmentManager(), "datepicker");
 	}
 
-	private void selectTime(OnTimeSetListener tsl) {
+	private void selectTime(OnTimeSetListener tsl, String type) {
 		Calendar calendar = Calendar.getInstance();
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		int minute = calendar.get(Calendar.MINUTE);
 
 		try {
-			if (task.has(App.DUE_DATE) && task.getInt(App.DUE_DATE) != -1) {
-				calendar.setTimeInMillis(task.getInt(App.DUE_DATE));
+			if (task.has(type) && task.getLong(type) != -1) {
+				calendar.setTimeInMillis(task.getLong(type) * 1000);
 
 				hour = calendar.get(Calendar.HOUR_OF_DAY);
 				minute = calendar.get(Calendar.MINUTE);
@@ -211,37 +211,33 @@ public class TaskContentView extends ContentView {
 		Calendar calendar = Calendar.getInstance();
 
 		if (date[0] != -1 && date[1] != -1 && date[2] != -1) {
-			if (time[0] != -1 && time[1] != -1) calendar.set(date[0], date[1], date[2], time[1], time[1], 0);
+			if (time[0] != -1 && time[1] != -1) calendar.set(date[0], date[1], date[2], time[0], time[1], 0);
 			else calendar.set(date[0], date[1], date[2], 12, 0, 0);
 
 			long timestamp = calendar.getTimeInMillis() / 1000;
 
 			activity.setProperty(type, timestamp, parentId);
+
+			if (type.equals(App.REMINDER)) setReminder(timestamp);
+			// The user must also be able to remove a notification
+			// The correct pending intent is gotten by using the parentId as
+			// request code
+		}
+	}
+
+	private void setReminder(long timestamp) {
+		Intent i = new Intent(activity, NotificationReceiver.class);
+		i.putExtra(App.ID, parentId);
+
+		try {
+			if (task.has(App.NAME)) i.putExtra(App.NAME, task.getString(App.NAME));
+			if (task.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, task.getLong(App.DUE_DATE));
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
-		// AlarmManager am = (AlarmManager)
-		// activity.getSystemService(Context.ALARM_SERVICE);
-		//
-		// Intent i = new Intent();
-		// i.setClass(activity, NotificationService.class);
-		// i.putExtra("msg", "message?");
-		// PendingIntent p = PendingIntent.getService(activity, 0, i, 0);
-		//
-		// am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 4000,
-		// p);
-
-		NotificationManager notificationManager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		String tickerText = "ticker text";
-		long when = System.currentTimeMillis() - 1907890000;
-		String title = "title";
-		String text = "text";
-		Intent i = new Intent(activity, MainActivity.class);
-		PendingIntent p = PendingIntent.getActivity(activity, 0, i, 0);
-		Notification n = new Notification(R.drawable.ic_launcher, tickerText, when);
-		n.setLatestEventInfo(activity, title + when, text + System.currentTimeMillis(), p);
-		
-		notificationManager.notify(123, n);
+		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+		am.set(AlarmManager.RTC_WAKEUP, timestamp * 1000, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
 	public void leave() {
