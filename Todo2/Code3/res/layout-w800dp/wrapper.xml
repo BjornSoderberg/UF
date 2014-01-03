@@ -6,170 +6,20 @@
     android:background="#bbbbbb"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#35ADCF"
-        android:orientation="horizontal" />
-
-    <LinearLayout
-        android:id="@+id/l"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal" >
-
-        <FrameLayout
-            android:id="@+id/dragButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:visibility="gone" >
-
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="@dimen/item_image_width"
-                android:layout_height="@dimen/item_image_height"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:src="@drawable/menu" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/backButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:onClick="goBack"
-            android:visibility="gone" >
-
-            <ImageView
-                android:id="@id/icon"
-                android:layout_width="@dimen/item_image_width"
-                android:layout_height="@dimen/item_image_height"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:src="@drawable/plus" />
-        </FrameLayout>
-    </LinearLayout>
-
-    <!-- Border lines for buttons -->
-
-    <LinearLayout
-        android:id="@+id/line1"
-        android:layout_width="2px"
-        android:layout_height="40dp"
-        android:layout_alignRight="@+id/l"
-        android:background="#298DA9"
-        android:enabled="false"
-        android:orientation="horizontal" />
-
-    <LinearLayout
-        android:id="@+id/line2"
-        android:layout_width="2px"
-        android:layout_height="40dp"
-        android:layout_alignLeft="@+id/addButton"
-        android:background="#298DA9"
-        android:enabled="false"
-        android:orientation="horizontal" />
-    <!-- End of border lines for buttons -->
-
-    <FrameLayout
-        android:id="@+id/addButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:onClick="addDialog" >
-
-        <ImageView
-            android:id="@id/icon"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:src="@drawable/plus" />
-    </FrameLayout>
-
-    <Spinner
-        android:id="@+id/sortSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <!-- Title -->
-
-    <RelativeLayout
-        android:id="@+id/nameTouchArea"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/barBorder"
-        android:layout_alignLeft="@+id/line1"
-        android:layout_alignRight="@+id/line2" >
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:singleLine="true"
-            android:text="Title"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/text_large" />
-
-        <EditText
-            android:id="@+id/nameET"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/saveButton"
-            android:gravity="center"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:singleLine="true"
-            android:textColor="#ffffff"
-            android:visibility="gone" >
-        </EditText>
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:text="Save"
-            android:visibility="gone" />
-    </RelativeLayout>
-
-    <!-- End of title -->
-
-    <LinearLayout
-        android:id="@+id/barBorder"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_below="@+id/topBar"
-        android:background="#298DA9"
-        android:orientation="horizontal" >
-    </LinearLayout>
+    <include layout="@layout/title_bar" />
 
     <LinearLayout
         android:id="@+id/wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomBar"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/barBorder"
         android:background="#cccccc"
         android:orientation="horizontal" >
     </LinearLayout>
-
-    <!-- Start of options bar -->
 
     <com.todo.code3.xml.OptionsBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
         android:background="#35ADCF"
         android:orientation="horizontal"
         android:visibility="gone" >
@@ -184,5 +34,10 @@
 
         <requestFocus />
     </EditText>
+
+    <Spinner
+        android:id="@+id/sortSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </com.todo.code3.xml.Wrapper>

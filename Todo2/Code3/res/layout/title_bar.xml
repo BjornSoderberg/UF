@@ -1,0 +1,150 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="#35ADCF"
+        android:orientation="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/l"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+
+        <FrameLayout
+            android:id="@+id/dragButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp" >
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="@dimen/item_image_width"
+                android:layout_height="@dimen/item_image_height"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/menu" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:onClick="goBack"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@id/icon"
+                android:layout_width="@dimen/item_image_width"
+                android:layout_height="@dimen/item_image_height"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/plus" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Border lines for buttons -->
+
+    <LinearLayout
+        android:id="@+id/line1"
+        android:layout_width="2px"
+        android:layout_height="40dp"
+        android:layout_alignRight="@+id/l"
+        android:background="#298DA9"
+        android:enabled="false"
+        android:orientation="horizontal"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/line2"
+        android:layout_width="2px"
+        android:layout_height="40dp"
+        android:layout_alignLeft="@+id/addButton"
+        android:background="#298DA9"
+        android:enabled="false"
+        android:orientation="horizontal" />
+    <!-- End of border lines for buttons -->
+
+    <FrameLayout
+        android:id="@+id/addButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="addDialog" >
+
+        <ImageView
+            android:id="@id/icon"
+            android:layout_width="@dimen/item_image_width"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/plus" />
+    </FrameLayout>
+
+    <!-- Title -->
+
+    <RelativeLayout
+        android:id="@+id/nameTouchArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/barBorder"
+        android:layout_alignLeft="@+id/line1"
+        android:layout_alignRight="@+id/line2" >
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:singleLine="true"
+            android:text="Title"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_large" />
+
+        <EditText
+            android:id="@+id/nameET"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/saveButton"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:singleLine="true"
+            android:textColor="#ffffff"
+            android:visibility="gone" >
+        </EditText>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:text="Save"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <!-- End of title -->
+
+    <LinearLayout
+        android:id="@+id/barBorder"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_below="@+id/topBar"
+        android:background="#298DA9"
+        android:orientation="horizontal" >
+    </LinearLayout>
+
+</RelativeLayout>

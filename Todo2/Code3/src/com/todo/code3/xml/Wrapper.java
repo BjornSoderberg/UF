@@ -2,18 +2,17 @@ package com.todo.code3.xml;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.gesture.SimpleGestureFilter;
 import com.todo.code3.gesture.SimpleGestureFilter.SimpleGestureListener;
 import com.todo.code3.misc.App;
 
-public class Wrapper extends RelativeLayout implements SimpleGestureListener {
+public class Wrapper extends LinearLayout implements SimpleGestureListener {
 
 	private int x, y, startX, startY, lastX;
 

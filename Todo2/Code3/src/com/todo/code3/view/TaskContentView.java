@@ -234,6 +234,9 @@ public class TaskContentView extends ContentView {
 			// The correct pending intent is gotten by using the parentId as
 			// request code
 		}
+
+		for (int i : date)
+			i = -1;
 	}
 
 	private void setReminder(long timestamp) {

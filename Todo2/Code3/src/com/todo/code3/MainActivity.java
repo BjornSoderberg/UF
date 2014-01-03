@@ -230,25 +230,25 @@ public class MainActivity extends FlyInFragmentActivity {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-		sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
-		sortSpinner.setAdapter(adapter);
-		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				int position = sortSpinner.getSelectedItemPosition();
-
-				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
-
-				updateData();
-			}
-
-			public void onNothingSelected(AdapterView<?> arg0) {
-				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
-
-				updateData();
-			}
-		});
-
-		sortSpinner.setVisibility(View.GONE);
+//		sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
+//		sortSpinner.setAdapter(adapter);
+//		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+//			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+//				int position = sortSpinner.getSelectedItemPosition();
+//
+//				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
+//
+//				updateData();
+//			}
+//
+//			public void onNothingSelected(AdapterView<?> arg0) {
+//				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
+//
+//				updateData();
+//			}
+//		});
+//
+//		sortSpinner.setVisibility(View.GONE);
 	}
 
 	private void initAddButton() {
