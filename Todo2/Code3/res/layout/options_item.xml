@@ -5,40 +5,23 @@
     android:background="#ffffff"
     android:orientation="horizontal" >
 
-    <FrameLayout
-        android:id="@+id/item_checkbox"
-        android:layout_width="@dimen/item_height"
-        android:layout_height="@dimen/item_height"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="@dimen/item_padding_leftright"
-        android:layout_centerVertical="true" >
-
-        <ImageView
-            android:id="@+id/checkbox"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:src="@drawable/box" />
-    </FrameLayout>
-
     <TextView
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="@dimen/item_height"
-        android:layout_toRightOf="@+id/item_checkbox"
-        android:ellipsize="end"
         android:layout_toLeftOf="@+id/item_drag"
-        android:singleLine="true"
+        android:ellipsize="end"
         android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/item_text_padding_left"
+        android:paddingLeft="@dimen/item_text_padding_left"
+        android:singleLine="true"
         android:text="No name"
         android:textColor="#585858"
         android:textSize="@dimen/item_text_size" />
-    
+
     <FrameLayout
         android:id="@+id/item_drag"
         android:layout_width="@dimen/item_height"

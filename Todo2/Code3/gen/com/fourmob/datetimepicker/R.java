@@ -13,11 +13,11 @@ public final class R {
 		public static final int calendar_header = 0x7f060009;
 		public static final int circle_background = 0x7f060001;
 		public static final int darker_blue = 0x7f060007;
-		public static final int date_picker_selector = 0x7f060018;
+		public static final int date_picker_selector = 0x7f06001a;
 		public static final int date_picker_text_normal = 0x7f060008;
 		public static final int date_picker_view_animator = 0x7f06000a;
-		public static final int date_picker_year_selector = 0x7f060019;
-		public static final int done_text_color = 0x7f06001a;
+		public static final int date_picker_year_selector = 0x7f06001b;
+		public static final int done_text_color = 0x7f06001c;
 		public static final int done_text_color_disabled = 0x7f060004;
 		public static final int done_text_color_normal = 0x7f060003;
 		public static final int line_background = 0x7f060002;

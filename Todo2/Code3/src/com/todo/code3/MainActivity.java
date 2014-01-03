@@ -21,6 +21,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -230,25 +231,25 @@ public class MainActivity extends FlyInFragmentActivity {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-//		sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
-//		sortSpinner.setAdapter(adapter);
-//		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-//			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//				int position = sortSpinner.getSelectedItemPosition();
-//
-//				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
-//
-//				updateData();
-//			}
-//
-//			public void onNothingSelected(AdapterView<?> arg0) {
-//				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
-//
-//				updateData();
-//			}
-//		});
-//
-//		sortSpinner.setVisibility(View.GONE);
+		sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
+		sortSpinner.setAdapter(adapter);
+		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				int position = sortSpinner.getSelectedItemPosition();
+
+				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
+
+				updateData();
+			}
+
+			public void onNothingSelected(AdapterView<?> arg0) {
+				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
+
+				updateData();
+			}
+		});
+
+		sortSpinner.setVisibility(View.GONE);
 	}
 
 	private void initAddButton() {
@@ -896,7 +897,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		// Menu items are listed in reverse order when compared to
 		// the other items. Therefore, I put the last item first.
 		for (int i = getFlyInMenu().getMenuItems().size() - 1; i >= 0; i--) {
-			order += getFlyInMenu().getMenuItems().get(i).getId() + ",";
+			order += ((BaseAdapter) getFlyInMenu().getListView().getAdapter()).getItemId(i) + ",";
 		}
 
 		// Removes the last ',' from the string

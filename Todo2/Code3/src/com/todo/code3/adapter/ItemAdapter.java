@@ -2,6 +2,7 @@ package com.todo.code3.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,14 +52,13 @@ public class ItemAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final ContentItem item = itemView.getContentItems().get(position);
 
+		Log.i("asdasd", movingId + "");
+
 		View view = null;
 		if (itemView.isInOptionsMode()) view = getOptionsView(position, item);
 		else if (item instanceof TaskItem) view = getTaskView(position, (TaskItem) item);
 		else if (item instanceof FolderItem) view = getFolderView(position, (FolderItem) item);
 		if (view == null) return null;
-		
-		// Sets the background (which is dependent on its state (pressed, focused etc.))
-		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
 
 		// Assures that all the views have the same height
 		if (view.getLayoutParams() != null) view.getLayoutParams().height = itemView.getItemHeight();
@@ -66,7 +66,6 @@ public class ItemAdapter extends BaseAdapter {
 
 		if (item.getId() == movingId && itemView.getListView().isDragging()) {
 			view.setVisibility(View.INVISIBLE);
-			movingId = -1;
 		}
 
 		if (item.getId() == itemView.getExpandingItemId()) {
@@ -81,12 +80,6 @@ public class ItemAdapter extends BaseAdapter {
 
 	private View getOptionsView(int position, final ContentItem item) {
 		View view = inflater.inflate(R.layout.options_item, null);
-
-		FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
-		ImageView iv = (ImageView) fl.findViewById(R.id.checkbox);
-
-		if (itemView.isSelected(item.getId())) iv.setImageResource(R.drawable.checked);
-		else iv.setImageResource(R.drawable.box);
 
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (edit)");
@@ -103,13 +96,18 @@ public class ItemAdapter extends BaseAdapter {
 			}
 		});
 
-		fl.setOnClickListener(new OnClickListener() {
+		text.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
 				itemView.toggleItem(item.getId());
 			}
 		});
+
+		// Sets the background (which is dependent on its state (pressed,
+		// focused etc.))
+		if (itemView.isSelected(item.getId())) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.blue_item_selector));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
 
 		return view;
 	}
@@ -124,7 +122,7 @@ public class ItemAdapter extends BaseAdapter {
 		// Is prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
 		ImageView i = (ImageView) view.findViewById(R.id.icon);
-		
+
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
@@ -160,6 +158,10 @@ public class ItemAdapter extends BaseAdapter {
 			text.setPaintFlags(257);
 		}
 
+		// Sets the background (which is dependent on its state (pressed,
+		// focused etc.))
+		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+
 		return view;
 	}
 
@@ -185,6 +187,10 @@ public class ItemAdapter extends BaseAdapter {
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle());
+
+		// Sets the background (which is dependent on its state (pressed,
+		// focused etc.))
+		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
 
 		return view;
 	}

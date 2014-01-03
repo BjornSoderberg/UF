@@ -13,7 +13,7 @@ public final class R {
 		public static final int rbm_out_to_left = 0x7f040002;
 	}
 	public static final class color {
-		public static final int add_folder_text_color = 0x7f060017;
+		public static final int add_folder_text_color = 0x7f060019;
 		public static final int item_color_dark = 0x7f060010;
 		public static final int item_color_light = 0x7f060011;
 		public static final int item_text_color = 0x7f06000f;
@@ -30,8 +30,8 @@ public final class R {
 		public static final int item_text_size = 0x7f070024;
 	}
 	public static final class drawable {
-		public static final int fly_item_background = 0x7f020002;
-		public static final int fly_item_background_light = 0x7f020003;
+		public static final int fly_item_background = 0x7f020003;
+		public static final int fly_item_background_light = 0x7f020004;
 	}
 	public static final class id {
 		public static final int fly_custom = 0x7f09000e;

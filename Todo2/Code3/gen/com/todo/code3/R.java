@@ -16,28 +16,30 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int add_folder_text_color=0x7f060017;
+        public static final int add_folder_text_color=0x7f060019;
         public static final int ampm_text_color=0x7f06000b;
         public static final int blue=0x7f060005;
         public static final int calendar_header=0x7f060009;
         public static final int circle_background=0x7f060001;
         public static final int darker_blue=0x7f060007;
-        public static final int date_picker_selector=0x7f060018;
+        public static final int date_picker_selector=0x7f06001a;
         public static final int date_picker_text_normal=0x7f060008;
         public static final int date_picker_view_animator=0x7f06000a;
-        public static final int date_picker_year_selector=0x7f060019;
+        public static final int date_picker_year_selector=0x7f06001b;
         public static final int divider_color=0x7f060013;
-        public static final int done_text_color=0x7f06001a;
+        public static final int done_text_color=0x7f06001c;
         public static final int done_text_color_disabled=0x7f060004;
         public static final int done_text_color_normal=0x7f060003;
         public static final int item_color_dark=0x7f060010;
         public static final int item_color_light=0x7f060011;
         public static final int item_text_color=0x7f06000f;
+        public static final int light_blue=0x7f060017;
         public static final int line_background=0x7f060002;
         public static final int main_color=0x7f060012;
         public static final int menu_background=0x7f06000e;
         public static final int numbers_text_color=0x7f06000c;
         public static final int red=0x7f060006;
+        public static final int selected_light_blue=0x7f060018;
         public static final int selected_light_gray=0x7f060014;
         public static final int selected_semi_transparent=0x7f060015;
         public static final int transparent=0x7f060016;
@@ -89,15 +91,16 @@ public final class R {
         public static final int year_label_text_size=0x7f070010;
     }
     public static final class drawable {
-        public static final int box=0x7f020000;
-        public static final int checked=0x7f020001;
-        public static final int fly_item_background=0x7f020002;
-        public static final int fly_item_background_light=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int menu=0x7f020005;
-        public static final int plus=0x7f020006;
-        public static final int transparent_item_selector=0x7f020007;
-        public static final int white_item_selector=0x7f020008;
+        public static final int blue_item_selector=0x7f020000;
+        public static final int box=0x7f020001;
+        public static final int checked=0x7f020002;
+        public static final int fly_item_background=0x7f020003;
+        public static final int fly_item_background_light=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int menu=0x7f020006;
+        public static final int plus=0x7f020007;
+        public static final int transparent_item_selector=0x7f020008;
+        public static final int white_item_selector=0x7f020009;
     }
     public static final class id {
         public static final int addButton=0x7f090032;
@@ -112,20 +115,20 @@ public final class R {
         public static final int cancel=0x7f09000a;
         public static final int cancel_button=0x7f09002a;
         public static final int center_view=0x7f090020;
-        public static final int checkbox=0x7f090017;
+        public static final int checkbox=0x7f09001f;
         public static final int date_picker_day=0x7f090005;
         public static final int date_picker_header=0x7f090001;
         public static final int date_picker_month=0x7f090004;
         public static final int date_picker_month_and_day=0x7f090003;
         public static final int date_picker_year=0x7f090006;
         public static final int day_picker_selected_date_layout=0x7f090002;
-        public static final int descET=0x7f09001a;
-        public static final int descTV=0x7f09001c;
+        public static final int descET=0x7f090019;
+        public static final int descTV=0x7f09001b;
         public static final int done=0x7f090000;
         public static final int done_button=0x7f09002b;
-        public static final int drag=0x7f090019;
+        public static final int drag=0x7f090018;
         public static final int dragButton=0x7f09002e;
-        public static final int dueButton=0x7f09001e;
+        public static final int dueButton=0x7f09001d;
         public static final int editText=0x7f090038;
         public static final int empty=0x7f090015;
         public static final int expand=0x7f090013;
@@ -134,12 +137,12 @@ public final class R {
         public static final int fly_listview=0x7f09000d;
         public static final int fly_menu_holder=0x7f09000c;
         public static final int fly_searchview=0x7f090009;
-        public static final int focusDummy=0x7f09001d;
+        public static final int focusDummy=0x7f09001c;
         public static final int hour_space=0x7f090021;
         public static final int hours=0x7f090023;
         public static final int icon=0x7f090011;
         public static final int item_checkbox=0x7f090012;
-        public static final int item_drag=0x7f090018;
+        public static final int item_drag=0x7f090017;
         public static final int item_prio=0x7f090010;
         public static final int item_text=0x7f09000f;
         public static final int l=0x7f09002d;
@@ -153,8 +156,8 @@ public final class R {
         public static final int nameET=0x7f090036;
         public static final int nameTouchArea=0x7f090033;
         public static final int rbm_item_text=0x7f09000b;
-        public static final int reminderButton=0x7f09001f;
-        public static final int saveButton=0x7f09001b;
+        public static final int reminderButton=0x7f09001e;
+        public static final int saveButton=0x7f09001a;
         public static final int separator=0x7f090022;
         public static final int sortSpinner=0x7f09003c;
         public static final int time_picker=0x7f090029;

@@ -191,7 +191,7 @@ public class ItemView extends ContentView {
 	public void updateContentItemsOrder() {
 		String order = "";
 		for (int i = 0; i < contentItems.size(); i++) {
-			order += contentItems.get(i).getId() + ",";
+			order += adapter.getItemId(i) + ",";
 		}
 		// Removes the last ',' from the string
 		order = order.substring(0, order.length() - 1);
@@ -203,7 +203,7 @@ public class ItemView extends ContentView {
 		for (ContentItem i : selectedItems) {
 			if (i.getId() == id) {
 				selectedItems.remove(i);
-				updateIcon(id);
+				updateBackgroundColor(id);
 				return;
 			}
 		}
@@ -212,18 +212,18 @@ public class ItemView extends ContentView {
 		for (ContentItem i : contentItems) {
 			if (i.getId() == id && !selectedItems.contains(i)) {
 				selectedItems.add(i);
-				updateIcon(id);
+				updateBackgroundColor(id);
 				return;
 			}
 		}
 	}
 
-	private void updateIcon(int id) {
-		if (getViewById(id) == null) return;
-		if ((ImageView) getViewById(id).findViewById(R.id.checkbox) == null) return;
+	private void updateBackgroundColor(int id) {
+		View v = getViewById(id);
+		if (v == null) return;
 
-		if (isSelected(id)) ((ImageView) getViewById(id).findViewById(R.id.checkbox)).setImageResource(R.drawable.checked);
-		else ((ImageView) getViewById(id).findViewById(R.id.checkbox)).setImageResource(R.drawable.box);
+		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_item_selector));
+		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.white_item_selector));
 	}
 
 	public void performActionOnSelectedItems(int id) {
@@ -294,7 +294,7 @@ public class ItemView extends ContentView {
 		} else selectedItems.clear();
 
 		for (ContentItem i : contentItems)
-			updateIcon(i.getId());
+			updateBackgroundColor(i.getId());
 	}
 
 	private void moveSelectedItems() {

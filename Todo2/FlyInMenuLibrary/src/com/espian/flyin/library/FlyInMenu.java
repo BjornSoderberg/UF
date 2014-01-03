@@ -389,6 +389,10 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	public void setMovingItemId(int id) {
 		movingItemId = id;
 	}
+	
+	public DynamicListView getListView() {
+		return listView;
+	}
 
 	@Override
 	protected void onRestoreInstanceState(Parcelable state) {
@@ -480,7 +484,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 
 			if (item.getId() == movingItemId) {
 				view.setVisibility(View.INVISIBLE);
-				movingItemId = -1;
 			}
 			
 			if(item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));

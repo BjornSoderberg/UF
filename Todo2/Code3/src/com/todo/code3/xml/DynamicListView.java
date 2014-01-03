@@ -100,7 +100,7 @@ public class DynamicListView extends ListView {
 	};
 
 	public void startDragging() {
-		if (isDragging()) return;
+		if (isDragging() || mMobileItemId != INVALID_ID) return;
 
 		// Checks if the touch location in x is greater than the width - the
 		// width of the "reorder button"
@@ -124,6 +124,7 @@ public class DynamicListView extends ListView {
 		mCellIsMobile = true;
 
 		updateNeighborViewsForID(mMobileItemId);
+		((ItemAdapter) getAdapter()).setMovingItemId((int) mMobileItemId);
 	}
 
 	/**
@@ -136,9 +137,6 @@ public class DynamicListView extends ListView {
 		int h = v.getHeight();
 		int top = v.getTop();
 		int left = v.getLeft();
-
-		// Makes the selected view light gray
-		v.setBackgroundColor(getResources().getColor(R.color.selected_light_gray));
 
 		Bitmap b = getBitmapWithBorder(v);
 
@@ -334,7 +332,6 @@ public class DynamicListView extends ListView {
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
 					((ItemAdapter) getAdapter()).notifyDataSetChanged();
-					((ItemAdapter) getAdapter()).setMovingItemId((int) mMobileItemId);
 				}
 			}, MOVE_DURATION);
 
@@ -398,6 +395,7 @@ public class DynamicListView extends ListView {
 
 			new Handler().postDelayed(new Runnable() {
 				public void run() {
+					((ItemAdapter) getAdapter()).setMovingItemId(-1);
 					((BaseAdapter) getAdapter()).notifyDataSetChanged();
 					mAboveItemId = INVALID_ID;
 					mMobileItemId = INVALID_ID;
@@ -407,7 +405,7 @@ public class DynamicListView extends ListView {
 					setEnabled(true);
 					invalidate();
 
-					itemView.updateContentItemsOrder();
+//					itemView.updateContentItemsOrder();
 				}
 			}, MOVE_DURATION);
 
