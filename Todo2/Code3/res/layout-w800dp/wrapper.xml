@@ -6,14 +6,14 @@
     android:background="#bbbbbb"
     android:orientation="vertical" >
 
-    <include layout="@layout/title_bar" />
-
     <LinearLayout
-        android:id="@+id/wrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#cccccc"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/titleBar"
+            layout="@layout/title_bar" />
     </LinearLayout>
 
     <com.todo.code3.xml.OptionsBar
@@ -24,6 +24,14 @@
         android:orientation="horizontal"
         android:visibility="gone" >
     </com.todo.code3.xml.OptionsBar>
+
+    <LinearLayout
+        android:id="@+id/wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#cccccc"
+        android:orientation="horizontal" >
+    </LinearLayout>
 
     <EditText
         android:id="@+id/focusDummy"

@@ -11,7 +11,26 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
-        <include layout="@layout/title_bar" />
+        <include
+            android:id="@+id/titleBar"
+            layout="@layout/title_bar" />
+    </LinearLayout>
+
+    <com.todo.code3.xml.OptionsBar
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#35ADCF"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+    </com.todo.code3.xml.OptionsBar>
+
+    <LinearLayout
+        android:id="@+id/barBorder"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="#298DA9"
+        android:orientation="horizontal" >
     </LinearLayout>
 
     <LinearLayout
@@ -24,15 +43,6 @@
         android:background="#cccccc"
         android:orientation="horizontal" >
     </LinearLayout>
-
-    <com.todo.code3.xml.OptionsBar
-        android:id="@+id/bottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#35ADCF"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-    </com.todo.code3.xml.OptionsBar>
 
     <EditText
         android:id="@+id/focusDummy"

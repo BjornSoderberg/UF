@@ -52,8 +52,6 @@ public class ItemAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final ContentItem item = itemView.getContentItems().get(position);
 
-		Log.i("asdasd", movingId + "");
-
 		View view = null;
 		if (itemView.isInOptionsMode()) view = getOptionsView(position, item);
 		else if (item instanceof TaskItem) view = getTaskView(position, (TaskItem) item);

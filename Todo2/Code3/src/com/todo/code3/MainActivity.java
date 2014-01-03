@@ -67,6 +67,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private Button saveButton;
 	private FrameLayout dragButton, backButton;
 	private Spinner sortSpinner;
+	private LinearLayout titleBar;
 
 	private JSONObject data;
 
@@ -182,6 +183,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		((Wrapper) findViewById(R.id.bigWrapper)).setActivity(this);
 
 		wrapper = (LinearLayout) findViewById(R.id.wrapper);
+		
+		titleBar = (LinearLayout) findViewById(R.id.titleBar);
 
 		nameTV = (TextView) findViewById(R.id.name);
 		nameET = (EditText) findViewById(R.id.nameET);
@@ -202,7 +205,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		});
 
 		// This is the view that encapsulates the title
-		((RelativeLayout) findViewById(R.id.nameTouchArea)).setOnClickListener(new OnClickListener() {
+		((LinearLayout) findViewById(R.id.nameTouchArea)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				startEditTitle();
 			}
@@ -302,9 +305,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = barContentHeight;
 
 		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
-		((LinearLayout) findViewById(R.id.topBar)).getLayoutParams().height = barContentHeight;
+		((LinearLayout) findViewById(R.id.titleBar)).getLayoutParams().height = barContentHeight;
 
-		options.getLayoutParams().height = getBarHeight();
+		options.getLayoutParams().height = barContentHeight;
 	}
 
 	private void updateData() {
@@ -741,11 +744,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (isEditingTitle()) endEditTitle(false);
 
 		options.setVisibility(View.VISIBLE);
-		options.getLayoutParams().height = 1;
-
+		titleBar.setVisibility(View.GONE);
+		
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).enterOptionsMode();
-
-		new ExpandAnimation(options, App.ANIMATION_DURATION, getBarHeight()).animate();
 
 		options.clearOptionsItems();
 		options.addOptionsItem(App.OPTIONS_REMOVE);
@@ -760,20 +761,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (0 <= posInWrapper && posInWrapper < contentViews.size()) //
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).exitOptionsMode();
 
-		// Makes the hide animation only if the view is not already hidden
-		if (options.getVisibility() != View.GONE) {
-			new CollapseAnimation(options, App.ANIMATION_DURATION, getBarHeight()).animate();
-
-			new Handler().postDelayed(new Runnable() {
-				public void run() {
-					options.setVisibility(View.GONE);
-
-					// Waits for the hide animation to finish before
-					// updating the data (and the views)
-					updateData();
-				}
-			}, App.ANIMATION_DURATION);
-		} else updateData();
+		titleBar.setVisibility(View.VISIBLE);
+		options.setVisibility(View.GONE);
+		
+		updateData();
 	}
 
 	public void updateChildrenOrder(String children, int parentId) {
