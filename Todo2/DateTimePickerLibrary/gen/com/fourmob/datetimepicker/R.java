@@ -11,21 +11,22 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static int ampm_text_color=0x7f03000a;
+        public static int ampm_text_color=0x7f03000b;
         public static int blue=0x7f030005;
-        public static int calendar_header=0x7f030008;
+        public static int calendar_header=0x7f030009;
         public static int circle_background=0x7f030001;
-        public static int darker_blue=0x7f030006;
-        public static int date_picker_selector=0x7f03000d;
-        public static int date_picker_text_normal=0x7f030007;
-        public static int date_picker_view_animator=0x7f030009;
-        public static int date_picker_year_selector=0x7f03000e;
-        public static int done_text_color=0x7f03000f;
+        public static int darker_blue=0x7f030007;
+        public static int date_picker_selector=0x7f03000e;
+        public static int date_picker_text_normal=0x7f030008;
+        public static int date_picker_view_animator=0x7f03000a;
+        public static int date_picker_year_selector=0x7f03000f;
+        public static int done_text_color=0x7f030010;
         public static int done_text_color_disabled=0x7f030004;
         public static int done_text_color_normal=0x7f030003;
         public static int line_background=0x7f030002;
-        public static int numbers_text_color=0x7f03000b;
-        public static int transparent_black=0x7f03000c;
+        public static int numbers_text_color=0x7f03000c;
+        public static int red=0x7f030006;
+        public static int transparent_black=0x7f03000d;
         public static int white=0x7f030000;
     }
     public static final class dimen {

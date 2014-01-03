@@ -16,10 +16,21 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
 	private final Context mContext;
 	private final DatePickerController mController;
 	private CalendarDay mSelectedDay;
+	private int dueYear = -1, dueMonth = -1, dueDay = -1;
 
 	public SimpleMonthAdapter(Context context, DatePickerController datePickerController) {
 		this.mContext = context;
 		this.mController = datePickerController;
+		init();
+		setSelectedDay(this.mController.getSelectedDay());
+	}
+	
+	public SimpleMonthAdapter(Context context, DatePickerController datePickerController, int dueYear, int dueMonth, int dueDay) {
+		this.mContext = context;
+		this.mController = datePickerController;
+		this.dueYear = dueYear;
+		this.dueMonth = dueMonth;
+		this.dueDay = dueDay;
 		init();
 		setSelectedDay(this.mController.getSelectedDay());
 	}
@@ -45,7 +56,7 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
 		if (convertView != null)
 			simpleMonthView = (SimpleMonthView) convertView;
 		else {
-			simpleMonthView = new SimpleMonthView(this.mContext);
+			simpleMonthView = new SimpleMonthView(this.mContext, dueYear, dueMonth, dueDay);
 			simpleMonthView.setLayoutParams(new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			simpleMonthView.setClickable(true);
 			simpleMonthView.setOnDayClickListener(this);
@@ -56,7 +67,7 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
 		monthParams.clear();
 		int month = position % 12;
 		int year = position / 12 + this.mController.getMinYear();
-		Log.d("SimpleMonthAdapter", "Year: " + year + ", Month: " + month);
+//		Log.d("SimpleMonthAdapter", "Year: " + year + ", Month: " + month);
 		int selectedDay = -1;
 		if (isSelectedDayInMonth(year, month))
 			selectedDay = this.mSelectedDay.day;

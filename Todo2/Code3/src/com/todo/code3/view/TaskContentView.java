@@ -182,7 +182,18 @@ public class TaskContentView extends ContentView {
 			e.printStackTrace();
 		}
 
-		DatePickerDialog dpd = DatePickerDialog.newInstance(dsl, year, month, day);
+		DatePickerDialog dpd = null;
+		try {
+			if (type.equals(App.REMINDER) && task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) {
+				int due[] = App.getDueDate(task.getLong(App.DUE_DATE));
+				dpd = DatePickerDialog.newInstance(dsl, year, month, day, due[0], due[1], due[2]);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		if (dpd == null) dpd = DatePickerDialog.newInstance(dsl, year, month, day);
+
 		dpd.setYearRange(year - 1, 2037);
 		dpd.show(activity.getSupportFragmentManager(), "datepicker");
 	}

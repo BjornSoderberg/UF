@@ -28,10 +28,25 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
 	protected boolean mShowWeekNumber = false;
 	protected SimpleMonthAdapter.CalendarDay mTempDay = new SimpleMonthAdapter.CalendarDay();
 
+	private int dueYear = -1, dueMonth = -1, dueDay = -1;
+
 	public DayPickerView(Context context, DatePickerController datePickerController) {
 		super(context);
 		this.mController = datePickerController;
 		this.mController.registerOnDateChangedListener(this);
+		setLayoutParams(new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		setDrawSelectorOnTop(false);
+		init(context);
+		onDateChanged();
+	}
+
+	public DayPickerView(Context context, DatePickerController datePickerController, int dueYear, int dueMonth, int dueDay) {
+		super(context);
+		this.mController = datePickerController;
+		this.mController.registerOnDateChangedListener(this);
+		this.dueYear = dueYear;
+		this.dueMonth = dueMonth;
+		this.dueDay = dueDay;
 		setLayoutParams(new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		setDrawSelectorOnTop(false);
 		init(context);
@@ -63,8 +78,7 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
 	}
 
 	public boolean goTo(SimpleMonthAdapter.CalendarDay calendarDay, boolean scrollToTop, boolean selectDay, boolean displayMonth) {
-		if (selectDay)
-			this.mSelectedDay.set(calendarDay);
+		if (selectDay) this.mSelectedDay.set(calendarDay);
 
 		this.mTempDay.set(calendarDay);
 		int monthIndex = 12 * (calendarDay.year - this.mController.getMinYear()) + calendarDay.month;
@@ -100,8 +114,7 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
 
 	public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 		SimpleMonthView simpleMonthView = (SimpleMonthView) absListView.getChildAt(0);
-		if (simpleMonthView == null)
-			return;
+		if (simpleMonthView == null) return;
 		this.mPreviousScrollPosition = (absListView.getFirstVisiblePosition() * simpleMonthView.getHeight() - simpleMonthView.getBottom());
 		this.mPreviousScrollState = this.mCurrentScrollState;
 	}
@@ -126,8 +139,7 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
 	}
 
 	protected void setUpAdapter() {
-		if (this.mAdapter == null)
-			this.mAdapter = new SimpleMonthAdapter(getContext(), this.mController);
+		if (this.mAdapter == null) this.mAdapter = new SimpleMonthAdapter(getContext(), this.mController, dueYear, dueMonth, dueDay);
 		this.mAdapter.setSelectedDay(this.mSelectedDay);
 		this.mAdapter.notifyDataSetChanged();
 	}
@@ -145,7 +157,7 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	void setFrictionIfSupported(float friction) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			setFriction(friction);
 		}
 	}

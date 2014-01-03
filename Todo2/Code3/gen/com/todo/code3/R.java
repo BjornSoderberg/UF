@@ -16,31 +16,32 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int add_folder_text_color=0x7f060016;
-        public static final int ampm_text_color=0x7f06000a;
+        public static final int add_folder_text_color=0x7f060017;
+        public static final int ampm_text_color=0x7f06000b;
         public static final int blue=0x7f060005;
-        public static final int calendar_header=0x7f060008;
+        public static final int calendar_header=0x7f060009;
         public static final int circle_background=0x7f060001;
-        public static final int darker_blue=0x7f060006;
-        public static final int date_picker_selector=0x7f060017;
-        public static final int date_picker_text_normal=0x7f060007;
-        public static final int date_picker_view_animator=0x7f060009;
-        public static final int date_picker_year_selector=0x7f060018;
-        public static final int divider_color=0x7f060012;
-        public static final int done_text_color=0x7f060019;
+        public static final int darker_blue=0x7f060007;
+        public static final int date_picker_selector=0x7f060018;
+        public static final int date_picker_text_normal=0x7f060008;
+        public static final int date_picker_view_animator=0x7f06000a;
+        public static final int date_picker_year_selector=0x7f060019;
+        public static final int divider_color=0x7f060013;
+        public static final int done_text_color=0x7f06001a;
         public static final int done_text_color_disabled=0x7f060004;
         public static final int done_text_color_normal=0x7f060003;
-        public static final int item_color_dark=0x7f06000f;
-        public static final int item_color_light=0x7f060010;
-        public static final int item_text_color=0x7f06000e;
+        public static final int item_color_dark=0x7f060010;
+        public static final int item_color_light=0x7f060011;
+        public static final int item_text_color=0x7f06000f;
         public static final int line_background=0x7f060002;
-        public static final int main_color=0x7f060011;
-        public static final int menu_background=0x7f06000d;
-        public static final int numbers_text_color=0x7f06000b;
-        public static final int selected_light_gray=0x7f060013;
-        public static final int selected_semi_transparent=0x7f060014;
-        public static final int transparent=0x7f060015;
-        public static final int transparent_black=0x7f06000c;
+        public static final int main_color=0x7f060012;
+        public static final int menu_background=0x7f06000e;
+        public static final int numbers_text_color=0x7f06000c;
+        public static final int red=0x7f060006;
+        public static final int selected_light_gray=0x7f060014;
+        public static final int selected_semi_transparent=0x7f060015;
+        public static final int transparent=0x7f060016;
+        public static final int transparent_black=0x7f06000d;
         public static final int white=0x7f060000;
     }
     public static final class dimen {

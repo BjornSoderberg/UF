@@ -380,6 +380,19 @@ public class App {
 
 		return time;
 	}
+	
+	public static int[] getDueDate(long timestamp) {
+		int[] i = new int[3];
+		
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(timestamp * 1000);
+		
+		i[0] = c.get(Calendar.YEAR);
+		i[1] = c.get(Calendar.MONTH);
+		i[2] = c.get(Calendar.DAY_OF_MONTH);
+		
+		return i;
+	}
 
 	public static void showKeyboard(Context c) {
 		((InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);

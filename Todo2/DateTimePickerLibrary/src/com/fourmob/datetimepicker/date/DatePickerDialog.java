@@ -59,6 +59,8 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 	private TextView mYearView;
 	private DateFormatSymbols dateformartsymbols = new DateFormatSymbols();
 
+	private static int dueYear = -1, dueMonth = -1, dueDay = -1;
+
 	private boolean mVibrate = false;
 
 	private void adjustDayInMonthIfNeeded(int month, int year) {
@@ -70,14 +72,19 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 	public DatePickerDialog() {
 		// Empty constructor required for dialog fragment. DO NOT REMOVE
 	}
-
+	
 	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day) {
-		return newInstance(onDateSetListener, year, month, day, false);
+		return newInstance(onDateSetListener, year, month, day, -1, -1, -1, false);
 	}
 
-	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, boolean vibrate) {
+	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, int dueYear, int dueMonth, int dueDay) {
+		return newInstance(onDateSetListener, year, month, day, dueYear, dueMonth, dueDay, false);
+	}
+
+	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, int dueYear, int dueMonth, int dueDay, boolean vibrate) {
 		DatePickerDialog datePickerDialog = new DatePickerDialog();
 		datePickerDialog.initialize(onDateSetListener, year, month, day, vibrate);
+		setDueDate(dueYear, dueMonth, dueDay);
 		return datePickerDialog;
 	}
 
@@ -87,6 +94,12 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 
 	private void setCurrentView(int currentView) {
 		setCurrentView(currentView, false);
+	}
+
+	public static void setDueDate(int year, int month, int day) {
+		dueYear = year;
+		dueMonth = month;
+		dueDay = day;
 	}
 
 	private void setCurrentView(int currentView, boolean forceRefresh) {
@@ -217,7 +230,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 			listPositionOffset = bundle.getInt("list_position_offset");
 		}
 		Activity activity = getActivity();
-		this.mDayPickerView = new DayPickerView(activity, this);
+		this.mDayPickerView = new DayPickerView(activity, this, dueYear, dueMonth, dueDay);
 		this.mYearPickerView = new YearPickerView(activity, this);
 		Resources resources = getResources();
 		this.mDayPickerDescription = resources.getString(R.string.day_picker_description);

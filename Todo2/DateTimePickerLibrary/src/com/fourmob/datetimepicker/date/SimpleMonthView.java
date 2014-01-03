@@ -1,5 +1,12 @@
 package com.fourmob.datetimepicker.date;
 
+import java.security.InvalidParameterException;
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -7,17 +14,12 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.format.DateUtils;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.fourmob.datetimepicker.R;
 import com.fourmob.datetimepicker.Utils;
-
-import java.security.InvalidParameterException;
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Locale;
 
 public class SimpleMonthView extends View {
 	protected static int DAY_SELECTED_CIRCLE_SIZE;
@@ -29,14 +31,14 @@ public class SimpleMonthView extends View {
 	protected static int MONTH_HEADER_SIZE;
 	protected static int MONTH_LABEL_TEXT_SIZE;
 	protected static float mScale = 0.0F;
-	private final Calendar mCalendar;
-	private final Calendar mDayLabelCalendar;
+	private Calendar mCalendar;
+	private Calendar mDayLabelCalendar;
 	private int mDayOfWeekStart = 0;
 	private String mDayOfWeekTypeface;
 	protected int mDayTextColor;
 	protected int mFirstJulianDay = -1;
 	protected int mFirstMonth = -1;
-	private final Formatter mFormatter;
+	private Formatter mFormatter;
 	protected boolean mHasToday = false;
 	protected int mLastMonth = -1;
 	protected int mMonth;
@@ -57,7 +59,7 @@ public class SimpleMonthView extends View {
 	protected int mSelectedDay = -1;
 	protected int mSelectedLeft = -1;
 	protected int mSelectedRight = -1;
-	private final StringBuilder mStringBuilder;
+	private StringBuilder mStringBuilder;
 	protected int mToday = -1;
 	protected int mTodayNumberColor;
 	protected int mWeekStart = 1;
@@ -65,15 +67,34 @@ public class SimpleMonthView extends View {
 	protected int mYear;
 	private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
 
+	private int dueYear = -1, dueMonth = -1, dueDay = -1;
+	private int dueColor, dueDate;
+	private boolean hasDueDate;
+
 	public SimpleMonthView(Context context) {
 		super(context);
-		Resources resources = context.getResources();
+		init();
+		initView();
+	}
+
+	public SimpleMonthView(Context context, int dueYear, int dueMonth, int dueDay) {
+		super(context);
+		this.dueYear = dueYear;
+		this.dueMonth = dueMonth;
+		this.dueDay = dueDay;
+		init();
+		initView();
+	}
+
+	private void init() {
+		Resources resources = getContext().getResources();
 		this.mDayLabelCalendar = Calendar.getInstance();
 		this.mCalendar = Calendar.getInstance();
 		this.mDayOfWeekTypeface = resources.getString(R.string.day_of_week_label_typeface);
 		this.mMonthTitleTypeface = resources.getString(R.string.sans_serif);
 		this.mDayTextColor = resources.getColor(R.color.date_picker_text_normal);
 		this.mTodayNumberColor = resources.getColor(R.color.blue);
+		this.dueColor = resources.getColor(R.color.red);
 		this.mMonthTitleColor = resources.getColor(R.color.white);
 		this.mMonthTitleBGColor = resources.getColor(R.color.circle_background);
 		this.mStringBuilder = new StringBuilder(50);
@@ -84,7 +105,6 @@ public class SimpleMonthView extends View {
 		MONTH_HEADER_SIZE = resources.getDimensionPixelOffset(R.dimen.month_list_item_header_height);
 		DAY_SELECTED_CIRCLE_SIZE = resources.getDimensionPixelSize(R.dimen.day_number_select_circle_radius);
 		this.mRowHeight = ((resources.getDimensionPixelOffset(R.dimen.date_picker_view_animator_height) - MONTH_HEADER_SIZE) / 6);
-		initView();
 	}
 
 	private int calculateNumRows() {
@@ -131,8 +151,7 @@ public class SimpleMonthView extends View {
 	}
 
 	private void onDayClick(SimpleMonthAdapter.CalendarDay calendarDay) {
-		if (this.mOnDayClickListener != null)
-			this.mOnDayClickListener.onDayClick(this, calendarDay);
+		if (this.mOnDayClickListener != null) this.mOnDayClickListener.onDayClick(this, calendarDay);
 	}
 
 	private boolean sameDay(int monthDay, Time time) {
@@ -146,13 +165,15 @@ public class SimpleMonthView extends View {
 		int day = 1;
 
 		while (day <= this.mNumCells) {
+			mMonthNumPaint.setFakeBoldText(false);
+			
 			int x = paddingDay * (1 + dayOffset * 2) + this.mPadding;
-			if (this.mSelectedDay == day)
-				canvas.drawCircle(x, y - MINI_DAY_NUMBER_TEXT_SIZE / 3, DAY_SELECTED_CIRCLE_SIZE, this.mSelectedCirclePaint);
-			if ((this.mHasToday) && (this.mToday == day))
-				this.mMonthNumPaint.setColor(this.mTodayNumberColor);
-			else
-				this.mMonthNumPaint.setColor(this.mDayTextColor);
+			if (this.mSelectedDay == day) canvas.drawCircle(x, y - MINI_DAY_NUMBER_TEXT_SIZE / 3, DAY_SELECTED_CIRCLE_SIZE, this.mSelectedCirclePaint);
+			if ((this.mHasToday) && (this.mToday == day)) this.mMonthNumPaint.setColor(this.mTodayNumberColor);
+			else if (hasDueDate && dueDate == day) {
+				mMonthNumPaint.setColor(dueColor);
+				mMonthNumPaint.setFakeBoldText(true);
+			} else this.mMonthNumPaint.setColor(this.mDayTextColor);
 			canvas.drawText(String.format("%d", day), x, y, this.mMonthNumPaint);
 			dayOffset++;
 			if (dayOffset == this.mNumDays) {
@@ -230,8 +251,7 @@ public class SimpleMonthView extends View {
 	public boolean onTouchEvent(MotionEvent motionEvent) {
 		if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 			SimpleMonthAdapter.CalendarDay calendarDay = getDayFromLocation(motionEvent.getX(), motionEvent.getY());
-			if (calendarDay != null)
-				onDayClick(calendarDay);
+			if (calendarDay != null) onDayClick(calendarDay);
 		}
 		return true;
 	}
@@ -242,22 +262,21 @@ public class SimpleMonthView extends View {
 	}
 
 	public void setMonthParams(HashMap<String, Integer> monthParams) {
-		if ((!monthParams.containsKey("month")) && (!monthParams.containsKey("year")))
-			throw new InvalidParameterException("You must specify the month and year for this view");
+		if ((!monthParams.containsKey("month")) && (!monthParams.containsKey("year"))) throw new InvalidParameterException("You must specify the month and year for this view");
 		setTag(monthParams);
 		if (monthParams.containsKey("height")) {
 			this.mRowHeight = ((Integer) monthParams.get("height")).intValue();
-			if (this.mRowHeight < MIN_HEIGHT)
-				this.mRowHeight = MIN_HEIGHT;
+			if (this.mRowHeight < MIN_HEIGHT) this.mRowHeight = MIN_HEIGHT;
 		}
-		if (monthParams.containsKey("selected_day"))
-			this.mSelectedDay = ((Integer) monthParams.get("selected_day")).intValue();
+		if (monthParams.containsKey("selected_day")) this.mSelectedDay = ((Integer) monthParams.get("selected_day")).intValue();
 		this.mMonth = ((Integer) monthParams.get("month")).intValue();
 		this.mYear = ((Integer) monthParams.get("year")).intValue();
 		Time time = new Time(Time.getCurrentTimezone());
 		time.setToNow();
 		this.mHasToday = false;
 		this.mToday = -1;
+		hasDueDate = false;
+		dueDate = -1;
 		this.mCalendar.set(Calendar.MONTH, this.mMonth);
 		this.mCalendar.set(Calendar.YEAR, this.mYear);
 		this.mCalendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -273,6 +292,12 @@ public class SimpleMonthView extends View {
 			if (sameDay(monthDay, time)) {
 				this.mHasToday = true;
 				this.mToday = monthDay;
+			}
+			Time t = new Time(Time.getCurrentTimezone());
+			t.set(dueDay, dueMonth, dueYear);
+			if (sameDay(monthDay, t)) {
+				hasDueDate = true;
+				dueDate = monthDay;
 			}
 		}
 		this.mNumRows = calculateNumRows();

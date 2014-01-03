@@ -13,12 +13,12 @@ public final class R {
 		public static final int rbm_out_to_left = 0x7f040002;
 	}
 	public static final class color {
-		public static final int add_folder_text_color = 0x7f060016;
-		public static final int item_color_dark = 0x7f06000f;
-		public static final int item_color_light = 0x7f060010;
-		public static final int item_text_color = 0x7f06000e;
-		public static final int main_color = 0x7f060011;
-		public static final int menu_background = 0x7f06000d;
+		public static final int add_folder_text_color = 0x7f060017;
+		public static final int item_color_dark = 0x7f060010;
+		public static final int item_color_light = 0x7f060011;
+		public static final int item_text_color = 0x7f06000f;
+		public static final int main_color = 0x7f060012;
+		public static final int menu_background = 0x7f06000e;
 	}
 	public static final class dimen {
 		public static final int item_height = 0x7f070026;
