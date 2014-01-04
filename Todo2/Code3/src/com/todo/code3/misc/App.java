@@ -51,7 +51,6 @@ public class App {
 
 	public static final int BEZEL_AREA_DP = 16;
 	public static final int ANIMATION_DURATION = 300;
-	public static final int VOICE_RECOGNITION_REQUEST_CODE = 1337;
 
 	// Ids for the options menu
 	public static final int OPTIONS_REMOVE = 0;

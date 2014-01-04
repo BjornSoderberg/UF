@@ -3,6 +3,7 @@ package com.todo.code3.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,7 +11,12 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
+import android.os.Bundle;
+import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -65,7 +71,9 @@ public abstract class Dialog extends AlertDialog.Builder {
 	}
 
 	private void initVoiceRecognition() {
-		Button b = new Button(activity);
+		if (Build.VERSION.SDK_INT < 8) return;
+
+		final Button b = new Button(activity);
 		b.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 		PackageManager pm = activity.getPackageManager();
@@ -76,7 +84,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 			b.setText("Press me to speak");
 			b.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					activity.startVoiceRecognition(Dialog.this, title);
+					startVoiceRecognition();
 				}
 			});
 
@@ -84,8 +92,50 @@ public abstract class Dialog extends AlertDialog.Builder {
 		}
 	}
 
-	public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
-	
+	@SuppressLint("NewApi")
+	private void startVoiceRecognition() {
+		SpeechRecognizer r = SpeechRecognizer.createSpeechRecognizer(getContext());
+		r.setRecognitionListener(new RecognitionListener() {
+			public void onBeginningOfSpeech() {
+			}
+
+			public void onBufferReceived(byte[] buffer) {
+			}
+
+			public void onEndOfSpeech() {
+			}
+
+			public void onError(int error) {
+			}
+
+			public void onEvent(int eventType, Bundle params) {
+			}
+
+			public void onPartialResults(Bundle partialResults) {
+			}
+
+			public void onReadyForSpeech(Bundle params) {
+			}
+
+			public void onResults(Bundle results) {
+				onVoiceRecognitionResult(results);
+			}
+
+			public void onRmsChanged(float rmsdB) {
+			}
+		});
+
+		if (!SpeechRecognizer.isRecognitionAvailable(getContext())) return;
+
+		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+		intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity.getApplication().getPackageName());
+
+		r.startListening(intent);
+	}
+
+	public abstract void onVoiceRecognitionResult(Bundle result);
+
 	protected abstract Object getResult();
 
 	private void setPositiveButton() {
@@ -106,7 +156,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 	protected void onResult(Object result) {
 	}
-	
+
 	protected void onCancel() {
 	}
 }

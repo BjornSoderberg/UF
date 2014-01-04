@@ -2,9 +2,13 @@ package com.todo.code3.dialog;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.widget.EditText;
 
 import com.todo.code3.MainActivity;
@@ -37,11 +41,11 @@ public class TextLineDialog extends Dialog {
 		return editText.getText().toString();
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == App.VOICE_RECOGNITION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-			ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-			editText.setText(App.capitalizeFirstWordInSentences(results.get(0)));
-		}
+	@SuppressLint("InlinedApi")
+	public void onVoiceRecognitionResult(Bundle result) {
+		if(Build.VERSION.SDK_INT < 8) return;
+		
+		ArrayList<String> l = result.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+		if(l.size() > 0) editText.setText(App.capitalizeFirstWordInSentences(l.get(0)));
 	}
 }

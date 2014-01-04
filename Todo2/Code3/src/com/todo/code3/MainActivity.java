@@ -1,18 +1,21 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -28,7 +31,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -37,8 +39,6 @@ import android.widget.Toast;
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
-import com.todo.code3.animation.CollapseAnimation;
-import com.todo.code3.animation.ExpandAnimation;
 import com.todo.code3.dialog.AddItemDialog;
 import com.todo.code3.dialog.Dialog;
 import com.todo.code3.dialog.TextLineDialog;
@@ -49,11 +49,6 @@ import com.todo.code3.view.ItemView;
 import com.todo.code3.view.TaskContentView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
-
-import com.fourmob.datetimepicker.date.DatePickerDialog;
-import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
-import com.sleepbot.datetimepicker.time.RadialPickerLayout;
-import com.sleepbot.datetimepicker.time.TimePickerDialog;
 
 public class MainActivity extends FlyInFragmentActivity {
 
@@ -85,8 +80,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	private long scrollFps = 1000 / 60;
 
 	private int width, height;
-
-	private Dialog dialogBoxForOnActivityResult;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -183,7 +176,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		((Wrapper) findViewById(R.id.bigWrapper)).setActivity(this);
 
 		wrapper = (LinearLayout) findViewById(R.id.wrapper);
-		
+
 		titleBar = (LinearLayout) findViewById(R.id.titleBar);
 
 		nameTV = (TextView) findViewById(R.id.name);
@@ -745,7 +738,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		options.setVisibility(View.VISIBLE);
 		titleBar.setVisibility(View.GONE);
-		
+
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).enterOptionsMode();
 
 		options.clearOptionsItems();
@@ -763,7 +756,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		titleBar.setVisibility(View.VISIBLE);
 		options.setVisibility(View.GONE);
-		
+
 		updateData();
 	}
 
@@ -809,12 +802,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			adjustContentPosition(isAnimationOngoing);
 		}
-	}
-
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (dialogBoxForOnActivityResult != null) dialogBoxForOnActivityResult.onActivityResult(requestCode, resultCode, data);
-
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	public FlyInMenu getFlyInMenu() {
@@ -866,20 +853,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public JSONObject getData() {
 		return data;
-	}
-
-	public void startVoiceRecognition(Dialog b, String message) {
-		dialogBoxForOnActivityResult = b;
-
-		try {
-			Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-			i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			if (message != null) i.putExtra(RecognizerIntent.EXTRA_PROMPT, message);
-
-			startActivityForResult(i, App.VOICE_RECOGNITION_REQUEST_CODE);
-		} catch (Exception e) {
-			Toast.makeText(MainActivity.this, "There was an error when trying to use the voice recongizer.", Toast.LENGTH_LONG).show();
-		}
 	}
 
 	public void updateContentItemsOrder() {

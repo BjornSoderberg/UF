@@ -2,6 +2,7 @@ package com.todo.code3.dialog;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -80,7 +81,7 @@ public class AddItemDialog extends Dialog {
 		d.show();
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onVoiceRecognitionResult(Bundle result) {
 	}
 
 	public void onResult(String name, String type) {

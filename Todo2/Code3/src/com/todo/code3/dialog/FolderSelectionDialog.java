@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.util.Log;
+import android.os.Bundle;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.item.ContentItem;
@@ -49,7 +48,7 @@ public class FolderSelectionDialog extends Dialog {
 		alert.setView(hierarchy);
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onVoiceRecognitionResult(Bundle result) {
 
 	}
 
