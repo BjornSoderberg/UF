@@ -214,6 +214,18 @@ public class App {
 
 		return data;
 	}
+	
+	public static JSONObject removeProperty(String key, int id, JSONObject data) {
+		try {
+			JSONObject object = new JSONObject(data.getString(id + ""));
+			object.remove(key);
+			data.put(id + "", object.toString());
+		} catch(JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return data;
+	}
 
 	public static JSONObject updateChildrenOrder(String children, int parentId, JSONObject data) {
 		try {

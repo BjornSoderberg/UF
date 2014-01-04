@@ -505,13 +505,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 	}
 
-	public void prioritize(int id, boolean prioritized) {
-		data = App.setProperty(App.PRIORITIZED, prioritized, id, data);
-		editor.put(App.DATA, data.toString());
-
-		updateData();
-	}
-
 	public void groupItemsInNewFolder(String newFolderName, int[] itemIds) {
 		add(newFolderName, App.FOLDER);
 
@@ -562,9 +555,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
-
-	public void setNewName(String name, int id) {
-		data = App.setProperty(App.NAME, name, id, data);
+	
+	public void removeProperty(String key, int id) {
+		data = App.removeProperty(key, id, data);
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
@@ -725,7 +718,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		focusDummy.requestFocus();
 
 		if (save) {
-			setNewName(nameET.getText().toString(), openObjectId);
+			setProperty(App.NAME, nameET.getText().toString(), openObjectId);
 			nameTV.setText(nameET.getText().toString());
 		}
 	}

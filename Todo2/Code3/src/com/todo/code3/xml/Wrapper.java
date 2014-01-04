@@ -132,23 +132,31 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 			if (y != startY && x != startX) {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
-				Log.i("asdasd", Math.toDegrees(v) + "");
+				v = Math.toDegrees(v);
+
+				for (Button b : touchButtons)
+					b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
+				
+				int selected = 0;
+
+				if (-90 < v && v < -60) selected = 2;
+				else if (-60 < v && v < -30) selected = 1;
+				else if (-30 < v && v < 0) selected = 0;
+				
+				touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
 			}
 		} else if (e.getAction() == MotionEvent.ACTION_UP) {
-			
-
 			addTouch = false;
-			
-			if(Math.hypot(x - startX, y - startY) < viewConfig.getScaledTouchSlop()) activity.getAddButton().performClick();
-			else {
+
+			if (Math.hypot(x - startX, y - startY) < viewConfig.getScaledTouchSlop()) activity.getAddButton().performClick();
+			else if (Math.hypot(x - startX, y - startY) > 50 && y != startY && x != startX) {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
-				
-				if(-90 < v && v < -60) activity.addDialog(App.FOLDER);
-				else if(-60 < v && v < -30) activity.addDialog(App.NOTE);
-				else if(-30 < v && v < 0) activity.addDialog(App.TASK);
+				v = Math.toDegrees(v);
+
+				if (-90 < v && v < -60) activity.addDialog(App.FOLDER);
+				else if (-60 < v && v < -30) activity.addDialog(App.NOTE);
+				else if (-30 < v && v < 0) activity.addDialog(App.TASK);
 			}
-			
-			return true;
 		}
 
 		return true;
@@ -228,11 +236,6 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 			p.rightMargin = (int) (d * Math.cos(v[i])) - hw;
 			p.topMargin = (int) (d * Math.sin(v[i])) - hw;
-
-			Animation a = new AlphaAnimation(0.0f, 1.0f);
-			a.setDuration(1000);
-
-			touchButtons[i].startAnimation(a);
 
 			touchButtons[i].setLayoutParams(p);
 			addView(touchButtons[i]);

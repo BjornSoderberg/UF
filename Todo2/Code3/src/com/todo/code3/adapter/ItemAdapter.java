@@ -2,7 +2,6 @@ package com.todo.code3.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.todo.code3.R;
+import com.todo.code3.misc.App;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
 import com.todo.code3.item.TaskItem;
@@ -126,7 +126,7 @@ public class ItemAdapter extends BaseAdapter {
 				if (itemView.getActivity().isMoving()) return;
 
 				boolean shouldPrio = !item.isPrioritized();
-				itemView.getActivity().prioritize(item.getId(), shouldPrio);
+				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
 			}
 		});
 
@@ -175,7 +175,7 @@ public class ItemAdapter extends BaseAdapter {
 				if (itemView.getActivity().isMoving()) return;
 
 				boolean shouldPrio = !item.isPrioritized();
-				itemView.getActivity().prioritize(item.getId(), shouldPrio);
+				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
 			}
 		});
 

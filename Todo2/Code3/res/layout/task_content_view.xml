@@ -58,10 +58,22 @@
             android:text="Set due date" />
 
         <Button
+            android:id="@+id/clearDue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Remove due date" />
+
+        <Button
             android:id="@+id/reminderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Set reminder" />
+
+        <Button
+            android:id="@+id/clearReminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Remove reminder" />
 
     </LinearLayout>
 

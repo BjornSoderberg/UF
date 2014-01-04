@@ -9,12 +9,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -30,7 +30,8 @@ public class TaskContentView extends ContentView {
 
 	private TextView descTV;
 	private EditText descET, focusDummy;
-	private Button saveButton, setDueDateButton, setReminderButton;
+	private Button saveButton;
+	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
 
 	private JSONObject task;
 
@@ -53,6 +54,9 @@ public class TaskContentView extends ContentView {
 
 		setDueDateButton = (Button) findViewById(R.id.dueButton);
 		setReminderButton = (Button) findViewById(R.id.reminderButton);
+
+		clearDueDateButton = (Button) findViewById(R.id.clearDue);
+		clearReminderButton = (Button) findViewById(R.id.clearReminder);
 
 		saveButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -89,6 +93,17 @@ public class TaskContentView extends ContentView {
 				showDateAndTimePicker(App.REMINDER);
 			}
 		});
+
+		clearDueDateButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				clearDateAndTime(App.DUE_DATE);
+			}
+		});
+		clearReminderButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				clearDateAndTime(App.REMINDER);
+			}
+		});
 	}
 
 	public void update(JSONObject data) {
@@ -103,13 +118,13 @@ public class TaskContentView extends ContentView {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(task.getLong(App.DUE_DATE) * 1000);
 					setDueDateButton.setText("Due date:" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR) + "(at " + calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE) + ")");
-				}
+				} else setDueDateButton.setText("Set due date");
 
 				if (task.has(App.REMINDER) && task.getLong(App.REMINDER) != -1) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(task.getLong(App.REMINDER) * 1000);
 					setReminderButton.setText("Reminder:" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR));
-				}
+				} else setReminderButton.setText("Set reminder");
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -166,7 +181,7 @@ public class TaskContentView extends ContentView {
 
 	private void selectDate(OnDateSetListener dsl, String type) {
 		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
+		int year = calendar.get(Calendar.YEAR) - 1;
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 
@@ -174,7 +189,7 @@ public class TaskContentView extends ContentView {
 			if (task.has(type) && task.getLong(type) != -1) {
 				calendar.setTimeInMillis(task.getLong(type) * 1000);
 
-				year = calendar.get(Calendar.YEAR);
+				year = (year > calendar.get(Calendar.YEAR)) ? year : calendar.get(Calendar.YEAR);
 				month = calendar.get(Calendar.MONTH);
 				day = calendar.get(Calendar.DAY_OF_MONTH);
 			}
@@ -252,6 +267,12 @@ public class TaskContentView extends ContentView {
 
 		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 		am.set(AlarmManager.RTC_WAKEUP, timestamp * 1000, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
+	}
+
+	private void clearDateAndTime(String type) {
+		activity.removeProperty(type, parentId);
+		
+		Log.i("asdasd", "cleared  "  + type);
 	}
 
 	public void leave() {
