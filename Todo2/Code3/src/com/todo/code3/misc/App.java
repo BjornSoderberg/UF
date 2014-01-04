@@ -48,6 +48,7 @@ public class App {
 
 	public static final String DUE_DATE = "dueDate";
 	public static final String REMINDER = "reminder";
+	public static final String REPEAT = "repeat";
 
 	public static final int BEZEL_AREA_DP = 16;
 	public static final int ANIMATION_DURATION = 300;

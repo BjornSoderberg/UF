@@ -2,6 +2,7 @@ package com.todo.code3.notification;
 
 import java.util.Arrays;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,9 +10,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.todo.code3.R;
 import com.todo.code3.misc.App;
+import com.todo.code3.misc.Reminder;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -66,5 +69,20 @@ public class NotificationReceiver extends BroadcastReceiver {
 		n.setLatestEventInfo(context, title, text, p);
 
 		notificationManager.notify(intent.getExtras().getInt(App.ID, -1), n);
+		
+	
+		
+		if(intent.hasExtra(App.REPEAT)) {
+			Toast.makeText(context, "set new reminder", Toast.LENGTH_SHORT).show();
+			
+			if(intent.getStringExtra(App.REPEAT).equals(Reminder.EACH_MINUTE)) {
+				Intent i = new Intent(context, NotificationReceiver.class);
+				i.putExtra(App.ID, intent.getExtras().getInt(App.ID, -1));
+				i.putExtra(App.REPEAT, intent.getStringExtra(App.REPEAT));
+
+				AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+				am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 1000, PendingIntent.getBroadcast(context, intent.getExtras().getInt(App.ID, -1), i, PendingIntent.FLAG_UPDATE_CURRENT));
+			}
+		}
 	}
 }

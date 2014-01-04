@@ -24,6 +24,7 @@ import com.sleepbot.datetimepicker.time.TimePickerDialog.OnTimeSetListener;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.misc.App;
+import com.todo.code3.misc.Reminder;
 import com.todo.code3.notification.NotificationReceiver;
 
 public class TaskContentView extends ContentView {
@@ -102,6 +103,12 @@ public class TaskContentView extends ContentView {
 		clearReminderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				clearDateAndTime(App.REMINDER);
+			}
+		});
+
+		((Button) findViewById(R.id.repeating1Min)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				setReminder(Reminder.EACH_MINUTE);
 			}
 		});
 	}
@@ -269,10 +276,24 @@ public class TaskContentView extends ContentView {
 		am.set(AlarmManager.RTC_WAKEUP, timestamp * 1000, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
+	private void setReminder(String type) {
+		if (type.equals(Reminder.EACH_MINUTE)) {
+			Intent i = new Intent(activity, NotificationReceiver.class);
+			i.putExtra(App.ID, parentId);
+			i.putExtra(App.REPEAT, type);
+
+			AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+			am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
+		}
+	}
+
 	private void clearDateAndTime(String type) {
 		activity.removeProperty(type, parentId);
+
+		Intent i = new Intent(activity, NotificationReceiver.class);
 		
-		Log.i("asdasd", "cleared  "  + type);
+		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+		am.cancel(PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_CANCEL_CURRENT));
 	}
 
 	public void leave() {
