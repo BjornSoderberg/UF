@@ -6,31 +6,40 @@
     android:background="#bbbbbb"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <include
-            android:id="@+id/titleBar"
-            layout="@layout/title_bar" />
-    </LinearLayout>
+    <include
+        android:id="@+id/titleBar"
+        android:layout_alignParentTop="true"
+        layout="@layout/title_bar" />
 
     <com.todo.code3.xml.OptionsBar
-        android:id="@+id/bottomBar"
+        android:id="@+id/optionsBar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_below="@+id/titleBar"
         android:background="#35ADCF"
         android:orientation="horizontal"
-        android:visibility="gone" >
+        android:visibility="visible" >
     </com.todo.code3.xml.OptionsBar>
 
     <LinearLayout
-        android:id="@+id/wrapper"
+        android:id="@+id/barBorder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="4dp"
+        android:background="#298DA9"
+        android:orientation="horizontal"
+        android:layout_below="@+id/optionsBar" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wrapper"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/barBorder"
+        android:layout_weight="1"
         android:background="#cccccc"
         android:orientation="horizontal" >
+
     </LinearLayout>
 
     <EditText
@@ -38,6 +47,7 @@
         android:layout_width="1px"
         android:layout_height="1px"
         android:ems="10"
+        android:inputType="text"
         android:visibility="gone" >
 
         <requestFocus />

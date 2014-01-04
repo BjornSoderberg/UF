@@ -1,18 +1,24 @@
 package com.todo.code3.xml;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.gesture.SimpleGestureFilter;
 import com.todo.code3.gesture.SimpleGestureFilter.SimpleGestureListener;
 import com.todo.code3.misc.App;
 
-public class Wrapper extends LinearLayout implements SimpleGestureListener {
+public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 	private int x, y, startX, startY, lastX;
 
@@ -25,6 +31,9 @@ public class Wrapper extends LinearLayout implements SimpleGestureListener {
 
 	private boolean isDragging = false;
 	private boolean hasStarted = false;
+
+	private boolean addTouch = false;
+	private Button[] touchButtons;
 
 	private ViewConfiguration viewConfig;
 	private MainActivity activity;
@@ -48,6 +57,8 @@ public class Wrapper extends LinearLayout implements SimpleGestureListener {
 
 	public boolean onTouchEvent(MotionEvent e) {
 		if (activity == null) return true;
+
+		if (addTouch) return onAddTouchEvent(e);
 
 		if (e.getAction() == MotionEvent.ACTION_DOWN) {
 			startX = x = lastX = (int) e.getRawX();
@@ -110,6 +121,39 @@ public class Wrapper extends LinearLayout implements SimpleGestureListener {
 		return true;
 	}
 
+	private boolean onAddTouchEvent(MotionEvent e) {
+		if (e.getAction() == MotionEvent.ACTION_DOWN) {
+			showAddOptions();
+			startX = x = (int) e.getRawX();
+			startY = y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
+		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
+			x = (int) e.getRawX();
+			y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
+
+			if (y != startY && x != startX) {
+				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
+				Log.i("asdasd", Math.toDegrees(v) + "");
+			}
+		} else if (e.getAction() == MotionEvent.ACTION_UP) {
+			
+
+			addTouch = false;
+			
+			if(Math.hypot(x - startX, y - startY) < viewConfig.getScaledTouchSlop()) activity.getAddButton().performClick();
+			else {
+				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
+				
+				if(-90 < v && v < -60) activity.addDialog(App.FOLDER);
+				else if(-60 < v && v < -30) activity.addDialog(App.NOTE);
+				else if(-30 < v && v < 0) activity.addDialog(App.TASK);
+			}
+			
+			return true;
+		}
+
+		return true;
+	}
+
 	public boolean onInterceptTouchEvent(MotionEvent e) {
 		// If the menu is visible, the user is able to drag,
 		// as long as he does not drag on the menu
@@ -129,6 +173,14 @@ public class Wrapper extends LinearLayout implements SimpleGestureListener {
 		// be able to drag
 		if (e.getRawX() <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return true;
 
+		FrameLayout add = activity.getAddButton();
+		if (add.getLeft() < e.getRawX() && e.getRawX() < add.getRight()) {
+			if (add.getTop() < e.getRawY() - App.getStatusBarHeight(activity.getResources()) && e.getRawY() - App.getStatusBarHeight(activity.getResources()) < add.getBottom()) {
+				addTouch = true;
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -144,9 +196,46 @@ public class Wrapper extends LinearLayout implements SimpleGestureListener {
 	public void onSwipe(int direction) {
 		if (!isDragging) {
 			if (direction == SimpleGestureFilter.SWIPE_RIGHT) {
-				if(activity.getPosInWrapper() == 0) activity.showMenu();
+				if (activity.getPosInWrapper() == 0) activity.showMenu();
 				else activity.goBack();
 			}
+		}
+	}
+
+	private void showAddOptions() {
+		if (touchButtons == null) touchButtons = new Button[3];
+
+		int x, y;
+		int numButtons = 3;
+		FrameLayout add = activity.getAddButton();
+		x = (add.getRight() + add.getLeft()) / 2;
+		y = (add.getTop() + add.getBottom()) / 2;
+
+		int d = App.dpToPx(150, activity.getResources());
+		double v[] = { Math.toRadians(15), Math.toRadians(45), Math.toRadians(75) };
+		int w = App.dpToPx(40, activity.getResources());
+		int hw = w / 2;
+
+		for (int i = 0; i < numButtons; i++) {
+			touchButtons[i] = new Button(getContext());
+			touchButtons[i].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
+			RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(w, w);
+			// p.leftMargin = x - 5;
+			// p.topMargin = y - 5;
+			// p.addRule(RelativeLayout.RIGHT_OF, com.todo.code3.R.id.line2);
+			p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+
+			p.rightMargin = (int) (d * Math.cos(v[i])) - hw;
+			p.topMargin = (int) (d * Math.sin(v[i])) - hw;
+
+			Animation a = new AlphaAnimation(0.0f, 1.0f);
+			a.setDuration(1000);
+
+			touchButtons[i].startAnimation(a);
+
+			touchButtons[i].setLayoutParams(p);
+			addView(touchButtons[i]);
 		}
 	}
 }

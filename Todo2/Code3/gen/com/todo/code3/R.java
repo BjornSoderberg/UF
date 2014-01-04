@@ -99,8 +99,9 @@ public final class R {
         public static final int ic_launcher=0x7f020005;
         public static final int menu=0x7f020006;
         public static final int plus=0x7f020007;
-        public static final int transparent_item_selector=0x7f020008;
-        public static final int white_item_selector=0x7f020009;
+        public static final int rounded_corners=0x7f020008;
+        public static final int transparent_item_selector=0x7f020009;
+        public static final int white_item_selector=0x7f02000a;
     }
     public static final class id {
         public static final int addButton=0x7f090033;
@@ -110,7 +111,6 @@ public final class R {
         public static final int backButton=0x7f09002d;
         public static final int barBorder=0x7f090039;
         public static final int bigWrapper=0x7f090036;
-        public static final int bottomBar=0x7f090038;
         public static final int button=0x7f090034;
         public static final int cancel=0x7f09000a;
         public static final int cancel_button=0x7f09002a;
@@ -154,6 +154,7 @@ public final class R {
         public static final int name=0x7f090030;
         public static final int nameET=0x7f090031;
         public static final int nameTouchArea=0x7f09002f;
+        public static final int optionsBar=0x7f090038;
         public static final int rbm_item_text=0x7f09000b;
         public static final int reminderButton=0x7f09001e;
         public static final int saveButton=0x7f09001a;

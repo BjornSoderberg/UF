@@ -5,17 +5,11 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -34,13 +28,11 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.Scroller;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
 import com.todo.code3.dialog.AddItemDialog;
-import com.todo.code3.dialog.Dialog;
 import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
@@ -186,7 +178,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		dragButton = (FrameLayout) findViewById(R.id.dragButton);
 		backButton = (FrameLayout) findViewById(R.id.backButton);
 
-		options = (OptionsBar) findViewById(R.id.bottomBar);
+		options = (OptionsBar) findViewById(R.id.optionsBar);
 		options.setMainActivity(this);
 
 		saveButton = (Button) findViewById(R.id.saveButton);
@@ -396,6 +388,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (!isMoving) getFlyInMenu().hideMenu();
 	}
 
+	// When clicking on the button
 	public void addDialog(View v) {
 		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
 			public void onResult(String name, String type) {
@@ -404,6 +397,19 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		};
 
+		i.show();
+	}
+	
+	// When dragging to an item
+	public void addDialog(final String type) {
+		TextLineDialog i = new TextLineDialog(this, "Add new " + type, null, true, "Add", "Cancel") {
+			public void onResult(Object result) {
+				super.onResult(result);
+				
+				if(result instanceof String) add((String) result, type);
+			}
+		};
+		
 		i.show();
 	}
 
@@ -831,6 +837,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public FrameLayout getDragButton() {
 		return dragButton;
+	}
+	
+	public FrameLayout getAddButton() {
+		return (FrameLayout) findViewById(R.id.addButton);
 	}
 
 	public ContentView getOpenContentView() {
