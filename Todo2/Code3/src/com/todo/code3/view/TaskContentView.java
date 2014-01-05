@@ -9,6 +9,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -106,9 +107,11 @@ public class TaskContentView extends ContentView {
 			}
 		});
 
-		((Button) findViewById(R.id.repeating1Min)).setOnClickListener(new OnClickListener() {
+		((Button) findViewById(R.id.repeatingMWF)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				setReminder(Reminder.EACH_MINUTE);
+				// All days of the week at 7.20
+				String info = Reminder.getReminderInfoString(Reminder.WEEKLY, 127, 8, 20);
+				setRepeatingReminder(info);
 			}
 		});
 	}
@@ -276,22 +279,38 @@ public class TaskContentView extends ContentView {
 		am.set(AlarmManager.RTC_WAKEUP, timestamp * 1000, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
-	private void setReminder(String type) {
-		if (type.equals(Reminder.EACH_MINUTE)) {
+	private void setRepeatingReminder(String reminderInfo) {
+		if (Reminder.getType(reminderInfo).equals(Reminder.WEEKLY)) {
 			Intent i = new Intent(activity, NotificationReceiver.class);
 			i.putExtra(App.ID, parentId);
-			i.putExtra(App.REPEAT, type);
+			i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
+
+			try {
+				if (task.has(App.NAME)) i.putExtra(App.NAME, task.getString(App.NAME));
+				if (task.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, task.getLong(App.DUE_DATE));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+			long next = Reminder.getNext(reminderInfo) * 1000;
+
+			// Logs the next
+			Calendar c = Calendar.getInstance();
+			c.setTimeInMillis(next);
+			Log.i("next : " + next, c.toString() + "");
 
 			AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
-			am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
+			am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
 		}
+
+		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
 	}
 
 	private void clearDateAndTime(String type) {
 		activity.removeProperty(type, parentId);
 
 		Intent i = new Intent(activity, NotificationReceiver.class);
-		
+
 		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 		am.cancel(PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_CANCEL_CURRENT));
 	}

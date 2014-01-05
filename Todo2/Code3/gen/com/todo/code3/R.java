@@ -160,7 +160,7 @@ public final class R {
         public static final int optionsBar=0x7f09003b;
         public static final int rbm_item_text=0x7f09000b;
         public static final int reminderButton=0x7f09001f;
-        public static final int repeating1Min=0x7f090021;
+        public static final int repeatingMWF=0x7f090021;
         public static final int saveButton=0x7f09001a;
         public static final int separator=0x7f090025;
         public static final int sortSpinner=0x7f09003e;

@@ -2,6 +2,7 @@ package com.todo.code3.dialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -130,6 +131,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 		intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity.getApplication().getPackageName());
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH.toString());
 
 		r.startListening(intent);
 	}
