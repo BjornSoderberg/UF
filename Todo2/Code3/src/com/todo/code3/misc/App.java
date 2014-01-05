@@ -45,6 +45,7 @@ public class App {
 	public static final String PRIORITIZED = "prioritized";
 
 	public static final String OPEN_OBJECT_ID = "openObjectId";
+	public static final String OPEN = "open";
 
 	public static final String DUE_DATE = "dueDate";
 	public static final String REMINDER = "reminder";
@@ -404,6 +405,24 @@ public class App {
 		i[2] = c.get(Calendar.DAY_OF_MONTH);
 		
 		return i;
+	}
+	
+	public static String getParentHierarchyString(int id, JSONObject data) {
+		String s = "";
+		
+		try {
+			JSONObject object = new JSONObject(data.getString(id + ""));
+			
+			if(object.has(App.PARENT_ID) && object.getInt(App.PARENT_ID) != -1) {
+				s = getParentHierarchyString(object.getInt(App.PARENT_ID), data);
+			}
+			
+			return s + object.getInt(App.ID) + ",";
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 
 	public static void showKeyboard(Context c) {

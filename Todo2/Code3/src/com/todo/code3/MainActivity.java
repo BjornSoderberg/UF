@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -113,6 +114,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		loadFlyInMenu(getMenuWidth());
 
 		getDataFromSharedPreferences();
+
+		if (getIntent().hasExtra(App.OPEN)) {
+			openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
+		}
 	}
 
 	private void getDataFromSharedPreferences() {
@@ -403,17 +408,17 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		i.show();
 	}
-	
+
 	// When dragging to an item
 	public void addDialog(final String type) {
 		TextLineDialog i = new TextLineDialog(this, "Add new " + type, null, true, "Add", "Cancel") {
 			public void onResult(Object result) {
 				super.onResult(result);
-				
-				if(result instanceof String) add((String) result, type);
+
+				if (result instanceof String) add((String) result, type);
 			}
 		};
-		
+
 		i.show();
 	}
 
@@ -464,7 +469,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void remove(int id) {
 		remove(id, true);
-		
+
 		cancelNotification(id);
 	}
 
@@ -474,10 +479,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		if (update) updateData();
 	}
-	
+
 	public void cancelNotification(int id) {
 		Intent i = new Intent(this, NotificationReceiver.class);
-		
+
 		AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		am.cancel(PendingIntent.getBroadcast(this, id, i, PendingIntent.FLAG_CANCEL_CURRENT));
 	}
@@ -568,7 +573,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
-	
+
 	public void removeProperty(String key, int id) {
 		data = App.removeProperty(key, id, data);
 		editor.put(App.DATA, data.toString());
@@ -597,6 +602,18 @@ public class MainActivity extends FlyInFragmentActivity {
 			e.printStackTrace();
 		}
 		updateData();
+	}
+
+	private void openFromIntent(int id) {
+		String parentHierarchy = App.getParentHierarchyString(id, data);
+		if (parentHierarchy.length() > 0) parentHierarchy = parentHierarchy.substring(0, parentHierarchy.length() - 1);
+
+		String[] parentIds = parentHierarchy.split(",");
+		int[] ids = new int[parentIds.length];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = Integer.parseInt(parentIds[i]);
+		}
+		openContentViewsFromParentIds(ids);
 	}
 
 	public void open(int id) {
@@ -633,6 +650,21 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void openContentViewsFromParentIds(int[] parentIds) {
+		// Opens the first item as a menu item (since the first item among the
+		// content items should be a menu item)
+		openMenuItem(parentIds[0]);
+
+		// Opens all the items without animating
+		for (int i = 1; i < parentIds.length; i++) {
+			open(parentIds[i], false);
+		}
+
+		// Scrolls to the content view which should be visible
+		scroller.startScroll(currentContentOffset, 0, -posInWrapper * getContentWidth(), 0);
+		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 	}
 
 	public void goBack(View v) {
@@ -844,7 +876,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public FrameLayout getDragButton() {
 		return dragButton;
 	}
-	
+
 	public FrameLayout getAddButton() {
 		return (FrameLayout) findViewById(R.id.addButton);
 	}
@@ -906,17 +938,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		int parentIds[] = savedInstanceState.getIntArray("contentViewsOpen");
 
-		// Opens the first item as a menu item (since the first item among the
-		// content items should be a menu item)
-		openMenuItem(parentIds[0]);
-
-		// Opens all the items without animating
-		for (int i = 1; i < parentIds.length; i++) {
-			open(parentIds[i], false);
-		}
-
-		// Scrolls to the content view which should be visible
-		scroller.startScroll(currentContentOffset, 0, -posInWrapper * getContentWidth(), 0);
-		scrollHandler.postDelayed(scrollRunnable, scrollFps);
+		openContentViewsFromParentIds(parentIds);
 	}
 }

@@ -6,7 +6,7 @@
     android:orientation="horizontal" >
 
     <LinearLayout
-        android:layout_width="230dp"
+        android:layout_width="146dp"
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
@@ -31,7 +31,7 @@
         <TextView
             android:id="@+id/descTV"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="102dp"
             android:hint="Tap to write a description" />
 
         <EditText
@@ -80,6 +80,78 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Remind each minute :O" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/cbM"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="M"
+                android:textColor="#000000" />
+
+            <CheckBox
+                android:id="@+id/cbTu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tu"
+                android:textColor="#000000" />
+
+            <CheckBox
+                android:id="@+id/cbW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="W"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/cbTh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Th"
+                android:textColor="#000000" />
+
+            <CheckBox
+                android:id="@+id/cbF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F"
+                android:textColor="#000000" />
+
+            <CheckBox
+                android:id="@+id/cbSa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sa"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/cbSu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Su"
+                android:textColor="#000000" >
+            </CheckBox>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/setWeeklyReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set weekly reminder" />
+
     </LinearLayout>
 
 </LinearLayout>

@@ -134,16 +134,18 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
 				v = Math.toDegrees(v);
 
-				for (Button b : touchButtons)
-					b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
-				
-				int selected = 0;
+				if (touchButtons != null) {
+					for (Button b : touchButtons)
+						b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
 
-				if (-90 < v && v < -60) selected = 2;
-				else if (-60 < v && v < -30) selected = 1;
-				else if (-30 < v && v < 0) selected = 0;
-				
-				touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
+					int selected = 0;
+
+					if (-90 < v && v < -60) selected = 2;
+					else if (-60 < v && v < -30) selected = 1;
+					else if (-30 < v && v < 0) selected = 0;
+
+					touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
+				}
 			}
 		} else if (e.getAction() == MotionEvent.ACTION_UP) {
 			addTouch = false;

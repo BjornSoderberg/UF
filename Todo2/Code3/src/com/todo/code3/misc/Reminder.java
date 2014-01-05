@@ -4,6 +4,15 @@ import java.util.Calendar;
 
 public class Reminder {
 	public static final String WEEKLY = "a";
+//	public static final String EVERY_TWO_WEEKS = "b";
+	
+	public static final int MONDAY = 64;
+	public static final int TUESDAY = 32;
+	public static final int WEDNESDAY = 16;
+	public static final int THURSDAY = 8;
+	public static final int FRIDAY = 4;
+	public static final int SATURDAY = 2;
+	public static final int SUNDAY = 1;
 
 	public static final String DAYS_IN_WEEK = "daysInWeek";
 
@@ -49,13 +58,13 @@ public class Reminder {
 	}
 
 	public static int convertDayToBinary(int day) {
-		if (day == Calendar.MONDAY) return 64;
-		if (day == Calendar.TUESDAY) return 32;
-		if (day == Calendar.WEDNESDAY) return 16;
-		if (day == Calendar.THURSDAY) return 8;
-		if (day == Calendar.FRIDAY) return 4;
-		if (day == Calendar.SATURDAY) return 2;
-		if (day == Calendar.SUNDAY) return 1;
+		if (day == Calendar.MONDAY) return MONDAY;
+		if (day == Calendar.TUESDAY) return TUESDAY;
+		if (day == Calendar.WEDNESDAY) return WEDNESDAY;
+		if (day == Calendar.THURSDAY) return THURSDAY;
+		if (day == Calendar.FRIDAY) return FRIDAY;
+		if (day == Calendar.SATURDAY) return SATURDAY;
+		if (day == Calendar.SUNDAY) return SUNDAY;
 		return 0;
 	}
 

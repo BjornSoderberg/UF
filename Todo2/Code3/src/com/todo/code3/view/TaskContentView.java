@@ -9,11 +9,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -34,6 +34,8 @@ public class TaskContentView extends ContentView {
 	private EditText descET, focusDummy;
 	private Button saveButton;
 	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
+	private Button setWeeklyReminder;
+	private CheckBox[] weekDays;
 
 	private JSONObject task;
 
@@ -109,9 +111,39 @@ public class TaskContentView extends ContentView {
 
 		((Button) findViewById(R.id.repeatingMWF)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				// All days of the week at 7.20
+				// All days of the week at 8.20
 				String info = Reminder.getReminderInfoString(Reminder.WEEKLY, 127, 8, 20);
 				setRepeatingReminder(info);
+			}
+		});
+
+		weekDays = new CheckBox[7];
+		weekDays[0] = (CheckBox) findViewById(R.id.cbSu);
+		weekDays[1] = (CheckBox) findViewById(R.id.cbSa);
+		weekDays[2] = (CheckBox) findViewById(R.id.cbF);
+		weekDays[3] = (CheckBox) findViewById(R.id.cbTh);
+		weekDays[4] = (CheckBox) findViewById(R.id.cbW);
+		weekDays[5] = (CheckBox) findViewById(R.id.cbTu);
+		weekDays[6] = (CheckBox) findViewById(R.id.cbM);
+
+		setWeeklyReminder = (Button) findViewById(R.id.setWeeklyReminder);
+		setWeeklyReminder.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				OnTimeSetListener tsl = new OnTimeSetListener() {
+					public void onTimeSet(RadialPickerLayout view, int hour, int minute) {
+						int i = getWeekButtons();
+						String reminderInfo = Reminder.getReminderInfoString(Reminder.WEEKLY, i, hour, minute);
+
+						setRepeatingReminder(reminderInfo);
+
+						Log.i("asdasd", reminderInfo);
+					}
+				};
+
+				int hour = 12, minute = 0;
+
+				TimePickerDialog tpd = TimePickerDialog.newInstance(tsl, hour, minute, true);
+				tpd.show(activity.getSupportFragmentManager(), "datepicker");
 			}
 		});
 	}
@@ -280,6 +312,8 @@ public class TaskContentView extends ContentView {
 	}
 
 	private void setRepeatingReminder(String reminderInfo) {
+		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
+		
 		if (Reminder.getType(reminderInfo).equals(Reminder.WEEKLY)) {
 			Intent i = new Intent(activity, NotificationReceiver.class);
 			i.putExtra(App.ID, parentId);
@@ -292,7 +326,9 @@ public class TaskContentView extends ContentView {
 				e.printStackTrace();
 			}
 
-			long next = Reminder.getNext(reminderInfo) * 1000;
+			long next = Reminder.getNext(reminderInfo);
+			if(next == -1) return;
+			else next *= 1000;
 
 			// Logs the next
 			Calendar c = Calendar.getInstance();
@@ -302,8 +338,15 @@ public class TaskContentView extends ContentView {
 			AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 			am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
 		}
+	}
 
-		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
+	private int getWeekButtons() {
+		int tot = 0;
+		for (int i = 0; i < weekDays.length; i++) {
+			if (weekDays[i].isChecked()) tot += Math.pow(2, i);
+		}
+
+		return tot;
 	}
 
 	private void clearDateAndTime(String type) {
