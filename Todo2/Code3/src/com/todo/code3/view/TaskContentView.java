@@ -309,10 +309,7 @@ public class TaskContentView extends ContentView {
 	private void clearDateAndTime(String type) {
 		activity.removeProperty(type, parentId);
 
-		Intent i = new Intent(activity, NotificationReceiver.class);
-
-		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
-		am.cancel(PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_CANCEL_CURRENT));
+		activity.cancelNotification(parentId);
 	}
 
 	public void leave() {

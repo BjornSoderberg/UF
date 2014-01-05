@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +39,7 @@ import com.todo.code3.dialog.AddItemDialog;
 import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.SPEditor;
+import com.todo.code3.notification.NotificationReceiver;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
 import com.todo.code3.view.TaskContentView;
@@ -460,6 +464,8 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void remove(int id) {
 		remove(id, true);
+		
+		cancelNotification(id);
 	}
 
 	public void remove(int id, boolean update) {
@@ -467,6 +473,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 
 		if (update) updateData();
+	}
+	
+	public void cancelNotification(int id) {
+		Intent i = new Intent(this, NotificationReceiver.class);
+		
+		AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		am.cancel(PendingIntent.getBroadcast(this, id, i, PendingIntent.FLAG_CANCEL_CURRENT));
 	}
 
 	public void move(int id, int parentId) {
