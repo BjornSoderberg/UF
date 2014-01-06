@@ -216,16 +216,16 @@ public class App {
 
 		return data;
 	}
-	
+
 	public static JSONObject removeProperty(String key, int id, JSONObject data) {
 		try {
 			JSONObject object = new JSONObject(data.getString(id + ""));
 			object.remove(key);
 			data.put(id + "", object.toString());
-		} catch(JSONException e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return data;
 	}
 
@@ -368,23 +368,23 @@ public class App {
 	}
 
 	public static int[] getDifferenceBetweenTimestamps(long t1, long t2) {
-		if(t1 > t2) return null;
-		
+		if (t1 > t2) return null;
+
 		// years, months, days, hours, minutes
 		int[] time = new int[5];
-		
+
 		Calendar c1 = Calendar.getInstance();
 		Calendar c2 = Calendar.getInstance();
-		
+
 		c1.setTimeInMillis(t1 * 1000);
 		c2.setTimeInMillis(t2 * 1000);
-		
+
 		int years = c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR);
 		int months = c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
 		int days = c2.get(Calendar.DAY_OF_YEAR) - c1.get(Calendar.DAY_OF_YEAR);
 		int hours = c2.get(Calendar.HOUR_OF_DAY) - c1.get(Calendar.HOUR_OF_DAY);
 		int minutes = c2.get(Calendar.MINUTE) - c1.get(Calendar.MINUTE);
-		
+
 		time[0] = years;
 		time[1] = months;
 		time[2] = days;
@@ -393,35 +393,108 @@ public class App {
 
 		return time;
 	}
-	
+
+	public static int getNumberOfTasksOverDue(int parentId, JSONObject data) {
+		int numTasksOverDue = 0;
+
+		try {
+			if (!data.has(parentId + "")) return 0;
+
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
+
+			if (parent.getString(App.TYPE).equals(App.FOLDER)) {
+				if (parent.has(App.CHILDREN_IDS) && parent.getString(App.CHILDREN_IDS) != "") {
+
+					String[] childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+
+					for (String id : childrenIds) {
+						if (id == "") continue;
+						try {
+							numTasksOverDue += getNumberOfTasksOverDue(Integer.parseInt(id), data);
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else if (parent.getString(App.TYPE).equals(App.TASK)) {
+				if (parent.has(App.DUE_DATE) && parent.getLong(App.DUE_DATE) != -1) {
+					if (isOverDue(parent.getLong(App.DUE_DATE))) return 1;
+
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return numTasksOverDue;
+	}
+
+	public static int getNumberOfTasksCompleted(int parentId, boolean isCompleted, JSONObject data) {
+		int numTasksCompleted = 0;
+
+		try {
+			if (!data.has(parentId + "")) return 0;
+
+			JSONObject parent = new JSONObject(data.getString(parentId + ""));
+
+			if (parent.getString(App.TYPE).equals(App.FOLDER)) {
+				if (parent.has(App.CHILDREN_IDS) && parent.getString(App.CHILDREN_IDS) != "") {
+
+					String[] childrenIds = parent.getString(App.CHILDREN_IDS).split(",");
+
+					for (String id : childrenIds) {
+						if (id == "") continue;
+						try {
+							numTasksCompleted += getNumberOfTasksCompleted(Integer.parseInt(id), isCompleted, data);
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else if (parent.getString(App.TYPE).equals(App.TASK)) {
+				if (parent.has(App.COMPLETED) && parent.getBoolean(App.COMPLETED) == isCompleted) {
+					return 1;
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return numTasksCompleted;
+	}
+
+	public static boolean isOverDue(long timestamp) {
+		return timestamp < System.currentTimeMillis() / 1000 && timestamp != -1;
+	}
+
 	public static int[] getDueDate(long timestamp) {
 		int[] i = new int[3];
-		
+
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(timestamp * 1000);
-		
+
 		i[0] = c.get(Calendar.YEAR);
 		i[1] = c.get(Calendar.MONTH);
 		i[2] = c.get(Calendar.DAY_OF_MONTH);
-		
+
 		return i;
 	}
-	
+
 	public static String getParentHierarchyString(int id, JSONObject data) {
 		String s = "";
-		
+
 		try {
 			JSONObject object = new JSONObject(data.getString(id + ""));
-			
-			if(object.has(App.PARENT_ID) && object.getInt(App.PARENT_ID) != -1) {
+
+			if (object.has(App.PARENT_ID) && object.getInt(App.PARENT_ID) != -1) {
 				s = getParentHierarchyString(object.getInt(App.PARENT_ID), data);
 			}
-			
+
 			return s + object.getInt(App.ID) + ",";
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "";
 	}
 

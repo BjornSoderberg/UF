@@ -280,7 +280,7 @@ public class TaskContentView extends ContentView {
 
 	private void selectDate(OnDateSetListener dsl, String type) {
 		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR) - 1;
+		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 

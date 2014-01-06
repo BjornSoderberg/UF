@@ -184,7 +184,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
-		text.setText(item.getTitle());
+		text.setText(item.getTitle() + " (" + App.getNumberOfTasksOverDue(item.getId(), itemView.getActivity().getData()) + " od, " + App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) + " c, " + App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData())+"uc)");
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
