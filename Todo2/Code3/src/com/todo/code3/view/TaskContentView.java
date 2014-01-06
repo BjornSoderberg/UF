@@ -34,7 +34,7 @@ public class TaskContentView extends ContentView {
 	private EditText descET, focusDummy;
 	private Button saveButton;
 	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
-	private Button setWeeklyReminder;
+	private Button setWeeklyReminder, setEveryTwoWeeksReminder;
 	private CheckBox[] weekDays;
 
 	private JSONObject task;
@@ -144,6 +144,38 @@ public class TaskContentView extends ContentView {
 
 				TimePickerDialog tpd = TimePickerDialog.newInstance(tsl, hour, minute, true);
 				tpd.show(activity.getSupportFragmentManager(), "datepicker");
+			}
+		});
+
+		setEveryTwoWeeksReminder = (Button) findViewById(R.id.setEveryTwoWeeksReminder);
+		setEveryTwoWeeksReminder.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				OnTimeSetListener tsl = new OnTimeSetListener() {
+					public void onTimeSet(RadialPickerLayout view, int hour, int minute) {
+						int i = getWeekButtons();
+						int oe = (((CheckBox) findViewById(R.id.cbEven)).isChecked()) ? 0 : 1;
+						String reminderInfo = Reminder.getReminderInfoString(Reminder.EVERY_TWO_WEEKS, i, hour, minute, oe);
+
+						setRepeatingReminder(reminderInfo);
+
+						Log.i("asdasd", reminderInfo);
+					}
+				};
+
+				int hour = 12, minute = 0;
+
+				TimePickerDialog tpd = TimePickerDialog.newInstance(tsl, hour, minute, true);
+				tpd.show(activity.getSupportFragmentManager(), "datepicker");
+			}
+		});
+		
+		((Button) findViewById(R.id.monthlyReminder)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				int dayOfMonth = Integer.parseInt(((EditText) findViewById(R.id.dayOfMonth)).getText().toString());
+				if(0 > dayOfMonth || dayOfMonth > 32) return;
+				
+				String reminderInfo = Reminder.getReminderInfoString(Reminder.MONTHLY, dayOfMonth, 12, 0);
+				setRepeatingReminder(reminderInfo);
 			}
 		});
 	}
@@ -313,31 +345,31 @@ public class TaskContentView extends ContentView {
 
 	private void setRepeatingReminder(String reminderInfo) {
 		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
-		
-		if (Reminder.getType(reminderInfo).equals(Reminder.WEEKLY)) {
-			Intent i = new Intent(activity, NotificationReceiver.class);
-			i.putExtra(App.ID, parentId);
-			i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
 
-			try {
-				if (task.has(App.NAME)) i.putExtra(App.NAME, task.getString(App.NAME));
-				if (task.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, task.getLong(App.DUE_DATE));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+		// if (Reminder.getType(reminderInfo).equals(Reminder.WEEKLY)) {
+		Intent i = new Intent(activity, NotificationReceiver.class);
+		i.putExtra(App.ID, parentId);
+		i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
 
-			long next = Reminder.getNext(reminderInfo);
-			if(next == -1) return;
-			else next *= 1000;
-
-			// Logs the next
-			Calendar c = Calendar.getInstance();
-			c.setTimeInMillis(next);
-			Log.i("next : " + next, c.toString() + "");
-
-			AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
-			am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
+		try {
+			if (task.has(App.NAME)) i.putExtra(App.NAME, task.getString(App.NAME));
+			if (task.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, task.getLong(App.DUE_DATE));
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
+
+		long next = Reminder.getNext(reminderInfo);
+		if (next == -1) return;
+		else next *= 1000;
+
+		// Logs the next
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(next);
+		Log.i("next : " + next, c.toString() + "");
+
+		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+		am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
+		// }
 	}
 
 	private int getWeekButtons() {

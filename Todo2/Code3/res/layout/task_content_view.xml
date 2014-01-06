@@ -51,107 +51,149 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/dueButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set due date" />
-
-        <Button
-            android:id="@+id/clearDue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Remove due date" />
-
-        <Button
-            android:id="@+id/reminderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set reminder" />
-
-        <Button
-            android:id="@+id/clearReminder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Remove reminder" />
-
-        <Button
-            android:id="@+id/repeatingMWF"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Remind each minute :O" />
-
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/scrollView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <CheckBox
-                android:id="@+id/cbM"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="M"
-                android:textColor="#000000" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
-            <CheckBox
-                android:id="@+id/cbTu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tu"
-                android:textColor="#000000" />
+                <Button
+                    android:id="@+id/dueButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set due date" />
 
-            <CheckBox
-                android:id="@+id/cbW"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="W"
-                android:textColor="#000000" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/clearDue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Remove due date" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/reminderButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set reminder" />
 
-            <CheckBox
-                android:id="@+id/cbTh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Th"
-                android:textColor="#000000" />
+                <Button
+                    android:id="@+id/clearReminder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Remove reminder" />
 
-            <CheckBox
-                android:id="@+id/cbF"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="F"
-                android:textColor="#000000" />
+                <Button
+                    android:id="@+id/repeatingMWF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Remind each minute :O" />
 
-            <CheckBox
-                android:id="@+id/cbSa"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sa"
-                android:textColor="#000000" />
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                    <CheckBox
+                        android:id="@+id/cbM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="M"
+                        android:textColor="#000000" />
 
-            <CheckBox
-                android:id="@+id/cbSu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Su"
-                android:textColor="#000000" >
-            </CheckBox>
-        </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/cbTu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tu"
+                        android:textColor="#000000" />
 
-        <Button
-            android:id="@+id/setWeeklyReminder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Set weekly reminder" />
+                    <CheckBox
+                        android:id="@+id/cbW"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="W"
+                        android:textColor="#000000" />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <CheckBox
+                        android:id="@+id/cbTh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Th"
+                        android:textColor="#000000" />
+
+                    <CheckBox
+                        android:id="@+id/cbF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="F"
+                        android:textColor="#000000" />
+
+                    <CheckBox
+                        android:id="@+id/cbSa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sa"
+                        android:textColor="#000000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <CheckBox
+                        android:id="@+id/cbSu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Su"
+                        android:textColor="#000000" >
+                    </CheckBox>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/setWeeklyReminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set weekly reminder" />
+
+                <Button
+                    android:id="@+id/setEveryTwoWeeksReminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set reminder every two weeks" />
+
+                <CheckBox
+                    android:id="@+id/cbEven"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Even weeks?"
+                    android:textColor="#000000" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/dayOfMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+
+                    <Button
+                        android:id="@+id/monthlyReminder"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Monthly" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 </LinearLayout>

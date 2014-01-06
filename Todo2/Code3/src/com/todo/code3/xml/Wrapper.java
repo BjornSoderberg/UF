@@ -53,6 +53,36 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	private void init() {
 		viewConfig = ViewConfiguration.get(getContext());
 		detector = new SimpleGestureFilter(getContext(), this);
+
+		initTouchButtons();
+	}
+
+	private void initTouchButtons() {
+		int numButtons = 3;
+		double v[] = { Math.toRadians(15), Math.toRadians(45), Math.toRadians(75) };
+		int w = App.dpToPx(50, getContext().getResources()); // width
+		int d = App.dpToPx(150, getContext().getResources()); // distance from
+																// upper
+																// right corner
+
+		touchButtons = new Button[numButtons];
+
+		for (int i = 0; i < numButtons; i++) {
+			touchButtons[i] = new Button(getContext());
+			touchButtons[i].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
+			RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(w, w);
+
+			p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+
+			p.rightMargin = (int) (d * Math.cos(v[i])) - w / 2;
+			p.topMargin = (int) (d * Math.sin(v[i])) - w / 2;
+
+			touchButtons[i].setLayoutParams(p);
+			addView(touchButtons[i]);
+		}
+
+		hideAddOptions();
 	}
 
 	public boolean onTouchEvent(MotionEvent e) {
@@ -134,24 +164,24 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
 				v = Math.toDegrees(v);
 
-				if (touchButtons != null) {
-					for (Button b : touchButtons)
-						b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
+				for (Button b : touchButtons)
+					b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
 
-					int selected = 0;
+				int selected = -1;
 
-					if (-90 < v && v < -60) selected = 2;
-					else if (-60 < v && v < -30) selected = 1;
-					else if (-30 < v && v < 0) selected = 0;
+				if (-90 < v && v < -60) selected = 2;
+				else if (-60 < v && v < -30) selected = 1;
+				else if (-30 < v && v < 0) selected = 0;
 
-					touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
-				}
+				if (selected != -1) touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
+
 			}
 		} else if (e.getAction() == MotionEvent.ACTION_UP) {
 			addTouch = false;
+			hideAddOptions();
 
 			if (Math.hypot(x - startX, y - startY) < viewConfig.getScaledTouchSlop()) activity.getAddButton().performClick();
-			else if (Math.hypot(x - startX, y - startY) > 50 && y != startY && x != startX) {
+			else if (y != startY && x != startX) {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
 				v = Math.toDegrees(v);
 
@@ -213,34 +243,15 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	private void showAddOptions() {
-		if (touchButtons == null) touchButtons = new Button[3];
-
-		int x, y;
-		int numButtons = 3;
-		FrameLayout add = activity.getAddButton();
-		x = (add.getRight() + add.getLeft()) / 2;
-		y = (add.getTop() + add.getBottom()) / 2;
-
-		int d = App.dpToPx(150, activity.getResources());
-		double v[] = { Math.toRadians(15), Math.toRadians(45), Math.toRadians(75) };
-		int w = App.dpToPx(40, activity.getResources());
-		int hw = w / 2;
-
-		for (int i = 0; i < numButtons; i++) {
-			touchButtons[i] = new Button(getContext());
-			touchButtons[i].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
-			RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(w, w);
-			// p.leftMargin = x - 5;
-			// p.topMargin = y - 5;
-			// p.addRule(RelativeLayout.RIGHT_OF, com.todo.code3.R.id.line2);
-			p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-			p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-
-			p.rightMargin = (int) (d * Math.cos(v[i])) - hw;
-			p.topMargin = (int) (d * Math.sin(v[i])) - hw;
-
-			touchButtons[i].setLayoutParams(p);
-			addView(touchButtons[i]);
+		for (Button b : touchButtons) {
+			b.setVisibility(View.VISIBLE);
+			b.bringToFront();
+			b.requestLayout();
 		}
+	}
+
+	private void hideAddOptions() {
+		for (Button b : touchButtons)
+			b.setVisibility(View.GONE);
 	}
 }
