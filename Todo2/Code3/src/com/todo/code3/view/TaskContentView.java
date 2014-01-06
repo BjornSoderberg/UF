@@ -15,7 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -172,9 +174,32 @@ public class TaskContentView extends ContentView {
 		((Button) findViewById(R.id.monthlyReminder)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				int dayOfMonth = Integer.parseInt(((EditText) findViewById(R.id.dayOfMonth)).getText().toString());
-				if(0 > dayOfMonth || dayOfMonth > 32) return;
+				if(0 > dayOfMonth || dayOfMonth > 32) {
+					Toast.makeText(activity, "Between 1-31 pls", Toast.LENGTH_SHORT).show();
+					return;
+				}
 				
 				String reminderInfo = Reminder.getReminderInfoString(Reminder.MONTHLY, dayOfMonth, 12, 0);
+				setRepeatingReminder(reminderInfo);
+			}
+		});
+		
+		((Button) findViewById(R.id.intervalReminder)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				String type = "";
+				int cid = ((RadioGroup) findViewById(R.id.intervalType)).getCheckedRadioButtonId();
+				if(cid == R.id.weekInterval) type = Reminder.WEEK;
+				else if(cid == R.id.dayInterval) type = Reminder.DAY;
+				else if(cid == R.id.hourInterval) type = Reminder.HOUR;
+				else if(cid == R.id.minuteInterval)type = Reminder.MINUTE;
+				
+				int intervalLength = Integer.parseInt(((EditText) findViewById(R.id.interval)).getText().toString());
+				if(intervalLength < 0) {
+					Toast.makeText(activity, "Larger than 0 pls", Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				String reminderInfo = Reminder.getReminderInfoString(Reminder.SET_INTERVAL, type, intervalLength, System.currentTimeMillis() / 1000);
 				setRepeatingReminder(reminderInfo);
 			}
 		});

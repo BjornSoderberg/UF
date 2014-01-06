@@ -192,6 +192,57 @@
                         android:layout_height="wrap_content"
                         android:text="Monthly" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="#000000" >
+
+                    <EditText
+                        android:id="@+id/interval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+
+                    <Button
+                        android:id="@+id/intervalReminder"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Set interval" />
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/intervalType"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#000000" >
+
+                    <RadioButton
+                        android:id="@+id/weekInterval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Week" />
+
+                    <RadioButton
+                        android:id="@+id/dayInterval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Day" />
+
+                    <RadioButton
+                        android:id="@+id/hourInterval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hour" />
+
+                    <RadioButton
+                        android:id="@+id/minuteInterval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Minute" />
+                </RadioGroup>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

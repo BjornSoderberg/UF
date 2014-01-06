@@ -8,6 +8,7 @@ public class Reminder {
 	public static final String WEEKLY = "a";
 	public static final String EVERY_TWO_WEEKS = "b";
 	public static final String MONTHLY = "c";
+	public static final String SET_INTERVAL = "d";
 
 	public static final int MONDAY = 64;
 	public static final int TUESDAY = 32;
@@ -16,6 +17,11 @@ public class Reminder {
 	public static final int FRIDAY = 4;
 	public static final int SATURDAY = 2;
 	public static final int SUNDAY = 1;
+
+	public static final String WEEK = "week";
+	public static final String DAY = "day";
+	public static final String HOUR = "hour";
+	public static final String MINUTE = "minute";
 
 	public static final String DAYS_IN_WEEK = "daysInWeek";
 
@@ -65,8 +71,6 @@ public class Reminder {
 			int hour = Integer.parseInt(getPart(reminderInfo, 2));
 			int minute = Integer.parseInt(getPart(reminderInfo, 3));
 
-			int asd = 0;
-
 			int count = 0;
 			while (count < 2000) {
 				int d = dayOfMonth;
@@ -79,12 +83,36 @@ public class Reminder {
 
 					// Return only if the time is in the future
 					if (System.currentTimeMillis() < c.getTimeInMillis()) { //
-					 return c.getTimeInMillis() / 1000;
+						return c.getTimeInMillis() / 1000;
 					}
 				}
 
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				count++;
+			}
+		} else if (getType(reminderInfo).equals(Reminder.SET_INTERVAL)) {
+			String type = getPart(reminderInfo, 1);
+			int intervalLength = Integer.parseInt(getPart(reminderInfo, 2));
+			long start = Long.parseLong(getPart(reminderInfo, 3));
+
+			int cycle = intervalLength;
+			if (type.equals(Reminder.WEEK)) cycle *= 7 * 24 * 60 * 60;
+			else if(type.equals(Reminder.DAY)) cycle *= 24 * 60 * 60;
+			else if(type.equals(Reminder.HOUR)) cycle *= 60 * 60;
+			else if(type.equals(Reminder.MINUTE)) cycle *= 60;
+			else return -1;
+			
+			c.setTimeInMillis(start * 1000);
+			
+			int count = 0;
+			while(count < 5000) {
+				// Return only if the time is in the future
+				if (System.currentTimeMillis() < c.getTimeInMillis()) { //
+					return c.getTimeInMillis() / 1000;
+				}
+				
+				count++;
+				c.setTimeInMillis(c.getTimeInMillis() + cycle * 1000);
 			}
 		}
 
@@ -109,13 +137,13 @@ public class Reminder {
 		return 0;
 	}
 
-	public static String getReminderInfoString(String type, int days, int hour, int minute) {
-		String s = type + "," + days + "," + hour + "," + minute;
+	public static String getReminderInfoString(Object type, Object days, Object hour, Object minute) {
+		String s = type.toString() + "," + days.toString() + "," + hour.toString() + "," + minute.toString();
 		return s;
 	}
 
-	public static String getReminderInfoString(String type, int days, int hour, int minute, int startWeek) {
-		String s = type + "," + days + "," + hour + "," + minute + "," + startWeek;
+	public static String getReminderInfoString(Object type, Object days, Object hour, Object minute, Object startWeek) {
+		String s = type.toString() + "," + days.toString() + "," + hour.toString() + "," + minute.toString() + "," + startWeek.toString();
 		return s;
 	}
 

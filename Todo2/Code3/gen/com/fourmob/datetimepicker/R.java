@@ -61,12 +61,12 @@ public final class R {
 		public static final int year_label_text_size = 0x7f070010;
 	}
 	public static final class id {
-		public static final int ampm_hitspace = 0x7f090036;
-		public static final int ampm_label = 0x7f090037;
+		public static final int ampm_hitspace = 0x7f09003d;
+		public static final int ampm_label = 0x7f09003e;
 		public static final int animator = 0x7f090007;
 		public static final int cancel = 0x7f09000a;
-		public static final int cancel_button = 0x7f09003a;
-		public static final int center_view = 0x7f090030;
+		public static final int cancel_button = 0x7f090041;
+		public static final int center_view = 0x7f090037;
 		public static final int date_picker_day = 0x7f090005;
 		public static final int date_picker_header = 0x7f090001;
 		public static final int date_picker_month = 0x7f090004;
@@ -74,15 +74,15 @@ public final class R {
 		public static final int date_picker_year = 0x7f090006;
 		public static final int day_picker_selected_date_layout = 0x7f090002;
 		public static final int done = 0x7f090000;
-		public static final int done_button = 0x7f09003b;
-		public static final int hour_space = 0x7f090031;
-		public static final int hours = 0x7f090033;
-		public static final int minutes = 0x7f090035;
-		public static final int minutes_space = 0x7f090034;
+		public static final int done_button = 0x7f090042;
+		public static final int hour_space = 0x7f090038;
+		public static final int hours = 0x7f09003a;
+		public static final int minutes = 0x7f09003c;
+		public static final int minutes_space = 0x7f09003b;
 		public static final int month_text_view = 0x7f090008;
-		public static final int separator = 0x7f090032;
-		public static final int time_picker = 0x7f090039;
-		public static final int time_picker_dialog = 0x7f090038;
+		public static final int separator = 0x7f090039;
+		public static final int time_picker = 0x7f090040;
+		public static final int time_picker_dialog = 0x7f09003f;
 	}
 	public static final class layout {
 		public static final int date_picker_cancel_button = 0x7f030000;
