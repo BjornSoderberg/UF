@@ -5,19 +5,20 @@ import java.util.Calendar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.todo.code3.notification.NotificationReceiver;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.todo.code3.notification.NotificationReceiver;
+
 public class Reminder {
-	public static final String WEEKLY = "a";
-	public static final String EVERY_TWO_WEEKS = "b";
-	public static final String MONTHLY = "c";
-	public static final String SET_INTERVAL = "d";
+	public static final String REMINDER_WEEKLY = "a";
+	public static final String REMINDER_EVERY_TWO_WEEKS = "b";
+	public static final String REMINDER_MONTHLY = "c";
+	public static final String REMINDER_SET_INTERVAL = "d";
+	public static final String REMINDER_SINGLE_TIMESTAMPS = "e";
 
 	public static final int MONDAY = 64;
 	public static final int TUESDAY = 32;
@@ -42,10 +43,10 @@ public class Reminder {
 	public static long getNext(String reminderInfo) {
 		Calendar c = Calendar.getInstance();
 
-		if (getType(reminderInfo).equals(Reminder.WEEKLY) || getType(reminderInfo).equals(Reminder.EVERY_TWO_WEEKS)) {
+		if (getType(reminderInfo).equals(Reminder.REMINDER_WEEKLY) || getType(reminderInfo).equals(Reminder.REMINDER_EVERY_TWO_WEEKS)) {
 			int gap = 1;
-			if (getType(reminderInfo).equals(Reminder.WEEKLY)) gap = 1;
-			else if (getType(reminderInfo).equals(Reminder.EVERY_TWO_WEEKS)) gap = 2;
+			if (getType(reminderInfo).equals(Reminder.REMINDER_WEEKLY)) gap = 1;
+			else if (getType(reminderInfo).equals(Reminder.REMINDER_EVERY_TWO_WEEKS)) gap = 2;
 
 			int days = Integer.parseInt(getPart(reminderInfo, 1));
 			int hour = Integer.parseInt(getPart(reminderInfo, 2));
@@ -75,7 +76,7 @@ public class Reminder {
 			}
 
 			return -1;
-		} else if (getType(reminderInfo).equals(Reminder.MONTHLY)) {
+		} else if (getType(reminderInfo).equals(Reminder.REMINDER_MONTHLY)) {
 			int dayOfMonth = Integer.parseInt(getPart(reminderInfo, 1));
 			int hour = Integer.parseInt(getPart(reminderInfo, 2));
 			int minute = Integer.parseInt(getPart(reminderInfo, 3));
@@ -99,7 +100,7 @@ public class Reminder {
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				count++;
 			}
-		} else if (getType(reminderInfo).equals(Reminder.SET_INTERVAL)) {
+		} else if (getType(reminderInfo).equals(Reminder.REMINDER_SET_INTERVAL)) {
 			String type = getPart(reminderInfo, 1);
 			int intervalLength = Integer.parseInt(getPart(reminderInfo, 2));
 			long start = Long.parseLong(getPart(reminderInfo, 3));
@@ -123,6 +124,22 @@ public class Reminder {
 				count++;
 				c.setTimeInMillis(c.getTimeInMillis() + cycle * 1000);
 			}
+		} else if(getType(reminderInfo).equals(Reminder.REMINDER_SINGLE_TIMESTAMPS)) {
+			long smallest = -1;
+			
+			String[] parts = reminderInfo.split(",");
+			for(int i = 1; i < parts.length; i++) {
+				try {
+					long timestamp = Long.parseLong(parts[i]);
+					if(timestamp < smallest || smallest == -1) {
+						if(timestamp * 1000 > System.currentTimeMillis()) smallest = timestamp;
+					}
+				} catch(NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			return smallest;
 		}
 
 		return -1;
@@ -144,6 +161,11 @@ public class Reminder {
 		if (day == Calendar.SATURDAY) return SATURDAY;
 		if (day == Calendar.SUNDAY) return SUNDAY;
 		return 0;
+	}
+	
+	public static String getReminderInfoString(Object type, Object asd) {
+		String s = type.toString() + "," + asd.toString();
+		return s;
 	}
 
 	public static String getReminderInfoString(Object type, Object days, Object hour, Object minute) {

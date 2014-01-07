@@ -48,7 +48,7 @@ public class App {
 	public static final String OPEN = "open";
 
 	public static final String DUE_DATE = "dueDate";
-	public static final String REMINDER = "reminder";
+//	public static final String REMINDER = "reminder";
 	public static final String REPEAT = "repeat";
 
 	public static final int BEZEL_AREA_DP = 16;
