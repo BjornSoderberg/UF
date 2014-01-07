@@ -95,7 +95,7 @@ public class ItemView extends ContentView {
 				}
 			} else getItemsFromThisFolder(data);
 
-			sortItems();
+//			sortItems();
 
 			adapter.notifyDataSetChanged();
 

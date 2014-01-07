@@ -234,7 +234,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				int position = sortSpinner.getSelectedItemPosition();
 
-				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
+//				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
 
 				updateData();
 			}

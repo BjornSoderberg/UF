@@ -25,49 +25,60 @@ public class Sort {
 	}
 
 	public static void sortTimestampCreated(ArrayList<ContentItem> list) {
-		int i;
-		boolean flag = true;
-		ContentItem temp;
-
-		while (flag) {
-			flag = false;
-			for (i = 0; i < list.size() - 1; i++) {
-				if (list.get(i).getTimestampCreated() < list.get(i + 1).getTimestampCreated()) {
-					temp = list.get(i);
-					list.set(i, list.get(i + 1));
-					list.set(i + 1, temp);
-
-					flag = true;
-				}
-			}
-		}
+		sortTimestampCreated(list, 0, list.size() - 1);
 
 		for (ContentItem ia : list)
 			ia.setTitle(ia.getTimestampCreated() + " : " + ia.getTitle());
 	}
-	
+
+	public static void sortTimestampCreated(ArrayList<ContentItem> list, int start, int end) {
+		int index = partition(list, start, end);
+		
+		if(start < index-1) sortTimestampCreated(list, start, index-1);
+		if(index < end) sortTimestampCreated(list, index, end);
+	}
+
 	public static void sortCompleted(ArrayList<ContentItem> oldList) {
 		ArrayList<ContentItem> newList = new ArrayList<ContentItem>();
-		
-		for(ContentItem i : oldList) {
-			if(i instanceof TaskItem) {
-				if(((TaskItem)i).isCompleted()) newList.add(i);
+
+		for (ContentItem i : oldList) {
+			if (i instanceof TaskItem) {
+				if (((TaskItem) i).isCompleted()) newList.add(i);
 			}
 		}
-		
-		for(ContentItem i : oldList) {
-			if(i instanceof TaskItem) {
-				if(!((TaskItem)i).isCompleted()) newList.add(i);
+
+		for (ContentItem i : oldList) {
+			if (i instanceof TaskItem) {
+				if (!((TaskItem) i).isCompleted()) newList.add(i);
 			}
 		}
-		
-		for(ContentItem i : oldList) {
-			if(!(i instanceof TaskItem)) {
+
+		for (ContentItem i : oldList) {
+			if (!(i instanceof TaskItem)) {
 				newList.add(i);
 			}
 		}
-		
+
 		oldList.clear();
 		oldList.addAll(newList);
+	}
+
+	private static int partition(ArrayList<ContentItem> list, int start, int end) {
+		ContentItem temp;
+		long pivot = list.get((start + end) / 2).getTimestampCreated();
+		
+		while(start <= end) {
+			while(list.get(start).getTimestampCreated() < pivot)
+				start++;
+			while(list.get(end).getTimestampCreated() > pivot)
+				end--;
+			if(start <= end) {
+				temp = list.get(start);
+				list.set(start, list.get(end));
+				list.set(end, temp);
+			}
+		}
+		
+		return start;
 	}
 }
