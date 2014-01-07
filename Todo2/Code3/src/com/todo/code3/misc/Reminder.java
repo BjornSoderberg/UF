@@ -2,6 +2,15 @@ package com.todo.code3.misc;
 
 import java.util.Calendar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.todo.code3.notification.NotificationReceiver;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 public class Reminder {
@@ -97,20 +106,20 @@ public class Reminder {
 
 			int cycle = intervalLength;
 			if (type.equals(Reminder.WEEK)) cycle *= 7 * 24 * 60 * 60;
-			else if(type.equals(Reminder.DAY)) cycle *= 24 * 60 * 60;
-			else if(type.equals(Reminder.HOUR)) cycle *= 60 * 60;
-			else if(type.equals(Reminder.MINUTE)) cycle *= 60;
+			else if (type.equals(Reminder.DAY)) cycle *= 24 * 60 * 60;
+			else if (type.equals(Reminder.HOUR)) cycle *= 60 * 60;
+			else if (type.equals(Reminder.MINUTE)) cycle *= 60;
 			else return -1;
-			
+
 			c.setTimeInMillis(start * 1000);
-			
+
 			int count = 0;
-			while(count < 5000) {
+			while (count < 5000) {
 				// Return only if the time is in the future
 				if (System.currentTimeMillis() < c.getTimeInMillis()) { //
 					return c.getTimeInMillis() / 1000;
 				}
-				
+
 				count++;
 				c.setTimeInMillis(c.getTimeInMillis() + cycle * 1000);
 			}
@@ -159,5 +168,32 @@ public class Reminder {
 
 	public static String getType(String info) {
 		return getPart(info, 0);
+	}
+
+	public static void startRepeatingReminder(String reminderInfo, Context context, int id, JSONObject object) {
+		Intent i = new Intent(context, NotificationReceiver.class);
+		i.putExtra(App.ID, id);
+		i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
+
+		try {
+			if (object != null) {
+				if (object.has(App.NAME)) i.putExtra(App.NAME, object.getString(App.NAME));
+				if (object.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, object.getLong(App.DUE_DATE));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		long next = Reminder.getNext(reminderInfo);
+		if (next == -1) return;
+		else next *= 1000;
+
+		// Logs the next
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(next);
+		Log.i("next : " + next, c.toString() + "");
+
+		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(context, id, i, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 }

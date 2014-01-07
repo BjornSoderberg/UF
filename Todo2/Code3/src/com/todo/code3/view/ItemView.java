@@ -95,7 +95,7 @@ public class ItemView extends ContentView {
 				}
 			} else getItemsFromThisFolder(data);
 
-//			sortItems();
+			// sortItems();
 
 			adapter.notifyDataSetChanged();
 
@@ -115,7 +115,7 @@ public class ItemView extends ContentView {
 			else {
 				if (child.getString(App.TYPE).equals(App.TASK)) {
 					TaskItem item = new TaskItem();
-					item.setTitle(child.getInt(App.PARENT_ID) + " : " +child.getString(App.NAME));
+					item.setTitle(child.getInt(App.PARENT_ID) + " : " + child.getString(App.NAME));
 					item.setId(child.getInt(App.ID));
 					item.setType(App.TASK);
 					item.setParentId(parentId);
@@ -125,6 +125,7 @@ public class ItemView extends ContentView {
 
 					if (child.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(child.getInt(App.TIMESTAMP_CREATED));
 					if (child.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(child.getInt(App.TIMESTAMP_COMPLETED));
+					if (child.has(App.DUE_DATE)) item.setDueDate(child.getLong(App.DUE_DATE));
 					if (child.has(App.COMPLETED) && child.getBoolean(App.COMPLETED)) item.completed(true);
 					else item.completed(false);
 
@@ -160,6 +161,7 @@ public class ItemView extends ContentView {
 
 				if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
 				if (object.has(App.TIMESTAMP_COMPLETED)) item.setTimestampChecked(object.getInt(App.TIMESTAMP_COMPLETED));
+				if (object.has(App.DUE_DATE)) item.setDueDate(object.getLong(App.DUE_DATE));
 				if (object.has(App.COMPLETED) && object.getBoolean(App.COMPLETED)) item.completed(true);
 				else item.completed(false);
 
@@ -333,7 +335,7 @@ public class ItemView extends ContentView {
 			// sortPrioritized = !sortPrioritized;
 		} else if (sortType == App.SORT_TIMESTAMP_CREATED) {
 			Sort.sortTimestampCreated(contentItems);
-		} else if(sortType == App.SORT_COMPLETED) {
+		} else if (sortType == App.SORT_COMPLETED) {
 			Sort.sortCompleted(contentItems);
 		}
 	}
@@ -341,7 +343,7 @@ public class ItemView extends ContentView {
 	public void setSortType(int type) {
 		sortType = type;
 
-//		sortPrioritized = false;
+		// sortPrioritized = false;
 	}
 
 	private View getViewById(int id) {

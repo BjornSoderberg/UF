@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -39,6 +38,7 @@ import com.espian.flyin.library.FlyInMenuItem;
 import com.todo.code3.dialog.AddItemDialog;
 import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.misc.App;
+import com.todo.code3.misc.Reminder;
 import com.todo.code3.misc.SPEditor;
 import com.todo.code3.notification.NotificationReceiver;
 import com.todo.code3.view.ContentView;
@@ -234,7 +234,9 @@ public class MainActivity extends FlyInFragmentActivity {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				int position = sortSpinner.getSelectedItemPosition();
 
-//				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
+				// if (contentViews.get(posInWrapper) instanceof ItemView)
+				// ((ItemView)
+				// contentViews.get(posInWrapper)).setSortType(position);
 
 				updateData();
 			}
@@ -246,7 +248,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		sortSpinner.setVisibility(View.GONE);
+		// sortSpinner.setVisibility(View.GONE);
 	}
 
 	private void initAddButton() {
@@ -561,8 +563,18 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
-	public void checkTask(int taskId, int parentId, boolean isChecked) {
-		data = App.checkTask(taskId, parentId, isChecked, data);
+	public void checkTask(int taskId, boolean isChecked) {
+		data = App.checkTask(taskId, isChecked, data);
+
+		if (!isChecked) cancelNotification(taskId);
+		else {
+			try{
+				JSONObject task = new JSONObject(data.getString(taskId + ""));
+				if(task.has(Reminder.REMINDER_INFO)) Reminder.startRepeatingReminder(task.getString(Reminder.REMINDER_INFO), this, task.getInt(App.ID), task);
+			} catch(JSONException e) {
+				
+			}
+		}
 
 		editor.put(App.DATA, data.toString());
 		updateData();
@@ -596,6 +608,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			posInWrapper = 0;
 			contentViews.clear();
+
+			scroller.startScroll(currentContentOffset, 0, -currentContentOffset, 0, 0);
+			scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 			contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 		} catch (JSONException e) {
@@ -639,6 +654,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 
 			posInWrapper++;
+			int i;
 
 			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskContentView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));

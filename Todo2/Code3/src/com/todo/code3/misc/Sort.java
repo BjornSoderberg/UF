@@ -8,7 +8,11 @@ import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.TaskItem;
 
 public class Sort {
-
+	
+	public static final int SORT_PRIORITIZED = 0;
+	public static final int SORT_TIMESTAMP_CREATED = 1;
+	public static final int SORT_COMPLETED = 2;
+	
 	public static void sortPrioritized(ArrayList<ContentItem> oldList, boolean invert) {
 		ArrayList<ContentItem> newList = new ArrayList<ContentItem>();
 
@@ -63,6 +67,7 @@ public class Sort {
 		oldList.addAll(newList);
 	}
 
+	// Used in the quicksort (sort timestamp created)
 	private static int partition(ArrayList<ContentItem> list, int start, int end) {
 		ContentItem temp;
 		long pivot = list.get((start + end) / 2).getTimestampCreated();

@@ -371,30 +371,7 @@ public class TaskContentView extends ContentView {
 	private void setRepeatingReminder(String reminderInfo) {
 		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
 
-		// if (Reminder.getType(reminderInfo).equals(Reminder.WEEKLY)) {
-		Intent i = new Intent(activity, NotificationReceiver.class);
-		i.putExtra(App.ID, parentId);
-		i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
-
-		try {
-			if (task.has(App.NAME)) i.putExtra(App.NAME, task.getString(App.NAME));
-			if (task.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, task.getLong(App.DUE_DATE));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		long next = Reminder.getNext(reminderInfo);
-		if (next == -1) return;
-		else next *= 1000;
-
-		// Logs the next
-		Calendar c = Calendar.getInstance();
-		c.setTimeInMillis(next);
-		Log.i("next : " + next, c.toString() + "");
-
-		AlarmManager am = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
-		am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(activity, parentId, i, PendingIntent.FLAG_UPDATE_CURRENT));
-		// }
+		Reminder.startRepeatingReminder(reminderInfo, activity, parentId, task);
 	}
 
 	private int getWeekButtons() {

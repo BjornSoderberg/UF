@@ -180,7 +180,7 @@ public class App {
 		return data;
 	}
 
-	public static JSONObject checkTask(int taskId, int parentId, boolean isChecked, JSONObject data) {
+	public static JSONObject checkTask(int taskId, boolean isChecked, JSONObject data) {
 		try {
 
 			JSONObject task = new JSONObject(data.getString(taskId + ""));
@@ -192,9 +192,9 @@ public class App {
 			else task.put(App.TIMESTAMP_COMPLETED, -1);
 
 			data.put(taskId + "", task.toString());
-			JSONObject parent = new JSONObject(data.getString(parentId + ""));
+			JSONObject parent = new JSONObject(data.getString(task.getInt(App.PARENT_ID) + ""));
 
-			data.put(parentId + "", parent.toString());
+			data.put(task.getInt(App.PARENT_ID) + "", parent.toString());
 
 		} catch (JSONException e) {
 			e.printStackTrace();
