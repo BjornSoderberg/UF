@@ -566,7 +566,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void checkTask(int taskId, boolean isChecked) {
 		data = App.checkTask(taskId, isChecked, data);
 
-		if (!isChecked) cancelNotification(taskId);
+		if (isChecked) cancelNotification(taskId);
 		else {
 			try{
 				JSONObject task = new JSONObject(data.getString(taskId + ""));
