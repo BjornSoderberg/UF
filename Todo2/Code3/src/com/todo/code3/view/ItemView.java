@@ -88,14 +88,14 @@ public class ItemView extends ContentView {
 		try {
 			contentItems.clear();
 
-			if (includeSubFolders || sortType == 3) {
+			if (includeSubFolders || sortType == 4) {
 				if (data.has(parentId + "")) {
 					JSONObject parent = new JSONObject(data.getString(parentId + ""));
 					if (parent.has(App.CHILDREN_IDS)) getItemsIncludingSubFolders(data, parent.getString(App.CHILDREN_IDS).split(","));
 				}
 			} else getItemsFromThisFolder(data);
 
-			// sortItems();
+			 sortItems();
 
 			adapter.notifyDataSetChanged();
 
@@ -330,13 +330,15 @@ public class ItemView extends ContentView {
 	}
 
 	private void sortItems() {
-		if (sortType == App.SORT_PRIORITIZED) {
+		if (sortType == Sort.SORT_PRIORITIZED) {
 			Sort.sortPrioritized(contentItems, sortPrioritized);
 			// sortPrioritized = !sortPrioritized;
-		} else if (sortType == App.SORT_TIMESTAMP_CREATED) {
+		} else if (sortType == Sort.SORT_TIMESTAMP_CREATED) {
 			Sort.sortTimestampCreated(contentItems);
-		} else if (sortType == App.SORT_COMPLETED) {
+		} else if (sortType == Sort.SORT_COMPLETED) {
 			Sort.sortCompleted(contentItems);
+		} else if(sortType == Sort.SORT_ALPHABETICALLY) {
+			Sort.sortAlphabetically(contentItems);
 		}
 	}
 

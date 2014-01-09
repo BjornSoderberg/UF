@@ -223,7 +223,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		initAddButton();
 
-		String[] paths = { "Prio", "Created", "Completed", "Include subtasks" };
+		String[] paths = { "Prio", "Created", "Completed", "Alphabetically", "Include subtasks" };
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -234,9 +234,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				int position = sortSpinner.getSelectedItemPosition();
 
-				// if (contentViews.get(posInWrapper) instanceof ItemView)
-				// ((ItemView)
-				// contentViews.get(posInWrapper)).setSortType(position);
+				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
 
 				updateData();
 			}

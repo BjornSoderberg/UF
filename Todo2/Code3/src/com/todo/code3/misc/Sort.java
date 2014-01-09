@@ -1,18 +1,19 @@
 package com.todo.code3.misc;
 
 import java.util.ArrayList;
-
-import android.os.AsyncTask;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.TaskItem;
 
 public class Sort {
-	
+
 	public static final int SORT_PRIORITIZED = 0;
 	public static final int SORT_TIMESTAMP_CREATED = 1;
 	public static final int SORT_COMPLETED = 2;
-	
+	public static final int SORT_ALPHABETICALLY = 3;
+
 	public static void sortPrioritized(ArrayList<ContentItem> oldList, boolean invert) {
 		ArrayList<ContentItem> newList = new ArrayList<ContentItem>();
 
@@ -37,9 +38,9 @@ public class Sort {
 
 	public static void sortTimestampCreated(ArrayList<ContentItem> list, int start, int end) {
 		int index = partition(list, start, end);
-		
-		if(start < index-1) sortTimestampCreated(list, start, index-1);
-		if(index < end) sortTimestampCreated(list, index, end);
+
+		if (start < index - 1) sortTimestampCreated(list, start, index - 1);
+		if (index < end) sortTimestampCreated(list, index, end);
 	}
 
 	public static void sortCompleted(ArrayList<ContentItem> oldList) {
@@ -67,23 +68,36 @@ public class Sort {
 		oldList.addAll(newList);
 	}
 
+	public static void sortAlphabetically(ArrayList<ContentItem> list) {
+		Comparator<ContentItem> comparator = new Comparator<ContentItem>() {
+			public int compare(ContentItem lhs, ContentItem rhs) {
+				String title1 = lhs.getTitle().toString().toLowerCase();
+				String title2 = rhs.getTitle().toString().toLowerCase();
+
+				return title1.compareTo(title2);
+			}
+		};
+		
+		Collections.sort(list, comparator);
+	}
+
 	// Used in the quicksort (sort timestamp created)
 	private static int partition(ArrayList<ContentItem> list, int start, int end) {
 		ContentItem temp;
 		long pivot = list.get((start + end) / 2).getTimestampCreated();
-		
-		while(start <= end) {
-			while(list.get(start).getTimestampCreated() < pivot)
+
+		while (start <= end) {
+			while (list.get(start).getTimestampCreated() < pivot)
 				start++;
-			while(list.get(end).getTimestampCreated() > pivot)
+			while (list.get(end).getTimestampCreated() > pivot)
 				end--;
-			if(start <= end) {
+			if (start <= end) {
 				temp = list.get(start);
 				list.set(start, list.get(end));
 				list.set(end, temp);
 			}
 		}
-		
+
 		return start;
 	}
 }
