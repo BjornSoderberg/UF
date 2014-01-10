@@ -194,7 +194,7 @@ public class TaskView extends ContentView {
 				else if (cid == R.id.minuteInterval) type = Reminder.MINUTE;
 
 				int intervalLength = Integer.parseInt(((EditText) findViewById(R.id.interval)).getText().toString());
-				if (intervalLength < 0) {
+				if (intervalLength <= 0) {
 					Toast.makeText(activity, "Larger than 0 pls", Toast.LENGTH_SHORT).show();
 					return;
 				}

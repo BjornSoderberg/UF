@@ -162,7 +162,8 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
-		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.red_item_selector));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
 
 		return view;
 	}
@@ -196,33 +197,34 @@ public class ItemAdapter extends BaseAdapter {
 
 		return view;
 	}
-	
+
 	private View getNoteView(int position, final NoteItem item) {
-		View view = inflater.inflate(R.layout.folder_item,  null);
-		
+		View view = inflater.inflate(R.layout.folder_item, null);
+
 		// Init prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
 		ImageView i = (ImageView) view.findViewById(R.id.icon);
-		
+
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if(itemView.getActivity().isMoving()) return;
-				
+				if (itemView.getActivity().isMoving()) return;
+
 				boolean shouldPrio = !item.isPrioritized();
 				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
 			}
 		});
-		
-		if(item.isPrioritized()) i.setImageResource(R.drawable.checked);
+
+		if (item.isPrioritized()) i.setImageResource(R.drawable.checked);
 		else i.setImageResource(R.drawable.box);
-		
+
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (note)");
-		
-		//  Sets the background (which is dependent on its state (pressed, focused etc.))
+
+		// Sets the background (which is dependent on its state (pressed,
+		// focused etc.))
 		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
-		
+
 		return view;
 	}
 

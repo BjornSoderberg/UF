@@ -8,4 +8,7 @@
     
     <color name="light_blue">#ffC7E7FF</color>
     <color name="selected_light_blue">#FF96D7FF</color>
+    
+    <color name="light_red">#ffFFC7C7</color>
+    <color name="selected_light_red">#FFFF9687</color>
 </resources>

@@ -34,10 +34,11 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 	protected LinearLayout content;
 	protected MainActivity activity;
+	protected Button voiceRecognitionButton;
 
 	protected String posButtonString = null;
 	protected String negButtonString = null;
-
+	
 	public Dialog(MainActivity activity, String title, String message, boolean hasVoiceRecognition) {
 		super(activity);
 		this.activity = activity;
@@ -74,22 +75,23 @@ public abstract class Dialog extends AlertDialog.Builder {
 	private void initVoiceRecognition() {
 		if (Build.VERSION.SDK_INT < 8) return;
 
-		final Button b = new Button(activity);
-		b.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		voiceRecognitionButton = new Button(activity);
+		voiceRecognitionButton.setBackgroundColor(0xffcccccc);
+		voiceRecognitionButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 		PackageManager pm = activity.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
 
 		// If can use voice recognition and has internet connection
 		if (activities.size() != 0 && App.isNetworkAvailable(activity)) {
-			b.setText("Press me to speak");
-			b.setOnClickListener(new View.OnClickListener() {
+			voiceRecognitionButton.setText("Press me to speak");
+			voiceRecognitionButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					startVoiceRecognition();
 				}
 			});
 
-			content.addView(b);
+			content.addView(voiceRecognitionButton);
 		}
 	}
 
@@ -98,12 +100,14 @@ public abstract class Dialog extends AlertDialog.Builder {
 		SpeechRecognizer r = SpeechRecognizer.createSpeechRecognizer(getContext());
 		r.setRecognitionListener(new RecognitionListener() {
 			public void onBeginningOfSpeech() {
+				voiceRecognitionButton.setBackgroundColor(0xff999999);
 			}
 
 			public void onBufferReceived(byte[] buffer) {
 			}
 
 			public void onEndOfSpeech() {
+				voiceRecognitionButton.setBackgroundColor(0xffcccccc);
 			}
 
 			public void onError(int error) {

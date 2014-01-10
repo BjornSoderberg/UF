@@ -225,7 +225,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		initAddButton();
 
-		String[] paths = { "Prio", "Created", "Completed", "Alphabetically", "Include subtasks" };
+		String[] paths = { "Prio", "Created", "Completed", "Alphabetically", "Due date (next due at top)", "Include subtasks" };
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

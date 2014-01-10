@@ -349,6 +349,8 @@ public class ItemView extends ContentView {
 			Sort.sortCompleted(contentItems);
 		} else if(sortType == Sort.SORT_ALPHABETICALLY) {
 			Sort.sortAlphabetically(contentItems);
+		} else if(sortType == Sort.SORT_DUE_DATE){
+			Sort.sortDueDate(contentItems);
 		}
 	}
 

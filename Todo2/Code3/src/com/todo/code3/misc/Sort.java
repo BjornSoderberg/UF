@@ -13,6 +13,7 @@ public class Sort {
 	public static final int SORT_TIMESTAMP_CREATED = 1;
 	public static final int SORT_COMPLETED = 2;
 	public static final int SORT_ALPHABETICALLY = 3;
+	public static final int SORT_DUE_DATE = 4;
 
 	public static void sortPrioritized(ArrayList<ContentItem> oldList, boolean invert) {
 		ArrayList<ContentItem> newList = new ArrayList<ContentItem>();
@@ -30,17 +31,18 @@ public class Sort {
 	}
 
 	public static void sortTimestampCreated(ArrayList<ContentItem> list) {
-		sortTimestampCreated(list, 0, list.size() - 1);
+		// Highest at top
+		Comparator<ContentItem> c = new Comparator<ContentItem>() {
+			public int compare(ContentItem lhs, ContentItem rhs) {
+				if (lhs.getTimestampCreated() > rhs.getTimestampCreated()) return -1;
+				return 1;
+			}
+		};
+
+		Collections.sort(list, c);
 
 		for (ContentItem ia : list)
 			ia.setTitle(ia.getTimestampCreated() + " : " + ia.getTitle());
-	}
-
-	public static void sortTimestampCreated(ArrayList<ContentItem> list, int start, int end) {
-		int index = partition(list, start, end);
-
-		if (start < index - 1) sortTimestampCreated(list, start, index - 1);
-		if (index < end) sortTimestampCreated(list, index, end);
 	}
 
 	public static void sortCompleted(ArrayList<ContentItem> oldList) {
@@ -77,27 +79,41 @@ public class Sort {
 				return title1.compareTo(title2);
 			}
 		};
-		
+
 		Collections.sort(list, comparator);
 	}
 
-	// Used in the quicksort (sort timestamp created)
-	private static int partition(ArrayList<ContentItem> list, int start, int end) {
-		ContentItem temp;
-		long pivot = list.get((start + end) / 2).getTimestampCreated();
+	public static void sortDueDate(ArrayList<ContentItem> list) {
+		ArrayList<ContentItem> sorted = new ArrayList<ContentItem>();
 
-		while (start <= end) {
-			while (list.get(start).getTimestampCreated() < pivot)
-				start++;
-			while (list.get(end).getTimestampCreated() > pivot)
-				end--;
-			if (start <= end) {
-				temp = list.get(start);
-				list.set(start, list.get(end));
-				list.set(end, temp);
+		for (ContentItem i : list)
+			if (i instanceof TaskItem && !((TaskItem) i).isCompleted()) sorted.add(i);
+
+		// Next due date at top
+		Comparator<ContentItem> c = new Comparator<ContentItem>() {
+			public int compare(ContentItem lhs, ContentItem rhs) {
+				long l = ((TaskItem) lhs).getDueDate();
+				long r = ((TaskItem) rhs).getDueDate();
+
+				if (l == -1 && r != -1) return 1;
+				else if (r == -1 && l != -1) return -1;
+				else if (r == -1 && l == -1) return 0;
+
+				if (l < r) return -1;
+				return 1;
 			}
+		};
+
+		Collections.sort(sorted, c);
+
+		for (ContentItem i : list) {
+			if (!sorted.contains(i)) sorted.add(i);
 		}
 
-		return start;
+		list.clear();
+		list.addAll(sorted);
+
+		for (ContentItem ia : list)
+			if (ia instanceof TaskItem) ia.setTitle(((TaskItem) ia).getDueDate() + " : " + ia.getTitle());
 	}
 }
