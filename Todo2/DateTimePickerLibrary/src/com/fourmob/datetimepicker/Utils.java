@@ -8,7 +8,6 @@ import com.nineoldandroids.animation.Keyframe;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.PropertyValuesHolder;
 
-
 public class Utils {
 
 	public static int getDaysInMonth(int month, int year) {
