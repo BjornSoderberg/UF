@@ -91,9 +91,9 @@ public final class R {
 		public static final int date_picker_header_view = 0x7f030003;
 		public static final int date_picker_selected_date = 0x7f030004;
 		public static final int date_picker_view_animator = 0x7f030005;
-		public static final int time_header_label = 0x7f03000e;
-		public static final int time_picker_dialog = 0x7f03000f;
-		public static final int year_label_text_view = 0x7f030014;
+		public static final int time_header_label = 0x7f030010;
+		public static final int time_picker_dialog = 0x7f030011;
+		public static final int year_label_text_view = 0x7f030016;
 	}
 	public static final class string {
 		public static final int ampm_circle_radius_multiplier = 0x7f080003;

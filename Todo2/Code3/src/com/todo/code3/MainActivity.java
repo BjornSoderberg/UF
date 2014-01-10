@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -43,7 +44,8 @@ import com.todo.code3.misc.SPEditor;
 import com.todo.code3.notification.NotificationReceiver;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
-import com.todo.code3.view.TaskContentView;
+import com.todo.code3.view.NoteView;
+import com.todo.code3.view.TaskView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
 
@@ -654,8 +656,9 @@ public class MainActivity extends FlyInFragmentActivity {
 			posInWrapper++;
 			int i;
 
-			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskContentView(this, openObjectId));
+			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
+			else if(object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
 
 			backButton.setVisibility(View.VISIBLE);
 			dragButton.setVisibility(View.GONE);

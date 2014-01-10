@@ -6,13 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
@@ -24,6 +21,7 @@ import com.todo.code3.dialog.FolderSelectionDialog;
 import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
+import com.todo.code3.item.NoteItem;
 import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.Sort;
@@ -177,6 +175,18 @@ public class ItemView extends ContentView {
 				if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
 				else item.isPrioritized(false);
 
+				contentItems.add(item);
+			} else if(object.getString(App.TYPE).equals(App.NOTE)){
+				NoteItem item = new NoteItem();
+				item.setTitle(object.getString(App.NAME));
+				item.setParentId(parentId);
+				item.setId(object.getInt(App.ID));
+				item.setType(App.NOTE);
+				if(object.has(App.TIMESTAMP_CREATED))item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
+				
+				if(object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+				else item.isPrioritized(false);
+				
 				contentItems.add(item);
 			}
 		}

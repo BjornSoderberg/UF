@@ -2,7 +2,6 @@ package com.todo.code3.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import com.todo.code3.R;
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.FolderItem;
+import com.todo.code3.item.NoteItem;
 import com.todo.code3.item.TaskItem;
 import com.todo.code3.misc.App;
 import com.todo.code3.view.ItemView;
@@ -57,6 +57,7 @@ public class ItemAdapter extends BaseAdapter {
 		if (itemView.isInOptionsMode()) view = getOptionsView(position, item);
 		else if (item instanceof TaskItem) view = getTaskView(position, (TaskItem) item);
 		else if (item instanceof FolderItem) view = getFolderView(position, (FolderItem) item);
+		else if (item instanceof NoteItem) view = getNoteView(position, (NoteItem) item);
 		if (view == null) return null;
 
 		// Assures that all the views have the same height
@@ -193,6 +194,35 @@ public class ItemAdapter extends BaseAdapter {
 		// focused etc.))
 		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
 
+		return view;
+	}
+	
+	private View getNoteView(int position, final NoteItem item) {
+		View view = inflater.inflate(R.layout.folder_item,  null);
+		
+		// Init prio
+		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
+		ImageView i = (ImageView) view.findViewById(R.id.icon);
+		
+		prio.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if(itemView.getActivity().isMoving()) return;
+				
+				boolean shouldPrio = !item.isPrioritized();
+				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+			}
+		});
+		
+		if(item.isPrioritized()) i.setImageResource(R.drawable.checked);
+		else i.setImageResource(R.drawable.box);
+		
+		// Set text
+		TextView text = (TextView) view.findViewById(R.id.item_text);
+		text.setText(item.getTitle() + " (note)");
+		
+		//  Sets the background (which is dependent on its state (pressed, focused etc.))
+		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+		
 		return view;
 	}
 

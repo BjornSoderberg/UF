@@ -30,7 +30,7 @@ import com.todo.code3.misc.App;
 import com.todo.code3.misc.Reminder;
 import com.todo.code3.notification.NotificationReceiver;
 
-public class TaskContentView extends ContentView {
+public class TaskView extends ContentView {
 
 	private TextView descTV;
 	private EditText descET, focusDummy;
@@ -44,12 +44,12 @@ public class TaskContentView extends ContentView {
 	private int date[] = new int[3];
 	private int time[] = new int[2];
 
-	public TaskContentView(MainActivity activity, int parentId) {
+	public TaskView(MainActivity activity, int parentId) {
 		super(activity, parentId);
 	}
 
 	protected void init() {
-		LayoutInflater.from(activity).inflate(R.layout.task_content_view, this, true);
+		LayoutInflater.from(activity).inflate(R.layout.task_view, this, true);
 
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
