@@ -5,19 +5,14 @@ import java.util.Calendar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fourmob.datetimepicker.date.DatePickerDialog;
 import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -26,9 +21,10 @@ import com.sleepbot.datetimepicker.time.TimePickerDialog;
 import com.sleepbot.datetimepicker.time.TimePickerDialog.OnTimeSetListener;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.dialog.DateAndTimeDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.Reminder;
-import com.todo.code3.notification.NotificationReceiver;
+import com.todo.code3.xml.MultiSelectParent;
 
 public class TaskView extends ContentView {
 
@@ -36,8 +32,7 @@ public class TaskView extends ContentView {
 	private EditText descET, focusDummy;
 	private Button saveButton;
 	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
-	private Button setWeeklyReminder, setEveryTwoWeeksReminder;
-	private CheckBox[] weekDays;
+	private MultiSelectParent multiSelectParent;
 
 	private JSONObject task;
 
@@ -111,98 +106,26 @@ public class TaskView extends ContentView {
 			}
 		});
 
-		((Button) findViewById(R.id.repeatingMWF)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				// All days of the week at 8.20
-				String info = Reminder.getReminderInfoString(Reminder.REMINDER_WEEKLY, 127, 8, 20);
-				setReminderInfo(info);
-			}
-		});
-
-		weekDays = new CheckBox[7];
-		weekDays[0] = (CheckBox) findViewById(R.id.cbSu);
-		weekDays[1] = (CheckBox) findViewById(R.id.cbSa);
-		weekDays[2] = (CheckBox) findViewById(R.id.cbF);
-		weekDays[3] = (CheckBox) findViewById(R.id.cbTh);
-		weekDays[4] = (CheckBox) findViewById(R.id.cbW);
-		weekDays[5] = (CheckBox) findViewById(R.id.cbTu);
-		weekDays[6] = (CheckBox) findViewById(R.id.cbM);
-
-		setWeeklyReminder = (Button) findViewById(R.id.setWeeklyReminder);
-		setWeeklyReminder.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				OnTimeSetListener tsl = new OnTimeSetListener() {
-					public void onTimeSet(RadialPickerLayout view, int hour, int minute) {
-						int i = getWeekButtons();
-						String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_WEEKLY, i, hour, minute);
-
-						setReminderInfo(reminderInfo);
-
-						Log.i("asdasd", reminderInfo);
-					}
-				};
-
-				int hour = 12, minute = 0;
-
-				TimePickerDialog tpd = TimePickerDialog.newInstance(tsl, hour, minute, true);
-				tpd.show(activity.getSupportFragmentManager(), "datepicker");
-			}
-		});
-
-		setEveryTwoWeeksReminder = (Button) findViewById(R.id.setEveryTwoWeeksReminder);
-		setEveryTwoWeeksReminder.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				OnTimeSetListener tsl = new OnTimeSetListener() {
-					public void onTimeSet(RadialPickerLayout view, int hour, int minute) {
-						int i = getWeekButtons();
-						int oe = (((CheckBox) findViewById(R.id.cbEven)).isChecked()) ? 0 : 1;
-						String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_EVERY_TWO_WEEKS, i, hour, minute, oe);
-
-						setReminderInfo(reminderInfo);
-
-						Log.i("asdasd", reminderInfo);
-					}
-				};
-
-				int hour = 12, minute = 0;
-
-				TimePickerDialog tpd = TimePickerDialog.newInstance(tsl, hour, minute, true);
-				tpd.show(activity.getSupportFragmentManager(), "datepicker");
-			}
-		});
-
-		((Button) findViewById(R.id.monthlyReminder)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				int dayOfMonth = Integer.parseInt(((EditText) findViewById(R.id.dayOfMonth)).getText().toString());
-				if (0 > dayOfMonth || dayOfMonth > 32) {
-					Toast.makeText(activity, "Between 1-31 pls", Toast.LENGTH_SHORT).show();
-					return;
+		multiSelectParent = new MultiSelectParent(activity) {
+			public void onChanged(String type, String changed) {
+				String info = Reminder.getReminderInfoString(type, -1, changed);
+				try {
+					if (task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) info = Reminder.getReminderInfoString(type, task.getString(App.DUE_DATE), changed);
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 
-				String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_MONTHLY, dayOfMonth, 12, 0);
-				setReminderInfo(reminderInfo);
+				TaskView.this.setReminderInfo(info);
 			}
-		});
+		};
 
-		((Button) findViewById(R.id.intervalReminder)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				String type = "";
-				int cid = ((RadioGroup) findViewById(R.id.intervalType)).getCheckedRadioButtonId();
-				if (cid == R.id.weekInterval) type = Reminder.WEEK;
-				else if (cid == R.id.dayInterval) type = Reminder.DAY;
-				else if (cid == R.id.hourInterval) type = Reminder.HOUR;
-				else if (cid == R.id.minuteInterval) type = Reminder.MINUTE;
+		multiSelectParent.setStrings("1 hour", "1 week", "1 month");
+		multiSelectParent.setValues(3600, 3600 * 24 * 7, Reminder.ONE_MONTH_RELATIVE_TO_DUE);
+		multiSelectParent.setType(Reminder.REMINDER_RELATIVE_TO_DUE_DATE);
+		multiSelectParent.generate();
+		multiSelectParent.setBackgroundColor(0xffff9999);
 
-				int intervalLength = Integer.parseInt(((EditText) findViewById(R.id.interval)).getText().toString());
-				if (intervalLength <= 0) {
-					Toast.makeText(activity, "Larger than 0 pls", Toast.LENGTH_SHORT).show();
-					return;
-				}
-
-				String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_SET_INTERVAL, type, intervalLength, System.currentTimeMillis() / 1000);
-				setReminderInfo(reminderInfo);
-			}
-		});
+		((LinearLayout) ((ScrollView) findViewById(R.id.scrollView1)).getChildAt(0)).addView(multiSelectParent);
 	}
 
 	public void update(JSONObject data) {
@@ -220,11 +143,12 @@ public class TaskView extends ContentView {
 				} else setDueDateButton.setText("Set due date");
 
 				if (task.has(Reminder.REMINDER_INFO)) {
-//					Calendar calendar = Calendar.getInstance();
-//					calendar.setTimeInMillis(task.getLong(App.REMINDER) * 1000);
-//					setReminderButton.setText("Reminder:" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR));
 					setReminderButton.setText("Reminder: " + task.getString(Reminder.REMINDER_INFO));
-				} else setReminderButton.setText("Set reminder");
+					multiSelectParent.update(task.getString(Reminder.REMINDER_INFO));
+				} else {
+					setReminderButton.setText("Set reminder");
+					multiSelectParent.update("");
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -256,130 +180,71 @@ public class TaskView extends ContentView {
 	}
 
 	public void showDateAndTimePicker(final String type) {
-		final OnTimeSetListener tsl = new OnTimeSetListener() {
-			public void onTimeSet(RadialPickerLayout view, int hour, int minute) {
-				time[0] = hour;
-				time[1] = minute;
-
-				setDate(type);
+		new DateAndTimeDialog(activity, task, type) {
+			public void onResult(int year, int month, int day, int hour, int minute) {
+				setDate(type, year, month, day, hour, minute);
 			}
 		};
-
-		final OnDateSetListener dsl = new OnDateSetListener() {
-			public void onDateSet(DatePickerDialog dpd, int year, int month, int day) {
-				if (year != -1 && month != -1 && day != -1) {
-					date[0] = year;
-					date[1] = month;
-					date[2] = day;
-					selectTime(tsl, type);
-				}
-			}
-		};
-
-		selectDate(dsl, type);
 	}
 
-	private void selectDate(OnDateSetListener dsl, String type) {
-		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-		try {
-			if (task.has(type) && task.getLong(type) != -1) {
-				calendar.setTimeInMillis(task.getLong(type) * 1000);
-
-				year = (year > calendar.get(Calendar.YEAR)) ? year : calendar.get(Calendar.YEAR);
-				month = calendar.get(Calendar.MONTH);
-				day = calendar.get(Calendar.DAY_OF_MONTH);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		DatePickerDialog dpd = null;
-		try {
-			if (type.equals(Reminder.REMINDER_INFO) && task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) {
-				int due[] = App.getDueDate(task.getLong(App.DUE_DATE));
-				dpd = DatePickerDialog.newInstance(dsl, year, month, day, due[0], due[1], due[2]);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		if (dpd == null) dpd = DatePickerDialog.newInstance(dsl, year, month, day);
-
-		dpd.setYearRange(year - 1, 2037);
-		dpd.show(activity.getSupportFragmentManager(), "datepicker");
-	}
-
-	private void selectTime(OnTimeSetListener tsl, String type) {
-		Calendar calendar = Calendar.getInstance();
-		int hour = calendar.get(Calendar.HOUR_OF_DAY);
-		int minute = calendar.get(Calendar.MINUTE);
-
-		try {
-			if (task.has(type) && task.getLong(type) != -1) {
-				calendar.setTimeInMillis(task.getLong(type) * 1000);
-
-				hour = calendar.get(Calendar.HOUR_OF_DAY);
-				minute = calendar.get(Calendar.MINUTE);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		TimePickerDialog tpd = TimePickerDialog.newInstance(tsl, hour, minute, true);
-		tpd.show(activity.getSupportFragmentManager(), "timepicker");
-	}
-
-	private void setDate(String type) {
+	private void setDate(String type, int year, int month, int day, int hour, int minute) {
 		Calendar calendar = Calendar.getInstance();
 
-		if (date[0] != -1 && date[1] != -1 && date[2] != -1) {
-			if (time[0] != -1 && time[1] != -1) calendar.set(date[0], date[1], date[2], time[0], time[1], 0);
-			else calendar.set(date[0], date[1], date[2], 12, 0, 0);
+		if (year != -1 && month != -1 && day != -1) {
+			if (hour == -1) hour = 12;
+			if (minute == -1) minute = 0;
 
+			else calendar.set(year, month, day, hour, minute);
 			long timestamp = calendar.getTimeInMillis() / 1000;
 
-			activity.setProperty(type, timestamp, parentId);
-
-			String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_SINGLE_TIMESTAMPS, timestamp);
-			if (type.equals(Reminder.REMINDER_INFO)) setReminderInfo(reminderInfo);
-			// The user must also be able to remove a notification
-			// The correct pending intent is gotten by using the parentId as
-			// request code
+			if (type.equals(Reminder.REMINDER_INFO)) {
+				String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_RELATIVE_TO_DUE_DATE, timestamp);
+				setReminderInfo(reminderInfo);
+			} else if(type.equals(App.DUE_DATE)) {
+				activity.setProperty(type, timestamp, parentId);
+			}
 		}
-
-		for (int i : date)
-			i = -1;
 	}
 
 	private void setReminderInfo(String reminderInfo) {
 		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
 
+		Log.i(reminderInfo, "");
+
 		// Only starts reminders if the task is not checked
 		try {
-			if (!task.has(App.COMPLETED) || !task.getBoolean(App.COMPLETED)) Reminder.startRepeatingReminder(reminderInfo, activity, parentId, task);
+			if (!task.has(App.COMPLETED) || !task.getBoolean(App.COMPLETED)) Reminder.startReminder(reminderInfo, activity, parentId, task);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private int getWeekButtons() {
-		int tot = 0;
-		for (int i = 0; i < weekDays.length; i++) {
-			if (weekDays[i].isChecked()) tot += Math.pow(2, i);
+	// private int getWeekButtons() {
+	// int tot = 0;
+	// for (int i = 0; i < weekDays.length; i++) {
+	// if (weekDays[i].isChecked()) tot += Math.pow(2, i);
+	// }
+	//
+	// return tot;
+	// }
+
+	public String getReminderInfo() {
+		if (task != null) {
+			try {
+				if (task.has(Reminder.REMINDER_INFO)) return task.getString(Reminder.REMINDER_INFO);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return tot;
+		return "";
 	}
-	
+
 	private void clearDueDate() {
 		activity.removeProperty(App.DUE_DATE, parentId);
 		activity.cancelNotification(parentId);
 	}
-	
+
 	private void clearReminderInfo() {
 		activity.removeProperty(Reminder.REMINDER_INFO, parentId);
 		activity.cancelNotification(parentId);

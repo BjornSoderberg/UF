@@ -570,7 +570,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		else {
 			try{
 				JSONObject task = new JSONObject(data.getString(taskId + ""));
-				if(task.has(Reminder.REMINDER_INFO)) Reminder.startRepeatingReminder(task.getString(Reminder.REMINDER_INFO), this, task.getInt(App.ID), task);
+				if(task.has(Reminder.REMINDER_INFO)) Reminder.startReminder(task.getString(Reminder.REMINDER_INFO), this, task.getInt(App.ID), task);
 			} catch(JSONException e) {
 				
 			}

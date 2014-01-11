@@ -1,6 +1,7 @@
 package com.todo.code3.misc;
 
 import java.util.Calendar;
+import java.util.Collection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +19,15 @@ public class Reminder {
 	public static final String REMINDER_EVERY_TWO_WEEKS = "b";
 	public static final String REMINDER_MONTHLY = "c";
 	public static final String REMINDER_SET_INTERVAL = "d";
-	public static final String REMINDER_SINGLE_TIMESTAMPS = "e";
+	// public static final String REMINDER_SINGLE_TIMESTAMPS = "e";
+	public static final String REMINDER_RELATIVE_TO_DUE_DATE = "f";
+
+	public static final int ONE_MONTH_RELATIVE_TO_DUE = 2592000; // seconds in
+																	// month
+																	// with 30
+																	// days
+																	// (used for
+																	// checking)
 
 	public static final int MONDAY = 64;
 	public static final int TUESDAY = 32;
@@ -32,6 +41,7 @@ public class Reminder {
 	public static final String DAY = "day";
 	public static final String HOUR = "hour";
 	public static final String MINUTE = "minute";
+	public static final String MONTH = "month";
 
 	public static final String DAYS_IN_WEEK = "daysInWeek";
 
@@ -124,22 +134,58 @@ public class Reminder {
 				count++;
 				c.setTimeInMillis(c.getTimeInMillis() + cycle * 1000);
 			}
-		} else if(getType(reminderInfo).equals(Reminder.REMINDER_SINGLE_TIMESTAMPS)) {
-			long smallest = -1;
-			
-			String[] parts = reminderInfo.split(",");
-			for(int i = 1; i < parts.length; i++) {
-				try {
-					long timestamp = Long.parseLong(parts[i]);
-					if(timestamp < smallest || smallest == -1) {
-						if(timestamp * 1000 > System.currentTimeMillis()) smallest = timestamp;
-					}
-				} catch(NumberFormatException e) {
-					e.printStackTrace();
-				}
+			// } else if
+			// (getType(reminderInfo).equals(Reminder.REMINDER_SINGLE_TIMESTAMPS))
+			// {
+			// long smallest = -1;
+			//
+			// String[] parts = reminderInfo.split(",");
+			// for (int i = 1; i < parts.length; i++) {
+			// try {
+			// long timestamp = Long.parseLong(parts[i]);
+			// if (timestamp < smallest || smallest == -1) {
+			// if (timestamp * 1000 > System.currentTimeMillis()) smallest =
+			// timestamp;
+			// }
+			// } catch (NumberFormatException e) {
+			// e.printStackTrace();
+			// }
+			// }
+			//
+			// return smallest;
+		} else if (getType(reminderInfo).equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
+			long dueDate = Long.parseLong(getPart(reminderInfo, 1));
+			long now = System.currentTimeMillis() / 1000;
+			long closest = -1;
+
+			if (dueDate == -1) return -1;
+
+			// 0 is type, 1 is due date
+			int part = 2;
+			while (part < 1000) {
+				if (hasPart(reminderInfo, part)) {
+					Log.i("asdasd", getPart(reminderInfo, part));
+
+					long l = Long.parseLong(getPart(reminderInfo, part));
+					long t;
+					// Exception for month (num seconds in month vary)
+					if (l == Reminder.ONE_MONTH_RELATIVE_TO_DUE) {
+						c.setTimeInMillis(dueDate * 1000);
+						c.add(Calendar.MONTH, -1);
+						t = c.getTimeInMillis() / 1000;
+						// If t is larger than 10 years, it is a custom
+						// timestamp (not relative to due date)
+					} else if (l > 10 * 365 * 24 * 3600) {
+						t = l;
+					} else t = dueDate - l;
+
+					if (t > now && (t < closest || closest == -1)) closest = t;
+				} else break;
+
+				part++;
 			}
-			
-			return smallest;
+
+			return closest;
 		}
 
 		return -1;
@@ -162,19 +208,13 @@ public class Reminder {
 		if (day == Calendar.SUNDAY) return SUNDAY;
 		return 0;
 	}
-	
-	public static String getReminderInfoString(Object type, Object asd) {
-		String s = type.toString() + "," + asd.toString();
-		return s;
-	}
 
-	public static String getReminderInfoString(Object type, Object days, Object hour, Object minute) {
-		String s = type.toString() + "," + days.toString() + "," + hour.toString() + "," + minute.toString();
-		return s;
-	}
-
-	public static String getReminderInfoString(Object type, Object days, Object hour, Object minute, Object startWeek) {
-		String s = type.toString() + "," + days.toString() + "," + hour.toString() + "," + minute.toString() + "," + startWeek.toString();
+	public static String getReminderInfoString(Object... items) {
+		String s = "";
+		for (Object item : items) {
+			s += item.toString() + ",";
+		}
+		if (s.length() > 0 && s.charAt(s.length() - 1) == ',') s = s.substring(0, s.length() - 1);
 		return s;
 	}
 
@@ -182,6 +222,18 @@ public class Reminder {
 		String[] s = reminderInfo.split(",");
 		if (s.length > part) return s[part];
 		return "";
+	}
+
+	public static String setPart(String reminderInfo, int part, String newPart) {
+		if (!hasPart(reminderInfo, part)) return reminderInfo;
+
+		String[] ss = reminderInfo.split(",");
+		String n = "";
+		for (int i = 0; i < ss.length; i++) {
+			if (i == part) n += newPart + ",";
+			else n += ss[i] + ",";
+		}
+		return n;
 	}
 
 	public static boolean hasPart(String reminderInfo, int part) {
@@ -192,7 +244,7 @@ public class Reminder {
 		return getPart(info, 0);
 	}
 
-	public static void startRepeatingReminder(String reminderInfo, Context context, int id, JSONObject object) {
+	public static void startReminder(String reminderInfo, Context context, int id, JSONObject object) {
 		Intent i = new Intent(context, NotificationReceiver.class);
 		i.putExtra(App.ID, id);
 		i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
