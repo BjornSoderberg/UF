@@ -26,6 +26,8 @@ public class DateAndTimeDialog {
 	private int minute = 0;
 
 	private int showYear, showMonth, showDay, showHour, showMinute;
+	
+	private long timestamp;
 
 	private String type;
 	private JSONObject object;
@@ -33,7 +35,7 @@ public class DateAndTimeDialog {
 	private OnDateSetListener dsl;
 	private OnTimeSetListener tsl;
 
-	private Calendar calendar;
+	private Calendar calendar = Calendar.getInstance();
 	private MainActivity activity;
 
 	public DateAndTimeDialog(MainActivity activity, JSONObject object, String type) {
@@ -41,10 +43,23 @@ public class DateAndTimeDialog {
 		this.object = object;
 		this.activity = activity;
 
-		calendar = Calendar.getInstance();
+		initStandardTimeAndDateFromJSONObject();
 
-		initStandardTimeAndDate();
+		init();
+	}
 
+	public DateAndTimeDialog(MainActivity activity, long timestamp, JSONObject object, String type) {
+		this.type = type;
+		this.timestamp = timestamp;
+		this.activity = activity;
+		this.object = object;
+		
+		initStandardTimeAndDateFromTimestamp();
+		
+		init();
+	}
+
+	private void init() {
 		dsl = new OnDateSetListener() {
 			public void onDateSet(DatePickerDialog datePickerDialog, int y, int m, int d) {
 				year = y;
@@ -68,7 +83,7 @@ public class DateAndTimeDialog {
 		showDatePicker();
 	}
 
-	private void initStandardTimeAndDate() {
+	private void initStandardTimeAndDateFromJSONObject() {
 		showYear = calendar.get(Calendar.YEAR);
 		showMonth = calendar.get(Calendar.MONTH);
 		showDay = calendar.get(Calendar.DAY_OF_MONTH);
@@ -86,17 +101,27 @@ public class DateAndTimeDialog {
 					showHour = calendar.get(Calendar.HOUR_OF_DAY);
 					showMinute = calendar.get(Calendar.MINUTE);
 				}
-			} 
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void initStandardTimeAndDateFromTimestamp() {
+		calendar.setTimeInMillis(timestamp * 1000);
+		
+		showYear = calendar.get(Calendar.YEAR);
+		showMonth = calendar.get(Calendar.MONTH);
+		showDay = calendar.get(Calendar.DAY_OF_MONTH);
+		showHour = calendar.get(Calendar.HOUR_OF_DAY);
+		showMinute = calendar.get(Calendar.MINUTE);
 	}
 
 	private void showDatePicker() {
 		DatePickerDialog d = null;
 
 		try {
-			if (type.equals(Reminder.REMINDER_INFO)) {
+			if (type.equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
 				int due[] = App.getDueDate(object.getLong(App.DUE_DATE));
 				d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, due[0], due[1], due[2]);
 			}
@@ -111,7 +136,7 @@ public class DateAndTimeDialog {
 	}
 
 	private void showTimePicker() {
-		TimePickerDialog t = TimePickerDialog.newInstance(tsl, hour, minute, true);
+		TimePickerDialog t = TimePickerDialog.newInstance(tsl, showHour, showMinute, true);
 		t.show(activity.getSupportFragmentManager(), "timepicker");
 	}
 

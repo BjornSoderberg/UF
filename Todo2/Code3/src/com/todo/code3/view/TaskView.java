@@ -5,22 +5,21 @@ import java.util.Calendar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.fourmob.datetimepicker.date.DatePickerDialog;
-import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
-import com.sleepbot.datetimepicker.time.RadialPickerLayout;
-import com.sleepbot.datetimepicker.time.TimePickerDialog;
-import com.sleepbot.datetimepicker.time.TimePickerDialog.OnTimeSetListener;
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
+import com.todo.code3.adapter.CustomReminderListAdapter;
 import com.todo.code3.dialog.DateAndTimeDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.Reminder;
@@ -32,12 +31,10 @@ public class TaskView extends ContentView {
 	private EditText descET, focusDummy;
 	private Button saveButton;
 	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
+	private ListView customReminderList;
 	private MultiSelectParent multiSelectParent;
 
 	private JSONObject task;
-
-	private int date[] = new int[3];
-	private int time[] = new int[2];
 
 	public TaskView(MainActivity activity, int parentId) {
 		super(activity, parentId);
@@ -91,7 +88,7 @@ public class TaskView extends ContentView {
 
 		setReminderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				showDateAndTimePicker(Reminder.REMINDER_INFO);
+				showDateAndTimePicker(Reminder.REMINDER_RELATIVE_TO_DUE_DATE);
 			}
 		});
 
@@ -108,14 +105,38 @@ public class TaskView extends ContentView {
 
 		multiSelectParent = new MultiSelectParent(activity) {
 			public void onChanged(String type, String changed) {
-				String info = Reminder.getReminderInfoString(type, -1, changed);
-				try {
-					if (task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) info = Reminder.getReminderInfoString(type, task.getString(App.DUE_DATE), changed);
-				} catch (JSONException e) {
-					e.printStackTrace();
+				String currInfo = getReminderInfo();
+				String newInfo = null;
+
+				// If curr info is same type, set changed and type + all
+				// timestamps in curr info that are over 10 years from now
+				// (custom timestamps)
+				if (Reminder.getType(currInfo).equals(type)) {
+					String[] parts = currInfo.split(",");
+					newInfo = Reminder.getReminderInfoString(type, changed);
+					for (int i = 1; i < parts.length; i++) {
+						try {
+							Long l = Long.parseLong(parts[i]);
+							if (l > 10 * 365 * 24 * 3600) newInfo += "," + l;
+						} catch (NumberFormatException e) {
+
+						}
+					}
+				} else {
+					newInfo = Reminder.getReminderInfoString(type, changed);
 				}
 
-				TaskView.this.setReminderInfo(info);
+				if (newInfo != null) TaskView.this.setReminderInfo(newInfo);
+
+				// String currInfo = getReminderInfo();
+				// String newInfo = "";
+				// if(Reminder.getType(currInfo).equals(type)) {
+				// newInfo = Reminder.addParts(newInfo, changed.split(","));
+				// } else {
+				// newInfo = Reminder.getReminderInfoString(type, changed);
+				// }
+				//
+				// TaskView.this.setReminderInfo(newInfo);
 			}
 		};
 
@@ -126,6 +147,14 @@ public class TaskView extends ContentView {
 		multiSelectParent.setBackgroundColor(0xffff9999);
 
 		((LinearLayout) ((ScrollView) findViewById(R.id.scrollView1)).getChildAt(0)).addView(multiSelectParent);
+
+		customReminderList = (ListView) findViewById(R.id.customReminderList);
+		customReminderList.setAdapter(new CustomReminderListAdapter(this));
+		customReminderList.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+				editCustomReminder(view.getId());
+			}
+		});
 	}
 
 	public void update(JSONObject data) {
@@ -153,6 +182,8 @@ public class TaskView extends ContentView {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+
+		((BaseAdapter) customReminderList.getAdapter()).notifyDataSetChanged();
 	}
 
 	private void startEditDescription() {
@@ -194,14 +225,38 @@ public class TaskView extends ContentView {
 			if (hour == -1) hour = 12;
 			if (minute == -1) minute = 0;
 
-			else calendar.set(year, month, day, hour, minute);
+			calendar.set(year, month, day, hour, minute, 0);
 			long timestamp = calendar.getTimeInMillis() / 1000;
 
-			if (type.equals(Reminder.REMINDER_INFO)) {
-				String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_RELATIVE_TO_DUE_DATE, timestamp);
+			if (type.equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
+				String reminderInfo = "";
+
+				// If there is no reminder info or the reminder info is of
+				// another type, the type is set and the due
+				// date is set to -1
+				if (getReminderInfo() == "" || !Reminder.getType(getReminderInfo()).equals(type)) reminderInfo = Reminder.getReminderInfoString(type, timestamp);
+				else reminderInfo = Reminder.getReminderInfoString(getReminderInfo(), timestamp);
+
+				if (getReminderInfo() != "") {
+					// If the timestamp already exists, it is not added
+					String[] ss = getReminderInfo().split(",");
+					for (String s : ss)
+						if (s.equals(timestamp + "")) {
+							reminderInfo = getReminderInfo();
+							break;
+						}
+				}
 				setReminderInfo(reminderInfo);
-			} else if(type.equals(App.DUE_DATE)) {
+			} else if (type.equals(App.DUE_DATE)) {
 				activity.setProperty(type, timestamp, parentId);
+				// Sets the reminder info (to update the due date relative
+				// reminders)
+				try {
+					task.put(App.DUE_DATE, timestamp); // Just in case
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				setReminderInfo(getReminderInfo());
 			}
 		}
 	}
@@ -209,14 +264,47 @@ public class TaskView extends ContentView {
 	private void setReminderInfo(String reminderInfo) {
 		activity.setProperty(Reminder.REMINDER_INFO, reminderInfo, parentId);
 
-		Log.i(reminderInfo, "");
-
 		// Only starts reminders if the task is not checked
 		try {
 			if (!task.has(App.COMPLETED) || !task.getBoolean(App.COMPLETED)) Reminder.startReminder(reminderInfo, activity, parentId, task);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void editCustomReminder(final long timestamp) {
+		final String info = getReminderInfo();
+		if (!Reminder.getType(info).equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) return;
+
+		new DateAndTimeDialog(activity, timestamp, task, Reminder.REMINDER_RELATIVE_TO_DUE_DATE) {
+			public void onResult(int year, int month, int day, int hour, int minute) {
+				if(year == -1 && month == -1 && day == -1) return;
+				if (hour == -1) hour = 12;
+				if (minute == -1) minute = 0;
+
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(year, month, day, hour, minute, 0);
+				long newTimestamp = calendar.getTimeInMillis() / 1000;
+				String s = "";
+				String[] parts = info.split(",");
+				// Starts at 1 since 0 is the type
+				for (int i = 1; i < parts.length; i++) {
+					if (parts[i].equals(timestamp + "")) {
+						s = Reminder.setPart(info, i, newTimestamp + "");
+						setReminderInfo(s);
+						break;
+					}
+				}
+			}
+		};
+	}
+
+	public void removeCustomReminder(long timestamp) {
+		String info = getReminderInfo();
+		if (!Reminder.getType(info).equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) return;
+
+		info = Reminder.removePart(info, timestamp + "");
+		setReminderInfo(info);
 	}
 
 	// private int getWeekButtons() {

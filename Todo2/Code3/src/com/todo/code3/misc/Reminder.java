@@ -22,12 +22,8 @@ public class Reminder {
 	// public static final String REMINDER_SINGLE_TIMESTAMPS = "e";
 	public static final String REMINDER_RELATIVE_TO_DUE_DATE = "f";
 
-	public static final int ONE_MONTH_RELATIVE_TO_DUE = 2592000; // seconds in
-																	// month
-																	// with 30
-																	// days
-																	// (used for
-																	// checking)
+	public static final int ONE_MONTH_RELATIVE_TO_DUE = 2592000;
+	// seconds in month with 30 days (used for checking)
 
 	public static final int MONDAY = 64;
 	public static final int TUESDAY = 32;
@@ -50,7 +46,7 @@ public class Reminder {
 
 	public static final String REMINDER_INFO = "reminderInfo";
 
-	public static long getNext(String reminderInfo) {
+	public static long getNext(String reminderInfo, long dueDate) {
 		Calendar c = Calendar.getInstance();
 
 		if (getType(reminderInfo).equals(Reminder.REMINDER_WEEKLY) || getType(reminderInfo).equals(Reminder.REMINDER_EVERY_TWO_WEEKS)) {
@@ -125,7 +121,7 @@ public class Reminder {
 			c.setTimeInMillis(start * 1000);
 
 			int count = 0;
-			while (count < 5000) {
+			while (count < 100000) {
 				// Return only if the time is in the future
 				if (System.currentTimeMillis() < c.getTimeInMillis()) { //
 					return c.getTimeInMillis() / 1000;
@@ -154,37 +150,35 @@ public class Reminder {
 			//
 			// return smallest;
 		} else if (getType(reminderInfo).equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
-			long dueDate = Long.parseLong(getPart(reminderInfo, 1));
 			long now = System.currentTimeMillis() / 1000;
 			long closest = -1;
 
-			if (dueDate == -1) return -1;
-
-			// 0 is type, 1 is due date
-			int part = 2;
+			// 0 is type
+			int part = 1;
 			while (part < 1000) {
 				if (hasPart(reminderInfo, part)) {
-					Log.i("asdasd", getPart(reminderInfo, part));
+					try {
+						long l = Long.parseLong(getPart(reminderInfo, part));
+						long t = 0;
+						// Exception for month (num seconds in month vary)
+						if (l == Reminder.ONE_MONTH_RELATIVE_TO_DUE) {
+							c.setTimeInMillis(dueDate * 1000);
+							c.add(Calendar.MONTH, -1);
+							t = c.getTimeInMillis() / 1000;
+							// If t is larger than 10 years, it is a custom
+							// timestamp (not relative to due date)
+						} else if (l > 10 * 365 * 24 * 3600) {
+							t = l;
+						} else if (dueDate != -1) t = dueDate - l;
 
-					long l = Long.parseLong(getPart(reminderInfo, part));
-					long t;
-					// Exception for month (num seconds in month vary)
-					if (l == Reminder.ONE_MONTH_RELATIVE_TO_DUE) {
-						c.setTimeInMillis(dueDate * 1000);
-						c.add(Calendar.MONTH, -1);
-						t = c.getTimeInMillis() / 1000;
-						// If t is larger than 10 years, it is a custom
-						// timestamp (not relative to due date)
-					} else if (l > 10 * 365 * 24 * 3600) {
-						t = l;
-					} else t = dueDate - l;
+						if (t > now && (t < closest || closest == -1)) closest = t;
+					} catch (NumberFormatException e) {
 
-					if (t > now && (t < closest || closest == -1)) closest = t;
+					}
 				} else break;
 
 				part++;
 			}
-
 			return closest;
 		}
 
@@ -236,6 +230,17 @@ public class Reminder {
 		return n;
 	}
 
+	public static String removePart(String reminderInfo, String part) {
+		String[] parts = reminderInfo.split(",");
+		String n = "";
+		for (String s : parts) {
+			if (!s.equals(part)) n += s + ",";
+		}
+
+		if (n.length() > 0 && n.charAt(n.length() - 1) == ',') n = n.substring(0, n.length() - 1);
+		return n;
+	}
+
 	public static boolean hasPart(String reminderInfo, int part) {
 		return reminderInfo.split(",").length > part;
 	}
@@ -249,16 +254,22 @@ public class Reminder {
 		i.putExtra(App.ID, id);
 		i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
 
+		long dueDate = -1;
+
 		try {
 			if (object != null) {
 				if (object.has(App.NAME)) i.putExtra(App.NAME, object.getString(App.NAME));
-				if (object.has(App.DUE_DATE)) i.putExtra(App.DUE_DATE, object.getLong(App.DUE_DATE));
+				if (object.has(App.DUE_DATE)) {
+					i.putExtra(App.DUE_DATE, object.getLong(App.DUE_DATE));
+
+					dueDate = object.getLong(App.DUE_DATE);
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		long next = Reminder.getNext(reminderInfo);
+		long next = Reminder.getNext(reminderInfo, dueDate);
 		if (next == -1) return;
 		else next *= 1000;
 

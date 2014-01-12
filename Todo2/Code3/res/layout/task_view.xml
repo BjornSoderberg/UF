@@ -85,6 +85,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Remove reminder" />
+
+                <ListView
+                    android:id="@+id/customReminderList"
+                    android:layout_width="match_parent"
+                    android:layout_height="135dp" >
+                </ListView>
+
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

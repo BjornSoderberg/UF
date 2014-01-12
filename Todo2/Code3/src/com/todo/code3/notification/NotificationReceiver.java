@@ -61,7 +61,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 			String reminderInfo = intent.getStringExtra(Reminder.REMINDER_INFO);
 
-			long next = Reminder.getNext(reminderInfo);
+			long next = Reminder.getNext(reminderInfo, intent.getLongExtra(App.DUE_DATE, -1));
 			if(next == -1) return;
 			else next *= 1000;
 
