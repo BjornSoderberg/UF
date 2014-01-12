@@ -195,6 +195,10 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public boolean onInterceptTouchEvent(MotionEvent e) {
+		int x = (int) e.getRawX();
+		int y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
+		if (activity.isInMasterView()) x -= activity.getMenuWidth();
+
 		// If the menu is visible, the user is able to drag,
 		// as long as he does not drag on the menu
 		if (!isDragging && activity.getFlyInMenu().isVisible()) {
@@ -204,22 +208,26 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		FrameLayout b = activity.getDragButton();
 		// if the back button is visible and the user touches
 		// the button, the menu should not open
-		if (e.getRawX() < b.getRight() && e.getRawY() - App.getStatusBarHeight(activity.getResources()) < b.getBottom()) {
+		if (x < b.getRight() && y < b.getBottom()) {
 			if (activity.getPosInWrapper() != 0) return false;
 			else return true;
 		}
 
 		// If the touch is inside the touch area for the drag, the user should
 		// be able to drag
-		if (e.getRawX() <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return true;
+		if (x <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return true;
 
 		FrameLayout add = activity.getAddButton();
-		if (add.getLeft() < e.getRawX() && e.getRawX() < add.getRight()) {
-			if (add.getTop() < e.getRawY() - App.getStatusBarHeight(activity.getResources()) && e.getRawY() - App.getStatusBarHeight(activity.getResources()) < add.getBottom()) {
-				addTouch = true;
-				return true;
+		if (add.getLeft() < x && x < add.getRight()) {
+			if (add.getTop() < y && y < add.getBottom()) {
+				if (e.getAction() == MotionEvent.ACTION_DOWN) {
+					addTouch = true;
+					return true;
+				}
 			}
 		}
+
+		Log.i(add.getLeft() + " . " + add.getRight(), x+ " . ");
 
 		return false;
 	}

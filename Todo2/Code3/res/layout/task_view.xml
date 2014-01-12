@@ -89,9 +89,37 @@
                 <ListView
                     android:id="@+id/customReminderList"
                     android:layout_width="match_parent"
-                    android:layout_height="135dp" >
+                    android:layout_height="135dp"
+                    android:divider="#888888"
+                    android:dividerHeight="2px" >
                 </ListView>
 
+                <LinearLayout
+                    android:id="@+id/relativeToDueContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/dayOfMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/monthlyReminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="Set monthly reminder" />
+
+                <LinearLayout
+                    android:id="@+id/daysOfWeekContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

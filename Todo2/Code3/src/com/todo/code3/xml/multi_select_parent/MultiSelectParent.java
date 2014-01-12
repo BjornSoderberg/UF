@@ -1,11 +1,9 @@
-package com.todo.code3.xml;
+package com.todo.code3.xml.multi_select_parent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -16,10 +14,10 @@ import com.todo.code3.misc.Reminder;
 
 public class MultiSelectParent extends LinearLayout {
 
-	private ArrayList<String> strings;
-	private ArrayList<Integer> values;
-	private String reminderInfo;
-	private String type;
+	protected ArrayList<String> strings;
+	protected ArrayList<Integer> values;
+	protected String reminderInfo;
+	protected String type;
 
 	private boolean generated = false;
 
@@ -33,7 +31,7 @@ public class MultiSelectParent extends LinearLayout {
 		init();
 	}
 
-	private void init() {
+	protected void init() {
 		strings = new ArrayList<String>();
 		values = new ArrayList<Integer>();
 
@@ -45,10 +43,6 @@ public class MultiSelectParent extends LinearLayout {
 		this.strings.clear();
 		for (String s : strings)
 			this.strings.add(s);
-	}
-
-	public void setReminderInfo(String s) {
-		reminderInfo = s;
 	}
 
 	public void setType(String s) {
@@ -87,7 +81,7 @@ public class MultiSelectParent extends LinearLayout {
 
 	public void update(String string) {
 		generated = false;
-		setReminderInfo(string);
+		reminderInfo = string;
 
 		for (int i = 0; i < values.size(); i++) {
 			CheckBox c = getCheckBoxChildById(values.get(i));
@@ -104,20 +98,19 @@ public class MultiSelectParent extends LinearLayout {
 		generated = true;
 	}
 
-	private void changed() {
-		String s = "";
+	protected void changed() {
+		ArrayList<Integer> selected = new ArrayList<Integer>();
 
 		for (int i = 0; i < strings.size(); i++) {
 			CheckBox c = getCheckBoxChildById(values.get(i));
 			if (c == null) continue;
-			if (c.isChecked()) s += c.getId() + ",";
+			if (c.isChecked()) selected.add(c.getId());
 		}
-		if (s.length() > 0 && s.charAt(s.length() - 1) == ',') s = s.substring(0, s.length() - 1);
 
-		if (generated) onChanged(type, s);
+		if (generated) onChanged(type, selected);
 	}
 
-	public void onChanged(String type, String changed) {
+	public void onChanged(String type, ArrayList<Integer> selected) {
 
 	}
 

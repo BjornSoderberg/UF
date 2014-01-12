@@ -1,5 +1,6 @@
 package com.todo.code3.view;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.json.JSONException;
@@ -14,16 +15,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.adapter.CustomReminderListAdapter;
-import com.todo.code3.dialog.DateAndTimeDialog;
+import com.todo.code3.dialog.date_and_time.DateAndTimeDialog;
+import com.todo.code3.dialog.date_and_time.TimeDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.Reminder;
-import com.todo.code3.xml.MultiSelectParent;
+import com.todo.code3.xml.multi_select_parent.MultiSelectParent;
+import com.todo.code3.xml.multi_select_parent.SelectDaysInWeek;
 
 public class TaskView extends ContentView {
 
@@ -32,7 +34,8 @@ public class TaskView extends ContentView {
 	private Button saveButton;
 	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
 	private ListView customReminderList;
-	private MultiSelectParent multiSelectParent;
+	private MultiSelectParent multiSelectParentRelativeToDue;
+	private SelectDaysInWeek selectDaysInWeek;
 
 	private JSONObject task;
 
@@ -103,10 +106,14 @@ public class TaskView extends ContentView {
 			}
 		});
 
-		multiSelectParent = new MultiSelectParent(activity) {
-			public void onChanged(String type, String changed) {
+		multiSelectParentRelativeToDue = new MultiSelectParent(activity) {
+			public void onChanged(String type, ArrayList<Integer> selected) {
 				String currInfo = getReminderInfo();
 				String newInfo = null;
+
+				String changed = "";
+				for (int i : selected)
+					changed += i + ",";
 
 				// If curr info is same type, set changed and type + all
 				// timestamps in curr info that are over 10 years from now
@@ -127,32 +134,59 @@ public class TaskView extends ContentView {
 				}
 
 				if (newInfo != null) TaskView.this.setReminderInfo(newInfo);
-
-				// String currInfo = getReminderInfo();
-				// String newInfo = "";
-				// if(Reminder.getType(currInfo).equals(type)) {
-				// newInfo = Reminder.addParts(newInfo, changed.split(","));
-				// } else {
-				// newInfo = Reminder.getReminderInfoString(type, changed);
-				// }
-				//
-				// TaskView.this.setReminderInfo(newInfo);
 			}
 		};
 
-		multiSelectParent.setStrings("1 hour", "1 week", "1 month");
-		multiSelectParent.setValues(3600, 3600 * 24 * 7, Reminder.ONE_MONTH_RELATIVE_TO_DUE);
-		multiSelectParent.setType(Reminder.REMINDER_RELATIVE_TO_DUE_DATE);
-		multiSelectParent.generate();
-		multiSelectParent.setBackgroundColor(0xffff9999);
+		multiSelectParentRelativeToDue.setStrings("1 hour", "1 week", "1 month");
+		multiSelectParentRelativeToDue.setValues(3600, 3600 * 24 * 7, Reminder.ONE_MONTH_RELATIVE_TO_DUE);
+		multiSelectParentRelativeToDue.setType(Reminder.REMINDER_RELATIVE_TO_DUE_DATE);
+		multiSelectParentRelativeToDue.generate();
+		multiSelectParentRelativeToDue.setBackgroundColor(0xffff9999);
+		((LinearLayout) findViewById(R.id.relativeToDueContainer)).addView(multiSelectParentRelativeToDue);
 
-		((LinearLayout) ((ScrollView) findViewById(R.id.scrollView1)).getChildAt(0)).addView(multiSelectParent);
+		selectDaysInWeek = new SelectDaysInWeek(activity) {
+			public void onChanged(final String type, ArrayList<Integer> selected, int hour, int minute) {
+				int days = 0;
+
+				for (int i : selected)
+					days += i;
+				
+				String reminderInfo = Reminder.getReminderInfoString(type, days, hour, minute);
+				setReminderInfo(reminderInfo);
+			}
+		};
+
+		selectDaysInWeek.setStrings("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+		selectDaysInWeek.setValues(Reminder.MONDAY, Reminder.TUESDAY, Reminder.WEDNESDAY, Reminder.THURSDAY, Reminder.FRIDAY, Reminder.SATURDAY, Reminder.SUNDAY);
+		selectDaysInWeek.setType(Reminder.REMINDER_WEEKLY);
+		selectDaysInWeek.setBackgroundColor(0xff9999ff);
+		selectDaysInWeek.generate();
+		((LinearLayout) findViewById(R.id.daysOfWeekContainer)).addView(selectDaysInWeek);
 
 		customReminderList = (ListView) findViewById(R.id.customReminderList);
 		customReminderList.setAdapter(new CustomReminderListAdapter(this));
 		customReminderList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 				editCustomReminder(view.getId());
+			}
+		});
+
+		((Button) findViewById(R.id.monthlyReminder)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				try {
+					final int dayOfMonth = Integer.parseInt(((EditText) findViewById(R.id.dayOfMonth)).getText().toString());
+					if (dayOfMonth > 0 && dayOfMonth < 32) {
+						new TimeDialog(activity) {
+							public void onResult(int hour, int minute) {
+								if(hour == -1) hour = 12;
+								if(minute == -1) minute = 0;
+								String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_MONTHLY, dayOfMonth, hour, minute);
+								setReminderInfo(reminderInfo);
+							}
+						};
+					}
+				} catch (NumberFormatException e) {
+				}
 			}
 		});
 	}
@@ -173,10 +207,12 @@ public class TaskView extends ContentView {
 
 				if (task.has(Reminder.REMINDER_INFO)) {
 					setReminderButton.setText("Reminder: " + task.getString(Reminder.REMINDER_INFO));
-					multiSelectParent.update(task.getString(Reminder.REMINDER_INFO));
+					multiSelectParentRelativeToDue.update(task.getString(Reminder.REMINDER_INFO));
+					selectDaysInWeek.update(task.getString(Reminder.REMINDER_INFO));
 				} else {
 					setReminderButton.setText("Set reminder");
-					multiSelectParent.update("");
+					multiSelectParentRelativeToDue.update("");
+					selectDaysInWeek.update("");
 				}
 			}
 		} catch (JSONException e) {
@@ -278,7 +314,7 @@ public class TaskView extends ContentView {
 
 		new DateAndTimeDialog(activity, timestamp, task, Reminder.REMINDER_RELATIVE_TO_DUE_DATE) {
 			public void onResult(int year, int month, int day, int hour, int minute) {
-				if(year == -1 && month == -1 && day == -1) return;
+				if (year == -1 && month == -1 && day == -1) return;
 				if (hour == -1) hour = 12;
 				if (minute == -1) minute = 0;
 

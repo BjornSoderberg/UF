@@ -1,4 +1,4 @@
-package com.todo.code3.dialog;
+package com.todo.code3.dialog.date_and_time;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -131,7 +131,7 @@ public class DateAndTimeDialog {
 
 		if (d == null) d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay);
 
-		d.setYearRange(showYear - 1, 2037);
+		d.setYearRange(Calendar.getInstance().get(Calendar.YEAR) - 1, 2037);
 		d.show(activity.getSupportFragmentManager(), "datepicker");
 	}
 
