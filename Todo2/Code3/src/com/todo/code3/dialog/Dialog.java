@@ -135,7 +135,9 @@ public abstract class Dialog extends AlertDialog.Builder {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 		intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity.getApplication().getPackageName());
-		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH.toString());
+//		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH.toString());
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "sv_SE");
+		// http://stackoverflow.com/questions/7973023/what-is-the-list-of-supported-languages-locales-on-android
 
 		r.startListening(intent);
 	}

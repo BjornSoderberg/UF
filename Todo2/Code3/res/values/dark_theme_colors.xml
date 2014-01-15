@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_color_dark">#ff383838</color>
+    <color name="divider_color_dark">#ff585858</color>
+    <color name="selected_dark">#ff282828</color>
+    <color name="dark">#ff303030</color>
+    
+    <color name="text_color_dark">#ff888888</color>
+    <color name="text_color_checked_dark">#ff585858</color>
+</resources>

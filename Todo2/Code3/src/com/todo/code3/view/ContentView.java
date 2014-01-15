@@ -29,6 +29,8 @@ public abstract class ContentView extends LinearLayout {
 	
 	public abstract void updateContentItemsOrder();
 	
+	public abstract void setColors();
+	
 	public int getParentId() {
 		return parentId;
 	}

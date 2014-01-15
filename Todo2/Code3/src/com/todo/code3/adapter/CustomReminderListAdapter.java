@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.todo.code3.R;
+import com.todo.code3.misc.Reminder;
 import com.todo.code3.view.TaskView;
 
 public class CustomReminderListAdapter extends BaseAdapter {
@@ -31,6 +32,8 @@ public class CustomReminderListAdapter extends BaseAdapter {
 		String[] parts = reminderInfo.split(",");
 		int num = 0;
 		
+		// Only lists timestamps if it is the right type
+		if(!Reminder.getType(reminderInfo).equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) return 0;
 		for (int i = 0; i < parts.length; i++) {
 			try {
 				long l = Long.parseLong(parts[i]);

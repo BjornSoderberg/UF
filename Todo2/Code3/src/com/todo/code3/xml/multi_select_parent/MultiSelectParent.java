@@ -80,6 +80,8 @@ public class MultiSelectParent extends LinearLayout {
 	}
 
 	public void update(String string) {
+		if(!Reminder.getType(string).equals(type)) return;
+		
 		generated = false;
 		reminderInfo = string;
 

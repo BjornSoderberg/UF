@@ -83,6 +83,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (edit)");
+		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// All touches that are not consumed are interpreted as actions for
 		// dragging the item. There is an area to the right of this view which
@@ -106,8 +107,12 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
-		if (itemView.isSelected(item.getId())) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.blue_item_selector));
-		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+		if (itemView.isSelected(item.getId())) {
+			view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.blue_item_selector));
+		} else {
+			if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
+			else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
+		}
 
 		return view;
 	}
@@ -152,18 +157,19 @@ public class ItemAdapter extends BaseAdapter {
 
 		if (item.isCompleted()) {
 			iv.setImageResource(R.drawable.checked);
-			text.setTextColor(0xff888888);
+			text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_checked_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_checked_dark));
 			text.setPaintFlags(text.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 		} else {
 			iv.setImageResource(R.drawable.box);
-			text.setTextColor(0xff585858);
+			text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 			text.setPaintFlags(257);
 		}
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
 		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.red_item_selector));
-		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+		else if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
 
 		return view;
 	}
@@ -190,10 +196,12 @@ public class ItemAdapter extends BaseAdapter {
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (" + App.getNumberOfTasksOverDue(item.getId(), itemView.getActivity().getData()) + " od, " + App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) + " c, " + App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData()) + "uc)");
+		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
-		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+		if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
 
 		return view;
 	}
@@ -220,10 +228,12 @@ public class ItemAdapter extends BaseAdapter {
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 		text.setText(item.getTitle() + " (note)");
+		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
-		view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.white_item_selector));
+		if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
 
 		return view;
 	}

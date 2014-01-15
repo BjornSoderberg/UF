@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,6 +81,16 @@ public class ItemView extends ContentView {
 		empty.setText("Empty");
 
 		itemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
+		
+		setColors();
+	}
+	
+	public void setColors() {
+		Resources r = activity.getResources();
+		boolean dark = activity.isDarkTheme();
+		listView.setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+		listView.setDivider((dark) ? r.getDrawable(R.color.divider_color_dark) : r.getDrawable(R.color.divider_color_light));
+		listView.setDividerHeight(r.getDimensionPixelSize(R.dimen.divider_height));
 	}
 
 	public void update(JSONObject data) {
@@ -93,7 +104,7 @@ public class ItemView extends ContentView {
 				}
 			} else getItemsFromThisFolder(data);
 
-			 sortItems();
+			sortItems();
 
 			adapter.notifyDataSetChanged();
 
@@ -176,17 +187,17 @@ public class ItemView extends ContentView {
 				else item.isPrioritized(false);
 
 				contentItems.add(item);
-			} else if(object.getString(App.TYPE).equals(App.NOTE)){
+			} else if (object.getString(App.TYPE).equals(App.NOTE)) {
 				NoteItem item = new NoteItem();
 				item.setTitle(object.getString(App.NAME));
 				item.setParentId(parentId);
 				item.setId(object.getInt(App.ID));
 				item.setType(App.NOTE);
-				if(object.has(App.TIMESTAMP_CREATED))item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
-				
-				if(object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
+				if (object.has(App.TIMESTAMP_CREATED)) item.setTimestampCreated(object.getInt(App.TIMESTAMP_CREATED));
+
+				if (object.has(App.PRIORITIZED) && object.getBoolean(App.PRIORITIZED)) item.isPrioritized(true);
 				else item.isPrioritized(false);
-				
+
 				contentItems.add(item);
 			}
 		}
@@ -235,7 +246,7 @@ public class ItemView extends ContentView {
 		if (v == null) return;
 
 		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_item_selector));
-		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.white_item_selector));
+		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_light));
 	}
 
 	public void performActionOnSelectedItems(int id) {
@@ -347,9 +358,9 @@ public class ItemView extends ContentView {
 			Sort.sortTimestampCreated(contentItems);
 		} else if (sortType == Sort.SORT_COMPLETED) {
 			Sort.sortCompleted(contentItems);
-		} else if(sortType == Sort.SORT_ALPHABETICALLY) {
+		} else if (sortType == Sort.SORT_ALPHABETICALLY) {
 			Sort.sortAlphabetically(contentItems);
-		} else if(sortType == Sort.SORT_DUE_DATE){
+		} else if (sortType == Sort.SORT_DUE_DATE) {
 			Sort.sortDueDate(contentItems);
 		}
 	}

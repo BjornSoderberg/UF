@@ -3,6 +3,7 @@ package com.todo.code3.view;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -59,6 +60,18 @@ public class NoteView extends ContentView {
 				if (hasFocus) App.hideKeyboard(getContext(), focusDummy);
 			}
 		});
+		
+		setColors();
+	}
+	
+	public void setColors() {
+		Resources r = activity.getResources();
+		boolean dark = activity.isDarkTheme();
+		setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+		descTV.setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+		descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		descET.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark) : r.getColor(R.color.selected_light));
+		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
 	}
 
 	public void update(JSONObject data) {

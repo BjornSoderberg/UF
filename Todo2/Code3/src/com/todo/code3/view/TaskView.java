@@ -6,6 +6,7 @@ import java.util.Calendar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +27,7 @@ import com.todo.code3.misc.App;
 import com.todo.code3.misc.Reminder;
 import com.todo.code3.xml.multi_select_parent.MultiSelectParent;
 import com.todo.code3.xml.multi_select_parent.SelectDaysInWeek;
+import com.todo.code3.xml.multi_select_parent.Selector;
 
 public class TaskView extends ContentView {
 
@@ -34,8 +36,10 @@ public class TaskView extends ContentView {
 	private Button saveButton;
 	private Button setDueDateButton, setReminderButton, clearDueDateButton, clearReminderButton;
 	private ListView customReminderList;
+
 	private MultiSelectParent multiSelectParentRelativeToDue;
 	private SelectDaysInWeek selectDaysInWeek;
+	private Selector intervalSelector;
 
 	private JSONObject task;
 
@@ -150,7 +154,7 @@ public class TaskView extends ContentView {
 
 				for (int i : selected)
 					days += i;
-				
+
 				String reminderInfo = Reminder.getReminderInfoString(type, days, hour, minute);
 				setReminderInfo(reminderInfo);
 			}
@@ -178,8 +182,8 @@ public class TaskView extends ContentView {
 					if (dayOfMonth > 0 && dayOfMonth < 32) {
 						new TimeDialog(activity) {
 							public void onResult(int hour, int minute) {
-								if(hour == -1) hour = 12;
-								if(minute == -1) minute = 0;
+								if (hour == -1) hour = 12;
+								if (minute == -1) minute = 0;
 								String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_MONTHLY, dayOfMonth, hour, minute);
 								setReminderInfo(reminderInfo);
 							}
@@ -189,6 +193,33 @@ public class TaskView extends ContentView {
 				}
 			}
 		});
+
+		intervalSelector = new Selector(activity) {
+			public void onChanged(int type, int size) {
+				if (type == -1) return;
+				if (size == -1) size = 1;
+
+				String reminderInfo = Reminder.getReminderInfoString(Reminder.REMINDER_INTERVAL, type, size, System.currentTimeMillis() / 1000);
+				setReminderInfo(reminderInfo);
+			}
+		};
+		intervalSelector.setStrings("Minute", "Hour", "Day", "Week");
+		intervalSelector.setValues(Reminder.INTERVAL_MINUTE, Reminder.INTERVAL_HOUR, Reminder.INTERVAL_DAY, Reminder.INTERVAL_WEEK);
+		intervalSelector.setBackgroundColor(0xff77ff77);
+		intervalSelector.generate();
+		((LinearLayout) findViewById(R.id.intervalType)).addView(intervalSelector);
+
+		setColors();
+	}
+
+	public void setColors() {
+		Resources r = activity.getResources();
+		boolean dark = activity.isDarkTheme();
+		setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+		descTV.setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+		descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		descET.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark) : r.getColor(R.color.selected_light));
+		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
 	}
 
 	public void update(JSONObject data) {
@@ -207,13 +238,13 @@ public class TaskView extends ContentView {
 
 				if (task.has(Reminder.REMINDER_INFO)) {
 					setReminderButton.setText("Reminder: " + task.getString(Reminder.REMINDER_INFO));
-					multiSelectParentRelativeToDue.update(task.getString(Reminder.REMINDER_INFO));
-					selectDaysInWeek.update(task.getString(Reminder.REMINDER_INFO));
 				} else {
 					setReminderButton.setText("Set reminder");
-					multiSelectParentRelativeToDue.update("");
-					selectDaysInWeek.update("");
 				}
+
+				multiSelectParentRelativeToDue.update(getReminderInfo());
+				selectDaysInWeek.update(getReminderInfo());
+				intervalSelector.update(getReminderInfo());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

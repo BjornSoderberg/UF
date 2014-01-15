@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     android:orientation="horizontal" >
 
     <LinearLayout
@@ -13,7 +12,7 @@
         <EditText
             android:id="@+id/descET"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:ems="10"
             android:gravity="top"
@@ -31,7 +30,7 @@
         <TextView
             android:id="@+id/descTV"
             android:layout_width="match_parent"
-            android:layout_height="102dp"
+            android:layout_height="match_parent"
             android:hint="Tap to write a description" />
 
         <EditText
@@ -117,6 +116,12 @@
 
                 <LinearLayout
                     android:id="@+id/daysOfWeekContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/intervalType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />

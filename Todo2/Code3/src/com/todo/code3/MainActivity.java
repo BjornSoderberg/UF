@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -45,6 +44,7 @@ import com.todo.code3.notification.NotificationReceiver;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
 import com.todo.code3.view.NoteView;
+import com.todo.code3.view.SettingsView;
 import com.todo.code3.view.TaskView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
@@ -248,7 +248,15 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		// sortSpinner.setVisibility(View.GONE);
+		// Just for texting
+		Button b = new Button(this);
+		b.setText("Settings...");
+		b.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				openSettings();
+			}
+		});
+		((Wrapper) findViewById(R.id.bigWrapper)).addView(b);
 	}
 
 	private void initAddButton() {
@@ -568,11 +576,11 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		if (isChecked) cancelNotification(taskId);
 		else {
-			try{
+			try {
 				JSONObject task = new JSONObject(data.getString(taskId + ""));
-				if(task.has(Reminder.REMINDER_INFO)) Reminder.startReminder(task.getString(Reminder.REMINDER_INFO), this, task.getInt(App.ID), task);
-			} catch(JSONException e) {
-				
+				if (task.has(Reminder.REMINDER_INFO)) Reminder.startReminder(task.getString(Reminder.REMINDER_INFO), this, task.getInt(App.ID), task);
+			} catch (JSONException e) {
+
 			}
 		}
 
@@ -598,7 +606,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		App.hideKeyboard(this, focusDummy);
 
 		try {
-			if (openObjectId == id) return;
+			if (openObjectId == id && !isInSettings()) return;
 
 			openObjectId = id;
 
@@ -654,11 +662,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 
 			posInWrapper++;
-			int i;
 
 			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
-			else if(object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
+			else if (object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
 
 			backButton.setVisibility(View.VISIBLE);
 			dragButton.setVisibility(View.GONE);
@@ -667,6 +674,20 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void openSettings() {
+		if(contentViews.get(posInWrapper) instanceof SettingsView) return;
+		
+		posInWrapper = 0;
+		contentViews.clear();
+
+		scroller.startScroll(currentContentOffset, 0, -currentContentOffset, 0, 0);
+		scrollHandler.postDelayed(scrollRunnable, scrollFps);
+
+		contentViews.add(posInWrapper, new SettingsView(this));
+		
+		updateData();
 	}
 
 	private void openContentViewsFromParentIds(int[] parentIds) {
@@ -956,5 +977,26 @@ public class MainActivity extends FlyInFragmentActivity {
 		int parentIds[] = savedInstanceState.getIntArray("contentViewsOpen");
 
 		openContentViewsFromParentIds(parentIds);
+	}
+	
+	public boolean isInSettings() {
+		return (contentViews.get(posInWrapper) instanceof SettingsView);
+	}
+	
+	public String getColorTheme() {
+		return prefs.getString(App.SETTINGS_THEME, App.SETTINGS_THEME_LIGHT);
+	}
+	
+	public boolean isDarkTheme() {
+		return getColorTheme().equals(App.SETTINGS_THEME_DARK);
+	}
+	
+	public void changeTheme(String theme) {
+		editor.put(App.SETTINGS_THEME, theme);
+		
+		for(ContentView i : contentViews) i.setColors();
+	}
+
+	public void saveSetting(String settingName, String settingValue) {
 	}
 }

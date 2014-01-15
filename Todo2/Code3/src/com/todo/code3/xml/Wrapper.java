@@ -227,8 +227,6 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 			}
 		}
 
-		Log.i(add.getLeft() + " . " + add.getRight(), x+ " . ");
-
 		return false;
 	}
 

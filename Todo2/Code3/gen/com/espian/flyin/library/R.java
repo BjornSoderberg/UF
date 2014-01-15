@@ -13,7 +13,7 @@ public final class R {
 		public static final int rbm_out_to_left = 0x7f040002;
 	}
 	public static final class color {
-		public static final int add_folder_text_color = 0x7f06001b;
+		public static final int add_folder_text_color = 0x7f060026;
 		public static final int item_color_dark = 0x7f060002;
 		public static final int item_color_light = 0x7f060003;
 		public static final int item_text_color = 0x7f060001;
