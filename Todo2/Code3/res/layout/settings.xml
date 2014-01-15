@@ -10,4 +10,10 @@
         android:layout_height="wrap_content"
         android:text="Toggle theme" />
 
+    <Button
+        android:id="@+id/voiceRecogLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set voice lang" />
+
 </LinearLayout>

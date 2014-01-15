@@ -38,7 +38,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 	protected String posButtonString = null;
 	protected String negButtonString = null;
-	
+
 	public Dialog(MainActivity activity, String title, String message, boolean hasVoiceRecognition) {
 		super(activity);
 		this.activity = activity;
@@ -73,7 +73,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 	}
 
 	private void initVoiceRecognition() {
-		if (Build.VERSION.SDK_INT < 8) return;
+		if (Build.VERSION.SDK_INT < App.MIN_API_FOR_VOICE_RECOGNITION) return;
 
 		voiceRecognitionButton = new Button(activity);
 		voiceRecognitionButton.setBackgroundColor(0xffcccccc);
@@ -97,10 +97,11 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 	@SuppressLint("NewApi")
 	private void startVoiceRecognition() {
+		if (Build.VERSION.SDK_INT < App.MIN_API_FOR_VOICE_RECOGNITION) return;
+
 		SpeechRecognizer r = SpeechRecognizer.createSpeechRecognizer(getContext());
 		r.setRecognitionListener(new RecognitionListener() {
 			public void onBeginningOfSpeech() {
-				voiceRecognitionButton.setBackgroundColor(0xff999999);
 			}
 
 			public void onBufferReceived(byte[] buffer) {
@@ -135,10 +136,12 @@ public abstract class Dialog extends AlertDialog.Builder {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 		intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity.getApplication().getPackageName());
-//		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH.toString());
-		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "sv_SE");
+		// intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
+		// Locale.ENGLISH.toString());
+		if (!activity.getSetting(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE).equals("")) intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, activity.getSetting(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE));
 		// http://stackoverflow.com/questions/7973023/what-is-the-list-of-supported-languages-locales-on-android
 
+		voiceRecognitionButton.setBackgroundColor(0xff999999);
 		r.startListening(intent);
 	}
 

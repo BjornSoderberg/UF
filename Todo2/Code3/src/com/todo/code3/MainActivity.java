@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -44,8 +45,9 @@ import com.todo.code3.notification.NotificationReceiver;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
 import com.todo.code3.view.NoteView;
-import com.todo.code3.view.SettingsView;
 import com.todo.code3.view.TaskView;
+import com.todo.code3.view.settings.SelectVoiceRecognitionView;
+import com.todo.code3.view.settings.SettingsView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
 
@@ -677,16 +679,42 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void openSettings() {
-		if(contentViews.get(posInWrapper) instanceof SettingsView) return;
-		
+		if (contentViews.get(posInWrapper) instanceof SettingsView) return;
+
 		posInWrapper = 0;
 		contentViews.clear();
+
+		setTitle("Settings");
 
 		scroller.startScroll(currentContentOffset, 0, -currentContentOffset, 0, 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 		contentViews.add(posInWrapper, new SettingsView(this));
+
+		updateData();
+	}
+
+	public void openSettingsItem(int id, String title) {
+		if (isMoving) return;
+		hideOptions();
+		if (isEditingTitle()) endEditTitle(false);
+		App.hideKeyboard(this, focusDummy);
+
+		posInWrapper++;
 		
+		setTitle(title);
+
+		if (id == SettingsView.SELECT_VOICE_RECOGNITION) contentViews.add(posInWrapper, new SelectVoiceRecognitionView(this));
+		// else if (object.getString(App.TYPE).equals(App.FOLDER))
+		// contentViews.add(posInWrapper, new ItemView(this, openObjectId));
+		// else if (object.getString(App.TYPE).equals(App.NOTE))
+		// contentViews.add(posInWrapper, new NoteView(this, openObjectId));
+
+		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, App.ANIMATION_DURATION);
+		scrollHandler.postDelayed(scrollRunnable, scrollFps);
+
+		backButton.setVisibility(View.VISIBLE);
+		dragButton.setVisibility(View.GONE);
 		updateData();
 	}
 
@@ -715,6 +743,15 @@ public class MainActivity extends FlyInFragmentActivity {
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
+
+		if (isInSettings()) {
+			scroller.startScroll(currentContentOffset, 0, getContentWidth(), 0, App.ANIMATION_DURATION);
+			scrollHandler.postDelayed(scrollRunnable, scrollFps);
+
+			if (contentViews.size() > posInWrapper) contentViews.get(posInWrapper).leave();
+			posInWrapper--;
+			return;
+		}
 
 		try {
 			JSONObject object = new JSONObject(data.getString(openObjectId + ""));
@@ -978,25 +1015,33 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		openContentViewsFromParentIds(parentIds);
 	}
-	
+
 	public boolean isInSettings() {
-		return (contentViews.get(posInWrapper) instanceof SettingsView);
+		for (ContentView i : contentViews)
+			if (i instanceof SettingsView) return true;
+		return false;
 	}
-	
+
 	public String getColorTheme() {
 		return prefs.getString(App.SETTINGS_THEME, App.SETTINGS_THEME_LIGHT);
 	}
-	
+
 	public boolean isDarkTheme() {
 		return getColorTheme().equals(App.SETTINGS_THEME_DARK);
 	}
-	
+
 	public void changeTheme(String theme) {
-		editor.put(App.SETTINGS_THEME, theme);
-		
-		for(ContentView i : contentViews) i.setColors();
+		saveSetting(App.SETTINGS_THEME, theme);
+
+		for (ContentView i : contentViews)
+			i.setColors();
 	}
 
 	public void saveSetting(String settingName, String settingValue) {
+		editor.put(settingName, settingValue);
+	}
+	
+	public String getSetting(String settingName) {
+		return prefs.getString(settingName, "");
 	}
 }

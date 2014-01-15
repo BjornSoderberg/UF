@@ -1,18 +1,21 @@
-package com.todo.code3.view;
+package com.todo.code3.view.settings;
 
 import org.json.JSONObject;
 
 import android.content.res.Resources;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ToggleButton;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.misc.App;
+import com.todo.code3.view.ContentView;
 
 public class SettingsView extends ContentView {
+	
+	public static final int SELECT_VOICE_RECOGNITION = 0;
 
 	public SettingsView(MainActivity activity) {
 		super(activity, 0);
@@ -33,6 +36,13 @@ public class SettingsView extends ContentView {
 		
 		if(activity.isDarkTheme()) b.setChecked(false);
 		else b.setChecked(true);
+		
+		Button asd = (Button) findViewById(R.id.voiceRecogLang);
+		asd.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				activity.openSettingsItem(SELECT_VOICE_RECOGNITION, "Set voice recognition language");
+			}
+		});
 		
 		setColors();
 	}
