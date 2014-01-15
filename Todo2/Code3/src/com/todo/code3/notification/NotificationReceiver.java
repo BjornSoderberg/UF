@@ -57,8 +57,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 		notificationManager.notify(id, n);
 
 		if (intent.hasExtra(Reminder.REMINDER_INFO)) {
-			Toast.makeText(context, "set new reminder", Toast.LENGTH_SHORT).show();
-
 			String reminderInfo = intent.getStringExtra(Reminder.REMINDER_INFO);
 
 			long next = Reminder.getNext(reminderInfo, intent.getLongExtra(App.DUE_DATE, -1));

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.todo.code3.MainActivity;
+import com.todo.code3.R;
 import com.todo.code3.misc.App;
 
 public abstract class Dialog extends AlertDialog.Builder {
@@ -84,7 +85,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 		// If can use voice recognition and has internet connection
 		if (activities.size() != 0 && App.isNetworkAvailable(activity)) {
-			voiceRecognitionButton.setText("Press me to speak");
+			voiceRecognitionButton.setText(activity.getResources().getString(R.string.press_me_to_speak));
 			voiceRecognitionButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					startVoiceRecognition();

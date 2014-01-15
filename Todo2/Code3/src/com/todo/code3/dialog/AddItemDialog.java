@@ -1,13 +1,14 @@
 package com.todo.code3.dialog;
 
 import android.app.AlertDialog;
-import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.todo.code3.MainActivity;
+import com.todo.code3.R;
 import com.todo.code3.misc.App;
 
 public class AddItemDialog extends Dialog {
@@ -16,13 +17,13 @@ public class AddItemDialog extends Dialog {
 
 	public AddItemDialog(MainActivity activity, String title, String message) {
 		super(activity, title, message, false);
-		
+
 		init();
 	}
 
 	public AddItemDialog(MainActivity activity, String title, String message, String posButtonString, String negButtonString) {
 		super(activity, title, message, false, posButtonString, negButtonString);
-		
+
 		init();
 	}
 
@@ -35,7 +36,7 @@ public class AddItemDialog extends Dialog {
 		alert = create();
 
 		Button task = new Button(activity);
-		task.setText("Task");
+		task.setText(activity.getString(R.string.task));
 		task.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				askForName(App.TASK);
@@ -43,17 +44,8 @@ public class AddItemDialog extends Dialog {
 			}
 		});
 
-		Button folder = new Button(activity);
-		folder.setText("Folder");
-		folder.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				askForName(App.FOLDER);
-				alert.dismiss();
-			}
-		});
-
 		Button note = new Button(activity);
-		note.setText("Note");
+		note.setText(activity.getString(R.string.note));
 		note.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				askForName(App.NOTE);
@@ -61,15 +53,25 @@ public class AddItemDialog extends Dialog {
 			}
 		});
 
+		Button folder = new Button(activity);
+		folder.setText(activity.getString(R.string.folder));
+		folder.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				askForName(App.FOLDER);
+				alert.dismiss();
+			}
+		});
+
 		l.addView(task);
-		l.addView(folder);
 		l.addView(note);
+		l.addView(folder);
 
 		alert.setView(l);
 	}
 
 	public void askForName(final String type) {
-		TextLineDialog d = new TextLineDialog(activity, "Add new " + type, null, true, "Add", "Cancel") {
+		Resources r = activity.getResources();
+		TextLineDialog d = new TextLineDialog(activity, r.getString(R.string.add_new) + " " + type, null, true, r.getString(R.string.add), r.getString(R.string.cancel)) {
 			protected void onResult(Object result) {
 				super.onResult(result);
 
@@ -77,7 +79,7 @@ public class AddItemDialog extends Dialog {
 				else AddItemDialog.this.onResult("", type);
 			}
 		};
-		
+
 		d.show();
 	}
 

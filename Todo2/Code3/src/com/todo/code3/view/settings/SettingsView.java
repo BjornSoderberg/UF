@@ -40,7 +40,7 @@ public class SettingsView extends ContentView {
 		Button asd = (Button) findViewById(R.id.voiceRecogLang);
 		asd.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				activity.openSettingsItem(SELECT_VOICE_RECOGNITION, "Set voice recognition language");
+				activity.openSettingsItem(SELECT_VOICE_RECOGNITION, getContext().getResources().getString(R.string.set_voice_recognition_language));
 			}
 		});
 		

@@ -22,8 +22,8 @@ public class SelectVoiceRecognitionView extends ContentView {
 	private ListView listView;
 	private Adapter adapter;
 
-	private String[] languages = { "Swedish", "English" };
-	private String[] values = { "sv_SE", "en_US" };
+	private String[] languages;
+	private String[] values;
 
 	public SelectVoiceRecognitionView(MainActivity activity) {
 		super(activity, 0);
@@ -35,7 +35,7 @@ public class SelectVoiceRecognitionView extends ContentView {
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
 		languages = new String[2];
-		languages[0] = "Swedish";
+		languages[0] = "Svenska";
 		languages[1] = "English";
 
 		values = new String[2];

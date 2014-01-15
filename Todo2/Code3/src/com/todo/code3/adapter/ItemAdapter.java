@@ -82,7 +82,7 @@ public class ItemAdapter extends BaseAdapter {
 		View view = inflater.inflate(R.layout.options_item, null);
 
 		TextView text = (TextView) view.findViewById(R.id.item_text);
-		text.setText(item.getTitle() + " (edit)");
+		text.setText(item.getTitle() + " (" + itemView.getActivity().getResources().getString(R.string.edit) + ")");
 		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// All touches that are not consumed are interpreted as actions for
@@ -123,7 +123,7 @@ public class ItemAdapter extends BaseAdapter {
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 
-		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) text.setText(item.getTitle() + " - OVER DUE");
+		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) text.setText(item.getTitle() + " - " + itemView.getActivity().getResources().getString(R.string.over_due));
 		else text.setText(item.getTitle());
 
 		// Is prio
@@ -227,7 +227,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
-		text.setText(item.getTitle() + " (note)");
+		text.setText(item.getTitle() + " (" +itemView.getActivity().getResources().getString(R.string.note)+")");
 		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// Sets the background (which is dependent on its state (pressed,

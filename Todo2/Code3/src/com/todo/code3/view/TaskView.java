@@ -141,7 +141,8 @@ public class TaskView extends ContentView {
 			}
 		};
 
-		multiSelectParentRelativeToDue.setStrings("1 hour", "1 week", "1 month");
+		Resources r = activity.getResources();
+		multiSelectParentRelativeToDue.setStrings(r.getString(R.string.one_hour), r.getString(R.string.one_week), r.getString(R.string.one_month));
 		multiSelectParentRelativeToDue.setValues(3600, 3600 * 24 * 7, Reminder.ONE_MONTH_RELATIVE_TO_DUE);
 		multiSelectParentRelativeToDue.setType(Reminder.REMINDER_RELATIVE_TO_DUE_DATE);
 		multiSelectParentRelativeToDue.generate();
@@ -160,7 +161,13 @@ public class TaskView extends ContentView {
 			}
 		};
 
-		selectDaysInWeek.setStrings("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+		selectDaysInWeek.setStrings(r.getString(R.string.monday), //
+				r.getString(R.string.tuesday), //
+				r.getString(R.string.wednesday), //
+				r.getString(R.string.thursday), //
+				r.getString(R.string.friday),//
+				r.getString(R.string.saturday), //
+				r.getString(R.string.sunday));//
 		selectDaysInWeek.setValues(Reminder.MONDAY, Reminder.TUESDAY, Reminder.WEDNESDAY, Reminder.THURSDAY, Reminder.FRIDAY, Reminder.SATURDAY, Reminder.SUNDAY);
 		selectDaysInWeek.setType(Reminder.REMINDER_WEEKLY);
 		selectDaysInWeek.setBackgroundColor(0xff9999ff);
@@ -203,7 +210,7 @@ public class TaskView extends ContentView {
 				setReminderInfo(reminderInfo);
 			}
 		};
-		intervalSelector.setStrings("Minute", "Hour", "Day", "Week");
+		intervalSelector.setStrings(r.getString(R.string.minutes), r.getString(R.string.hours), r.getString(R.string.days), r.getString(R.string.weeks));
 		intervalSelector.setValues(Reminder.INTERVAL_MINUTE, Reminder.INTERVAL_HOUR, Reminder.INTERVAL_DAY, Reminder.INTERVAL_WEEK);
 		intervalSelector.setBackgroundColor(0xff77ff77);
 		intervalSelector.generate();
@@ -233,13 +240,13 @@ public class TaskView extends ContentView {
 				if (task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(task.getLong(App.DUE_DATE) * 1000);
-					setDueDateButton.setText("Due date:" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR) + "(at " + calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE) + ")");
-				} else setDueDateButton.setText("Set due date");
+					setDueDateButton.setText(activity.getResources().getString(R.string.due_date) + " : " + calendar.get(Calendar.DAY_OF_MONTH) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.YEAR) + "(" + calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE) + ")");
+				} else setDueDateButton.setText(activity.getResources().getString(R.string.set_due_date));
 
 				if (task.has(Reminder.REMINDER_INFO)) {
 					setReminderButton.setText("Reminder: " + task.getString(Reminder.REMINDER_INFO));
 				} else {
-					setReminderButton.setText("Set reminder");
+					setReminderButton.setText(activity.getResources().getString(R.string.set_reminder));
 				}
 
 				multiSelectParentRelativeToDue.update(getReminderInfo());

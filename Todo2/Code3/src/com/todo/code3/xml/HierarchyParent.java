@@ -29,7 +29,6 @@ public class HierarchyParent extends ScrollView {
 	private ArrayList<ContentItem> selectedItems;
 
 	private Button moveToMenuButton;
-	private Button alertDialogButton;
 
 	private int selectedItem = -2;
 	private int itemHeight;
@@ -71,7 +70,7 @@ public class HierarchyParent extends ScrollView {
 
 		moveToMenuButton = new Button(getContext());
 		moveToMenuButton.setBackgroundColor(0xffffffff);
-		moveToMenuButton.setText("+   Add to menu");
+		moveToMenuButton.setText("+   " + getContext().getResources().getString(R.string.add_to_menu));
 		moveToMenuButton.setOnClickListener(new OnClickListener() {
 			boolean selected = false;
 
@@ -90,7 +89,7 @@ public class HierarchyParent extends ScrollView {
 
 		if (!onlyContainsFolders()) {
 			moveToMenuButton.setEnabled(false);
-			moveToMenuButton.setText("You cannot move tasks and notes to the menu.");
+			moveToMenuButton.setText(getContext().getResources().getString(R.string.you_cannot_move_tasks_and_notes_to_the_menu));
 		}
 
 		contentHolder.addView(moveToMenuButton);
@@ -235,10 +234,6 @@ public class HierarchyParent extends ScrollView {
 
 	public int getSelectedItem() {
 		return selectedItem;
-	}
-	
-	public void setAlertDialogButton(Button b) {
-		alertDialogButton = b;
 	}
 
 	public void onItemSelected(int selectedId, boolean selected) {

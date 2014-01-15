@@ -26,9 +26,6 @@ public class Selector extends LinearLayout {
 
 	private boolean updated = false;
 
-	private String reminderInfo;
-	private String reminderType;
-
 	public Selector(Context context) {
 		super(context);
 		init();
@@ -76,10 +73,6 @@ public class Selector extends LinearLayout {
 		for (int i : values)
 			this.values.add(i);
 	}
-	
-	public void setReminderType(String type) {
-		reminderType = type;
-	}
 
 	public void generate() {
 		radioGroup.removeAllViews();
@@ -93,10 +86,9 @@ public class Selector extends LinearLayout {
 	}
 
 	public void update(String reminderInfo) {
-		if(!Reminder.getType(reminderInfo).equals(type)) return;
-		
+		if (!Reminder.getType(reminderInfo).equals(type)) return;
+
 		updated = false;
-		this.reminderInfo = reminderInfo;
 
 		try {
 			int checkedValue = Integer.parseInt(Reminder.getPart(reminderInfo, 1));

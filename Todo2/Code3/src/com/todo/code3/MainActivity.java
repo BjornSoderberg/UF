@@ -1,6 +1,7 @@
 package com.todo.code3;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,10 +11,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -120,7 +122,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		getDataFromSharedPreferences();
 
 		if (getIntent().hasExtra(App.OPEN)) {
-			openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
+			if (getIntent().getIntExtra(App.OPEN, -1) == App.SETTINGS) {
+				openSettings();
+				openSettingsItem(SettingsView.SELECT_VOICE_RECOGNITION, getResources().getString(R.string.select_speech_recognition_language));
+			} else openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
 		}
 	}
 
@@ -227,7 +232,13 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		initAddButton();
 
-		String[] paths = { "Prio", "Created", "Completed", "Alphabetically", "Due date (next due at top)", "Include subtasks" };
+		Resources r = getResources();
+		String[] paths = { r.getString(R.string.prioritized), //
+				r.getString(R.string.created), //
+				r.getString(R.string.completed), //
+				r.getString(R.string.alphabetically),//
+				r.getString(R.string.due_date), //
+				r.getString(R.string.include_subtasks) };
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -252,7 +263,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		// Just for texting
 		Button b = new Button(this);
-		b.setText("Settings...");
+		b.setText(getResources().getString(R.string.settings));
 		b.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				openSettings();
@@ -267,14 +278,14 @@ public class MainActivity extends FlyInFragmentActivity {
 		customView.setOrientation(LinearLayout.VERTICAL);
 
 		Button addFolderButton = new Button(this);
-		addFolderButton.setText("+  Add new folder");
+		addFolderButton.setText("+  " + getResources().getString(R.string.add_new_folder));
 		// Makes it transparent
 		addFolderButton.setBackgroundColor(0);
 		// addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.item_text_color));
 		addFolderButton.setTextColor(getResources().getColorStateList(R.color.add_folder_text_color));
 		addFolderButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				TextLineDialog b = new TextLineDialog(MainActivity.this, "Add new folder", null, true, "Add", "Cancel") {
+				TextLineDialog b = new TextLineDialog(MainActivity.this, getResources().getString(R.string.add_new_folder), null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel)) {
 					protected void onResult(Object result) {
 						super.onResult(result);
 
@@ -364,7 +375,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 						FlyInMenuItem mi = new FlyInMenuItem();
 						int numChildren = (folder.getString(App.CHILDREN_IDS).length() == 0) ? 0 : folder.getString(App.CHILDREN_IDS).split(",").length;
-						mi.setTitle(folder.getString(App.NAME) + " - " + numChildren + " (" + folder.getString(App.TYPE) + ")");
+						mi.setTitle(folder.getString(App.NAME) + " - " + numChildren);
 						mi.setId(folder.getInt(App.ID));
 						mi.setType(folder.getString(App.TYPE));
 						mi.isOpen(App.isParentOf(openObjectId, folder.getInt(App.ID), data));
@@ -411,7 +422,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	// When clicking on the button
 	public void addDialog(View v) {
-		AddItemDialog i = new AddItemDialog(this, "Add new", "Select type", null, "Cancel") {
+		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), getResources().getString(R.string.select_type), null, getResources().getString(R.string.cancel)) {
 			public void onResult(String name, String type) {
 				super.onResult(name, type);
 				add(name, type);
@@ -423,7 +434,12 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	// When dragging to an item
 	public void addDialog(final String type) {
-		TextLineDialog i = new TextLineDialog(this, "Add new " + type, null, true, "Add", "Cancel") {
+		String t = "";
+		if (type.equals(App.TASK)) t = getResources().getString(R.string.task);
+		else if(type.equals(App.NOTE)) t = getResources().getString(R.string.note);
+		else if (type.equals(App.FOLDER)) t = getResources().getString(R.string.folder);
+		
+		TextLineDialog i = new TextLineDialog(this,getResources().getString(R.string.add_new) + " " + t, null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel)) {
 			public void onResult(Object result) {
 				super.onResult(result);
 
@@ -684,7 +700,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		posInWrapper = 0;
 		contentViews.clear();
 
-		setTitle("Settings");
+		setTitle(getResources().getString(R.string.settings));
 
 		scroller.startScroll(currentContentOffset, 0, -currentContentOffset, 0, 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
@@ -701,7 +717,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		App.hideKeyboard(this, focusDummy);
 
 		posInWrapper++;
-		
+
 		setTitle(title);
 
 		if (id == SettingsView.SELECT_VOICE_RECOGNITION) contentViews.add(posInWrapper, new SelectVoiceRecognitionView(this));
@@ -1030,6 +1046,20 @@ public class MainActivity extends FlyInFragmentActivity {
 		return getColorTheme().equals(App.SETTINGS_THEME_DARK);
 	}
 
+	// not tested yet
+	public void setLocale(String lang) {
+		Locale l = new Locale(lang);
+		Resources r = getResources();
+		DisplayMetrics dm = r.getDisplayMetrics();
+		Configuration c = r.getConfiguration();
+		c.locale = l;
+		r.updateConfiguration(c, dm);
+
+		Intent refresh = new Intent(this, MainActivity.class);
+		refresh.putExtra(App.OPEN, App.SETTINGS);
+		startActivity(refresh);
+	}
+
 	public void changeTheme(String theme) {
 		saveSetting(App.SETTINGS_THEME, theme);
 
@@ -1040,7 +1070,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void saveSetting(String settingName, String settingValue) {
 		editor.put(settingName, settingValue);
 	}
-	
+
 	public String getSetting(String settingName) {
 		return prefs.getString(settingName, "");
 	}

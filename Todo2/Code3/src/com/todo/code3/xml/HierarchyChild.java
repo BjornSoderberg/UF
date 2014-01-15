@@ -86,7 +86,7 @@ public class HierarchyChild extends RelativeLayout {
 		});
 
 		if (!isExpandable()) expandButton.setVisibility(View.GONE);
-		if (!isSelectable()) text.setText(text.getText() + " (current)");
+		if (!isSelectable()) text.setText(text.getText() + " (" + getContext().getResources().getString(R.string.current)+")");
 	}
 
 	public int getItemParentId() {

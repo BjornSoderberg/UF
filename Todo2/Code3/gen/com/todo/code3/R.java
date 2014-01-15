@@ -223,19 +223,35 @@ public final class R {
         public static final int year_label_text_view=0x7f03001a;
     }
     public static final class string {
+        public static final int add=0x7f090026;
+        public static final int add_new=0x7f090027;
+        public static final int add_new_folder=0x7f090025;
+        public static final int add_to_menu=0x7f09002f;
+        public static final int alphabetically=0x7f090021;
         public static final int ampm_circle_radius_multiplier=0x7f090004;
         public static final int app_name=0x7f09001c;
+        public static final int cancel=0x7f090029;
         public static final int cancel_label=0x7f09000c;
         public static final int circle_radius_multiplier=0x7f090001;
         public static final int circle_radius_multiplier_24HourMode=0x7f090002;
+        public static final int completed=0x7f090020;
+        public static final int created=0x7f09001f;
+        public static final int current=0x7f090031;
         /**  DO NOT TRANSLATE 
          */
         public static final int day_of_week_label_typeface=0x7f090013;
         public static final int day_picker_description=0x7f09000d;
+        public static final int days=0x7f09003e;
         /**  Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] 
          */
         public static final int deleted_key=0x7f090016;
         public static final int done_label=0x7f09000b;
+        public static final int due_date=0x7f090022;
+        public static final int edit=0x7f090048;
+        public static final int empty=0x7f090042;
+        public static final int folder=0x7f09002c;
+        public static final int friday=0x7f090039;
+        public static final int group_selected_items_in_new_folder=0x7f090043;
         /** 
          Content description for the hour selector in the time picker, which displays
          selectable hours of the day along the inside edge of a circle, as in an analog clock.
@@ -243,6 +259,8 @@ public final class R {
     
          */
         public static final int hour_picker_description=0x7f090017;
+        public static final int hours=0x7f09003d;
+        public static final int include_subtasks=0x7f090023;
         public static final int is_in_master_view=0x7f090000;
         public static final int item_is_selected=0x7f090011;
         /** 
@@ -252,22 +270,50 @@ public final class R {
     
          */
         public static final int minute_picker_description=0x7f090018;
+        public static final int minutes=0x7f09003c;
+        public static final int monday=0x7f090035;
+        public static final int move=0x7f090047;
+        public static final int move_selected_items=0x7f090045;
+        public static final int name_the_new_folder=0x7f090044;
+        public static final int note=0x7f09002b;
         public static final int numbers_radius_multiplier_inner=0x7f090006;
         public static final int numbers_radius_multiplier_normal=0x7f090005;
         public static final int numbers_radius_multiplier_outer=0x7f090007;
+        public static final int one_hour=0x7f090032;
+        public static final int one_month=0x7f090034;
+        public static final int one_week=0x7f090033;
+        public static final int over_due=0x7f09004a;
+        public static final int press_me_to_speak=0x7f090049;
+        public static final int prioritized=0x7f09001e;
         public static final int radial_numbers_typeface=0x7f090019;
         public static final int sans_serif=0x7f090012;
+        public static final int saturday=0x7f09003a;
+        public static final int select_a_folder_to_move_to=0x7f090046;
         public static final int select_day=0x7f09000f;
         public static final int select_hours=0x7f09001a;
         public static final int select_minutes=0x7f09001b;
+        public static final int select_speech_recognition_language=0x7f09001d;
+        public static final int select_type=0x7f090028;
         public static final int select_year=0x7f090010;
         public static final int selection_radius_multiplier=0x7f090003;
+        public static final int set_due_date=0x7f090040;
+        public static final int set_reminder=0x7f090041;
+        public static final int set_time_for_weekly_reminder=0x7f09002e;
+        public static final int set_voice_recognition_language=0x7f09002d;
+        public static final int settings=0x7f090024;
+        public static final int sunday=0x7f09003b;
+        public static final int task=0x7f09002a;
         public static final int text_size_multiplier_inner=0x7f090009;
         public static final int text_size_multiplier_normal=0x7f090008;
         public static final int text_size_multiplier_outer=0x7f09000a;
+        public static final int thursday=0x7f090038;
         public static final int time_placeholder=0x7f090014;
         public static final int time_separator=0x7f090015;
+        public static final int tuesday=0x7f090036;
+        public static final int wednesday=0x7f090037;
+        public static final int weeks=0x7f09003f;
         public static final int year_picker_description=0x7f09000e;
+        public static final int you_cannot_move_tasks_and_notes_to_the_menu=0x7f090030;
     }
     public static final class style {
         /** 

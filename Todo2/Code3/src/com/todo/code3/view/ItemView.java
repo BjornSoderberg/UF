@@ -78,13 +78,13 @@ public class ItemView extends ContentView {
 		});
 
 		empty = (TextView) findViewById(R.id.empty);
-		empty.setText("Empty");
+		empty.setText(getContext().getResources().getString(R.string.empty));
 
 		itemHeight = (int) activity.getResources().getDimension(R.dimen.item_height);
-		
+
 		setColors();
 	}
-	
+
 	public void setColors() {
 		Resources r = activity.getResources();
 		boolean dark = activity.isDarkTheme();
@@ -281,7 +281,8 @@ public class ItemView extends ContentView {
 	private void groupSelectedItems() {
 		if (selectedItems.size() == 0) return;
 
-		TextLineDialog d = new TextLineDialog(activity, "Group items in new folder", "Name the new folder", true, "Add", "Cancel") {
+		Resources r = getContext().getResources();
+		TextLineDialog d = new TextLineDialog(activity, r.getString(R.string.group_selected_items_in_new_folder), r.getString(R.string.name_the_new_folder), true, r.getString(R.string.add), r.getString(R.string.cancel)) {
 			protected void onResult(Object result) {
 
 				final String name;
@@ -323,7 +324,13 @@ public class ItemView extends ContentView {
 	private void moveSelectedItems() {
 		if (selectedItems.size() == 0) return;
 
-		FolderSelectionDialog d = new FolderSelectionDialog(activity, "Move selected items", "Select a folder to move to", false, selectedItems, activity.getData(), "Move", "Cancel") {
+		Resources r = getContext().getResources();
+		FolderSelectionDialog d = new FolderSelectionDialog(activity, //
+				r.getString(R.string.move_selected_items), //
+				r.getString(R.string.select_a_folder_to_move_to), //
+				false, selectedItems, activity.getData(), //
+				r.getString(R.string.move), //
+				r.getString(R.string.cancel)) {
 			protected void onResult(Object result) {
 				getAlertDialog().dismiss();
 

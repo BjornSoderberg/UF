@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.todo.code3.MainActivity;
+import com.todo.code3.R;
 import com.todo.code3.dialog.date_and_time.TimeDialog;
 import com.todo.code3.misc.Reminder;
 
@@ -36,7 +37,7 @@ public class SelectDaysInWeek extends MultiSelectParent {
 		super.generate();
 
 		timeButton = new Button(getContext());
-		timeButton.setText("Set weekly reminder time");
+		timeButton.setText(getContext().getResources().getString(R.string.set_time_for_weekly_reminder));
 		timeButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				new TimeDialog(activity) {
