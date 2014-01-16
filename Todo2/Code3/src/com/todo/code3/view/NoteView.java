@@ -24,6 +24,7 @@ public class NoteView extends ContentView {
 
 	public NoteView(MainActivity activity, int parentId) {
 		super(activity, parentId);
+		init();
 	}
 
 	protected void init() {

@@ -9,9 +9,9 @@
         android:id="@+id/item_checkbox"
         android:layout_width="@dimen/item_height"
         android:layout_height="@dimen/item_height"
-        android:layout_marginLeft="@dimen/item_padding_leftright"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true" >
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/item_padding_leftright" >
 
         <ImageView
             android:id="@+id/checkbox"
@@ -26,17 +26,17 @@
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/item_prio"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/item_padding_leftright"
+        android:layout_toLeftOf="@+id/item_prio"
         android:layout_toRightOf="@+id/item_checkbox"
         android:ellipsize="end"
+        android:hint="@string/no_name"
         android:paddingLeft="@dimen/item_text_padding_left"
         android:singleLine="true"
-        android:text="No name"
         android:textColor="#585858"
         android:textSize="@dimen/item_text_size" />
-    
+
     <FrameLayout
         android:id="@+id/item_prio"
         android:layout_width="@dimen/item_height"

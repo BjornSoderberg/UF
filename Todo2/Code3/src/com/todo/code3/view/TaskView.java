@@ -45,6 +45,7 @@ public class TaskView extends ContentView {
 
 	public TaskView(MainActivity activity, int parentId) {
 		super(activity, parentId);
+		init();
 	}
 
 	protected void init() {

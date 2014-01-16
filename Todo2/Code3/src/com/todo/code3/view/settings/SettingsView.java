@@ -14,11 +14,13 @@ import com.todo.code3.misc.App;
 import com.todo.code3.view.ContentView;
 
 public class SettingsView extends ContentView {
-	
+
 	public static final int SELECT_VOICE_RECOGNITION = 0;
+	public static final int SELECT_APP_LANGUAGE = 1;
 
 	public SettingsView(MainActivity activity) {
 		super(activity, 0);
+		init();
 	}
 
 	protected void init() {
@@ -29,14 +31,14 @@ public class SettingsView extends ContentView {
 		final ToggleButton b = (ToggleButton) findViewById(R.id.theme);
 		b.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if(b.isChecked()) activity.changeTheme(App.SETTINGS_THEME_LIGHT);
+				if (b.isChecked()) activity.changeTheme(App.SETTINGS_THEME_LIGHT);
 				else activity.changeTheme(App.SETTINGS_THEME_DARK);
 			}
 		});
-		
-		if(activity.isDarkTheme()) b.setChecked(false);
+
+		if (activity.isDarkTheme()) b.setChecked(false);
 		else b.setChecked(true);
-		
+
 		Button asd = (Button) findViewById(R.id.voiceRecogLang);
 		asd.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -44,9 +46,16 @@ public class SettingsView extends ContentView {
 			}
 		});
 		
+		Button asdf = (Button) findViewById(R.id.textLang);
+		asdf.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				activity.openSettingsItem(SELECT_APP_LANGUAGE, getContext().getResources().getString(R.string.set_voice_recognition_language));
+			}
+		});
+
 		setColors();
 	}
-	
+
 	public void setColors() {
 		Resources r = activity.getResources();
 		boolean dark = activity.isDarkTheme();

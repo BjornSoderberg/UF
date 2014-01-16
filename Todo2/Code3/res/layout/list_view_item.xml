@@ -11,12 +11,11 @@
         android:layout_alignParentLeft="true"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="@dimen/item_text_padding_left"
-        android:layout_toLeftOf="@+id/item_prio"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_text_padding_left"
         android:singleLine="true"
-        android:text="No name"
+        android:text="@string/no_name"
         android:textColor="#585858"
         android:textSize="@dimen/item_text_size" />
 

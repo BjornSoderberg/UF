@@ -19,14 +19,14 @@
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/descTV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="Tap to write a description" />
+        android:hint="@string/tap_to_write_a_description" />
 
     <EditText
         android:id="@+id/focusDummy"

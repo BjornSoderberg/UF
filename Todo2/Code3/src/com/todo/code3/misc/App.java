@@ -66,8 +66,11 @@ public class App {
 	public static final String SETTINGS_THEME_DARK = "settingsThemeDark";
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";
 	public static final String SETTINGS_VOICE_RECOGNITION_LANGUAGE = "settingsVoiceRecognitionLanguage";
+	public static final String SETTINGS_APP_LANGUAGE = "settingsAppLanguage";
 	
 	public static final int MIN_API_FOR_VOICE_RECOGNITION = 8;
+	
+	public static final String LANGUAGE = "language";
 
 	// converting dp to pixels and vice versa
 	public static int dpToPx(float dp, Resources r) {

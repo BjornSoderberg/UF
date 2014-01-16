@@ -16,6 +16,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -48,7 +49,7 @@ import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
 import com.todo.code3.view.NoteView;
 import com.todo.code3.view.TaskView;
-import com.todo.code3.view.settings.SelectVoiceRecognitionView;
+import com.todo.code3.view.settings.SelectLanguage;
 import com.todo.code3.view.settings.SettingsView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
@@ -113,6 +114,14 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor = new SPEditor(prefs);
 
 		contentViews = new ArrayList<ContentView>();
+		
+		// Setting correct language (locale)
+		Configuration c = getBaseContext().getResources().getConfiguration();
+		if(getLocale() != null) {
+			Locale.setDefault(getLocale());
+			c.locale = getLocale();
+			getBaseContext().getResources().updateConfiguration(c, getResources().getDisplayMetrics());
+		}
 
 		initXML();
 		initBars();
@@ -124,7 +133,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (getIntent().hasExtra(App.OPEN)) {
 			if (getIntent().getIntExtra(App.OPEN, -1) == App.SETTINGS) {
 				openSettings();
-				openSettingsItem(SettingsView.SELECT_VOICE_RECOGNITION, getResources().getString(R.string.select_speech_recognition_language));
+				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.select_speech_recognition_language), false);
 			} else openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
 		}
 	}
@@ -261,9 +270,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		// Just for texting
+		// Just for testing
 		Button b = new Button(this);
 		b.setText(getResources().getString(R.string.settings));
+		b.setLayoutParams(new LayoutParams(300, -2));
 		b.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				openSettings();
@@ -709,8 +719,12 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		updateData();
 	}
-
+	
 	public void openSettingsItem(int id, String title) {
+		openSettingsItem(id, title, true);
+	}
+
+	public void openSettingsItem(int id, String title, boolean animate) {
 		if (isMoving) return;
 		hideOptions();
 		if (isEditingTitle()) endEditTitle(false);
@@ -720,13 +734,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		setTitle(title);
 
-		if (id == SettingsView.SELECT_VOICE_RECOGNITION) contentViews.add(posInWrapper, new SelectVoiceRecognitionView(this));
-		// else if (object.getString(App.TYPE).equals(App.FOLDER))
-		// contentViews.add(posInWrapper, new ItemView(this, openObjectId));
-		// else if (object.getString(App.TYPE).equals(App.NOTE))
-		// contentViews.add(posInWrapper, new NoteView(this, openObjectId));
+		if (id == SettingsView.SELECT_VOICE_RECOGNITION) contentViews.add(posInWrapper, new SelectLanguage(this, App.SETTINGS_VOICE_RECOGNITION_LANGUAGE));
+		else if (id == SettingsView.SELECT_APP_LANGUAGE) contentViews.add(posInWrapper, new SelectLanguage(this, App.SETTINGS_APP_LANGUAGE));
 
-		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, App.ANIMATION_DURATION);
+		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, (animate) ? App.ANIMATION_DURATION : 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 		backButton.setVisibility(View.VISIBLE);
@@ -1054,10 +1065,32 @@ public class MainActivity extends FlyInFragmentActivity {
 		Configuration c = r.getConfiguration();
 		c.locale = l;
 		r.updateConfiguration(c, dm);
+		
+		editor.put(App.LANGUAGE, lang);
 
 		Intent refresh = new Intent(this, MainActivity.class);
+		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, App.SETTINGS);
 		startActivity(refresh);
+	}
+	
+	public Locale getLocale() {
+		String lang = prefs.getString(App.LANGUAGE, "");
+		Log.i("asdasd", lang);
+		Configuration c = getBaseContext().getResources().getConfiguration();
+		if(!lang.equals("") && !c.locale.getLanguage().equals(lang)) return new Locale(lang);
+		
+		return null;
+	}
+	
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		
+		Locale l = getLocale();
+		if(l == null) return;
+		newConfig.locale = l;
+		Locale.setDefault(l);
+		getBaseContext().getResources().updateConfiguration(newConfig, getBaseContext().getResources().getDisplayMetrics());
 	}
 
 	public void changeTheme(String theme) {

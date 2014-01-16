@@ -16,4 +16,10 @@
         android:layout_height="wrap_content"
         android:text="Set voice lang" />
 
+    <Button
+        android:id="@+id/textLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set app lang" />
+
 </LinearLayout>

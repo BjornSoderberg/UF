@@ -108,6 +108,7 @@ public final class R {
         public static int day_of_week_label_typeface=0x7f050012;
         public static int day_picker_description=0x7f05000c;
         /**  Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] 
+ Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] 
          */
         public static int deleted_key=0x7f050015;
         public static int done_label=0x7f05000a;
@@ -116,10 +117,20 @@ public final class R {
          selectable hours of the day along the inside edge of a circle, as in an analog clock.
          [CHAR LIMIT=50]
     
+
+         Content description for the hour selector in the time picker, which displays
+         selectable hours of the day along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    
          */
         public static int hour_picker_description=0x7f050016;
         public static int item_is_selected=0x7f050010;
         /** 
+         Content description for the minute selector in the time picker, which displays
+         selectable five-minute intervals along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    
+
          Content description for the minute selector in the time picker, which displays
          selectable five-minute intervals along the inside edge of a circle, as in an analog clock.
          [CHAR LIMIT=50]

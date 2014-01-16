@@ -123,7 +123,7 @@ public class ItemAdapter extends BaseAdapter {
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
 
-		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) text.setText(item.getTitle() + " - " + itemView.getActivity().getResources().getString(R.string.over_due));
+		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) text.setText(item.getTitle() + " - " + itemView.getActivity().getResources().getString(R.string.overdue));
 		else text.setText(item.getTitle());
 
 		// Is prio

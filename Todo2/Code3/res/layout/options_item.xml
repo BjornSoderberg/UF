@@ -12,13 +12,13 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/item_text_padding_left"
         android:layout_toLeftOf="@+id/item_drag"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:layout_marginLeft="@dimen/item_text_padding_left"
+        android:text="@string/no_name"
         android:paddingLeft="@dimen/item_text_padding_left"
         android:singleLine="true"
-        android:text="No name"
         android:textColor="#585858"
         android:textSize="@dimen/item_text_size" />
 

@@ -17,30 +17,27 @@ import com.todo.code3.R;
 import com.todo.code3.misc.App;
 import com.todo.code3.view.ContentView;
 
-public class SelectVoiceRecognitionView extends ContentView {
+public class SelectLanguage extends ContentView {
 
 	private ListView listView;
 	private Adapter adapter;
 
 	private String[] languages;
 	private String[] values;
+	
+	private String type;
 
-	public SelectVoiceRecognitionView(MainActivity activity) {
+	public SelectLanguage(MainActivity activity, String type) {
 		super(activity, 0);
+		this.type = type;
+		init();
 	}
 
 	protected void init() {
 		LayoutInflater.from(getContext()).inflate(R.layout.select_language_view, this, true);
 
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
-
-		languages = new String[2];
-		languages[0] = "Svenska";
-		languages[1] = "English";
-
-		values = new String[2];
-		values[0] = "sv_SE";
-		values[1] = "en_US";
+		initLanguages();
 
 		adapter = new Adapter();
 
@@ -48,11 +45,32 @@ public class SelectVoiceRecognitionView extends ContentView {
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				activity.saveSetting(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE, values[position]);
+				if(type.equals(App.SETTINGS_APP_LANGUAGE)) activity.setLocale(values[position]);
+				else activity.saveSetting(type, values[position]);
 			}
 		});
 
 		setColors();
+	}
+	
+	private void initLanguages() {
+		if(type.equals(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE)) {
+			languages = new String[2];
+			languages[0] = "Svenska";
+			languages[1] = "English";
+
+			values = new String[2];
+			values[0] = "sv_SE";
+			values[1] = "en_US";
+		} else if(type.equals(App.SETTINGS_APP_LANGUAGE)) {
+			languages = new String[2];
+			languages[0] = "Svenska";
+			languages[1] = "English";
+
+			values = new String[2];
+			values[0] = "sv";
+			values[1] = "en";
+		}
 	}
 
 	public void setColors() {
@@ -76,7 +94,6 @@ public class SelectVoiceRecognitionView extends ContentView {
 	}
 
 	class Adapter extends BaseAdapter {
-
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 
 		public int getCount() {

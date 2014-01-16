@@ -24,14 +24,14 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:text="@string/save"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/descTV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Tap to write a description" />
+            android:hint="@string/tap_to_write_a_description" />
 
         <EditText
             android:id="@+id/focusDummy"
@@ -64,26 +64,26 @@
                     android:id="@+id/dueButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Set due date" />
+                    android:hint="@string/set_due_date" />
 
                 <Button
                     android:id="@+id/clearDue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    android:text="Remove due date" />
+                    android:hint="@string/remove_due_date" />
 
                 <Button
                     android:id="@+id/reminderButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Set custom reminder" />
+                    android:hint="@string/set_custom_reminder" />
 
                 <Button
                     android:id="@+id/clearReminder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Remove reminder" />
+                    android:hint="@string/remove_reminder" />
 
                 <ListView
                     android:id="@+id/customReminderList"
@@ -112,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    android:text="Set monthly reminder" />
+                    android:hint="@string/set_monthly_reminder" />
 
                 <LinearLayout
                     android:id="@+id/daysOfWeekContainer"

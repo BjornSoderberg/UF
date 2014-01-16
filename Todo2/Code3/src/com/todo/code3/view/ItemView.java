@@ -48,6 +48,7 @@ public class ItemView extends ContentView {
 
 	public ItemView(MainActivity activity, int parentId) {
 		super(activity, parentId);
+		init();
 	}
 
 	protected void init() {

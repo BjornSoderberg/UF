@@ -47,5 +47,15 @@
     <string name="move">Move</string>
     <string name="edit">Edit</string>
     <string name="press_me_to_speak">Press me to speak</string>
-    <string name="over_due">Over due</string>
+    <string name="overdue">Overdue</string>
+    <string name="no_name">No name</string>
+    <string name="title">Title</string>
+    <string name="save">Save</string>
+    <string name="tap_to_write_a_description">Tap to write a description</string>
+    <string name="remove_due_date">Remove due date</string>
+    <string name="remove_reminder">Remove reminder</string>
+    <string name="set_custom_reminder">Set custom reminder</string>
+    <string name="set_monthly_reminder">Set monthly reminder</string>
+    
+    <!-- Don't forget to translate DateTimePickerLibrary strings as well -->
 </resources>

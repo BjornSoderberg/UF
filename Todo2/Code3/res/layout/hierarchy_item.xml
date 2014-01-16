@@ -12,11 +12,10 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/item_padding_leftright"
-        android:layout_toLeftOf="@+id/item_checkbox"
         android:ellipsize="end"
         android:paddingLeft="@dimen/item_text_padding_left"
         android:singleLine="true"
-        android:text="No name"
+        android:text="@string/no_name"
         android:textColor="#585858"
         android:textSize="@dimen/item_text_size" />
 

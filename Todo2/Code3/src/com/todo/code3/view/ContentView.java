@@ -17,8 +17,6 @@ public abstract class ContentView extends LinearLayout {
 		super(activity);
 		this.activity = activity;
 		this.parentId = parentId;
-		
-		init();
 	}
 
 	protected abstract void init();
