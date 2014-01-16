@@ -2,15 +2,16 @@
 <resources>
     <string name="app_name">NextTask</string>
     
-    <string name="select_voice_recognition_language">Välj röstigenkänningsspråk</string>
+    <string name="set_voice_recognition_language">Välj röstigenkänningsspråk</string>
+    <string name="set_language">Välj språk</string>
     <string name="prioritized">Prioriterad</string>
     <string name="created">Skapad</string>
     <string name="completed">Avklarad</string>
     <string name="alphabetically">Alfabetiskt</string>
     <string name="due_date">Förfallodatum</string>
-    <string name="include_subtasks">Inkludera underuppgifter</string>
+    <string name="include_subitems">Inkludera underuppgifter</string>
     <string name="settings">Inställningar</string>
-    <string name="add_new_folder">Lägg till ny mapp</string>
+    <string name="add_new_folder">Skapa ny mapp</string>
     <string name="add">Lägg till</string>
     <string name="add_new">Lägg till ny</string>
     <string name="select_type">Välj typ</string>

@@ -1,8 +1,11 @@
 package com.todo.code3.view.settings;
 
+import java.util.Locale;
+
 import org.json.JSONObject;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,23 +57,19 @@ public class SelectLanguage extends ContentView {
 	}
 	
 	private void initLanguages() {
-		if(type.equals(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE)) {
-			languages = new String[2];
+		if(type.equals(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE) || type.equals(App.SETTINGS_APP_LANGUAGE)) {
+			languages = new String[3];
+			values = new String[3];
+			
 			languages[0] = "Svenska";
 			languages[1] = "English";
-
-			values = new String[2];
-			values[0] = "sv_SE";
-			values[1] = "en_US";
-		} else if(type.equals(App.SETTINGS_APP_LANGUAGE)) {
-			languages = new String[2];
-			languages[0] = "Svenska";
-			languages[1] = "English";
-
-			values = new String[2];
+			languages[2] = "Deutsch";
 			values[0] = "sv";
 			values[1] = "en";
-		}
+			values[2] = "de";
+		} 
+		
+		Log.i("asdasd", Locale.GERMAN.toString() + "");
 	}
 
 	public void setColors() {

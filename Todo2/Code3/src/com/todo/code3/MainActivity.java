@@ -133,7 +133,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (getIntent().hasExtra(App.OPEN)) {
 			if (getIntent().getIntExtra(App.OPEN, -1) == App.SETTINGS) {
 				openSettings();
-				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.select_speech_recognition_language), false);
+				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_voice_recognition_language), false);
 			} else openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
 		}
 	}
@@ -247,7 +247,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				r.getString(R.string.completed), //
 				r.getString(R.string.alphabetically),//
 				r.getString(R.string.due_date), //
-				r.getString(R.string.include_subtasks) };
+				r.getString(R.string.include_subitems) };
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -269,6 +269,8 @@ public class MainActivity extends FlyInFragmentActivity {
 				updateData();
 			}
 		});
+		
+		sortSpinner.setVisibility(View.GONE);
 
 		// Just for testing
 		Button b = new Button(this);
@@ -774,6 +776,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (isInSettings()) {
 			scroller.startScroll(currentContentOffset, 0, getContentWidth(), 0, App.ANIMATION_DURATION);
 			scrollHandler.postDelayed(scrollRunnable, scrollFps);
+
+			setTitle(getResources().getString(R.string.settings));
 
 			if (contentViews.size() > posInWrapper) contentViews.get(posInWrapper).leave();
 			posInWrapper--;
