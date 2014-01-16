@@ -13,6 +13,11 @@ public class SPEditor {
 //		editor.commit();
 	}
 	
+	public void put(String key, boolean value) {
+		editor.putBoolean(key, value);
+		editor.commit();
+	}
+	
 	public void put(String key, String value) {
 		editor.putString(key, value);
 		editor.commit();

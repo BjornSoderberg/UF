@@ -67,6 +67,7 @@ public class App {
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";
 	public static final String SETTINGS_VOICE_RECOGNITION_LANGUAGE = "settingsVoiceRecognitionLanguage";
 	public static final String SETTINGS_APP_LANGUAGE = "settingsAppLanguage";
+	public static final String SETTINGS_24_HOUR_CLOCK = "settings24HourClock";
 	
 	public static final int MIN_API_FOR_VOICE_RECOGNITION = 8;
 	

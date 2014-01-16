@@ -9,6 +9,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Toggle theme" />
+    <ToggleButton
+        android:id="@+id/clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is 24h clock?" />
 
     <Button
         android:id="@+id/voiceRecogLang"

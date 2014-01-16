@@ -1056,6 +1056,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	public boolean isDarkTheme() {
 		return getColorTheme().equals(App.SETTINGS_THEME_DARK);
 	}
+	
+	public boolean is24HourMode() {
+		return prefs.getBoolean(App.SETTINGS_24_HOUR_CLOCK, true);
+	}
 
 	// not tested yet
 	public void setLocale(String lang) {
@@ -1098,6 +1102,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		for (ContentView i : contentViews)
 			i.setColors();
+	}
+	
+	public void saveSetting(String settingName, boolean settingValue) {
+		editor.put(settingName, settingValue);
 	}
 
 	public void saveSetting(String settingName, String settingValue) {

@@ -136,7 +136,7 @@ public class DateAndTimeDialog {
 	}
 
 	private void showTimePicker() {
-		TimePickerDialog t = TimePickerDialog.newInstance(tsl, showHour, showMinute, true);
+		TimePickerDialog t = TimePickerDialog.newInstance(tsl, showHour, showMinute, activity.is24HourMode());
 		t.show(activity.getSupportFragmentManager(), "timepicker");
 	}
 

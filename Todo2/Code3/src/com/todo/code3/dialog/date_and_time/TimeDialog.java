@@ -26,7 +26,7 @@ public class TimeDialog {
 		};
 		
 		Calendar c = Calendar.getInstance();
-		TimePickerDialog t = TimePickerDialog.newInstance(tsl,  c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true);
+		TimePickerDialog t = TimePickerDialog.newInstance(tsl,  c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), activity.is24HourMode());
 		t.show(activity.getSupportFragmentManager(), "timepicker");
 	}
 

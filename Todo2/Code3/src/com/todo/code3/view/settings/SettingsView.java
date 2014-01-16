@@ -35,9 +35,16 @@ public class SettingsView extends ContentView {
 				else activity.changeTheme(App.SETTINGS_THEME_DARK);
 			}
 		});
+		
+		final ToggleButton bb = (ToggleButton) findViewById(R.id.clock);
+		bb.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				activity.saveSetting(App.SETTINGS_24_HOUR_CLOCK, bb.isChecked());
+			}
+		});
 
-		if (activity.isDarkTheme()) b.setChecked(false);
-		else b.setChecked(true);
+		b.setChecked(!activity.isDarkTheme());
+		bb.setChecked(activity.is24HourMode());
 
 		Button asd = (Button) findViewById(R.id.voiceRecogLang);
 		asd.setOnClickListener(new OnClickListener() {
@@ -45,7 +52,7 @@ public class SettingsView extends ContentView {
 				activity.openSettingsItem(SELECT_VOICE_RECOGNITION, getContext().getResources().getString(R.string.set_voice_recognition_language));
 			}
 		});
-		
+
 		Button asdf = (Button) findViewById(R.id.textLang);
 		asdf.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
