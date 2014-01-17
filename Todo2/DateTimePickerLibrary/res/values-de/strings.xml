@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="http://schemas.android.com/apk/res/android">
+    <string name="done_label">Erledigt</string>
+    <string name="cancel_label">Abbrechen</string>
+    <string name="day_picker_description">Zeitraster</string>
+    <string name="year_picker_description">Jahrliste</string>
+    <string name="select_day">Wähle Monat und Tag</string>
+    <string name="select_year">Wähle Jahr</string>
+    <string name="item_is_selected">%1$s gewählt</string>
+
+    <!-- Accessibility announcement when a number that had been typed in is deleted [CHAR_LIMIT=NONE] -->
+    <string name="deleted_key"><xliff:g id="key" example="4">%1$s</xliff:g> entfernt</string>
+    <!--
+         Content description for the hour selector in the time picker, which displays
+         selectable hours of the day along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    -->
+    <string name="hour_picker_description">Drehregler für Stunden</string>
+    <!--
+         Content description for the minute selector in the time picker, which displays
+         selectable five-minute intervals along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    -->
+    <string name="minute_picker_description">Drehregler für Minuten</string>
+    <string name="select_hours">Wähle Stunde</string>
+    <string name="select_minutes">Wähle Minute</string>
+</resources>

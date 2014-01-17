@@ -89,7 +89,7 @@ public class ItemView extends ContentView {
 	public void setColors() {
 		Resources r = activity.getResources();
 		boolean dark = activity.isDarkTheme();
-		listView.setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+		listView.setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.background_color_light));
 		listView.setDivider((dark) ? r.getDrawable(R.color.divider_color_dark) : r.getDrawable(R.color.divider_color_light));
 		listView.setDividerHeight(r.getDimensionPixelSize(R.dimen.divider_height));
 	}
