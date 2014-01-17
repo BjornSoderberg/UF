@@ -46,7 +46,7 @@ public class SettingsView extends ContentView {
 		b.setChecked(!activity.isDarkTheme());
 		bb.setChecked(activity.is24HourMode());
 
-		// Set visible over api 8 (edit in layouts (layout-v8)
+		// Set visible over api 8 (edit in layouts (layout-v8))
 		Button asd = (Button) findViewById(R.id.voiceRecogLang);
 		asd.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {

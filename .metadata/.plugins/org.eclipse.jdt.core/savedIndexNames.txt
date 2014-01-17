@@ -1,4 +1,0 @@
-INDEX VERSION 1.126+C:\Users\23bjosod\Dropbox\UF\Kod\UF\.metadata\.plugins\org.eclipse.jdt.core
-2205663359.index
-3449984365.index
-1822708526.index
