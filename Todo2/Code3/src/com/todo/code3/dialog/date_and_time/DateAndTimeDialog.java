@@ -123,20 +123,20 @@ public class DateAndTimeDialog {
 		try {
 			if (type.equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
 				int due[] = App.getDueDate(object.getLong(App.DUE_DATE));
-				d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, due[0], due[1], due[2]);
+				d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, due[0], due[1], due[2], activity.isDarkTheme());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		if (d == null) d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay);
+		if (d == null) d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, activity.isDarkTheme());
 
 		d.setYearRange(Calendar.getInstance().get(Calendar.YEAR) - 1, 2037);
 		d.show(activity.getSupportFragmentManager(), "datepicker");
 	}
 
 	private void showTimePicker() {
-		TimePickerDialog t = TimePickerDialog.newInstance(tsl, showHour, showMinute, activity.is24HourMode());
+		TimePickerDialog t = TimePickerDialog.newInstance(tsl, showHour, showMinute, activity.is24HourMode(), activity.isDarkTheme());
 		t.show(activity.getSupportFragmentManager(), "timepicker");
 	}
 

@@ -1,4 +1,5 @@
 package com.sleepbot.datetimepicker.time;
+
 /*
  * Copyright (C) 2013 The Android Open Source Project
  *
@@ -28,83 +29,85 @@ import com.fourmob.datetimepicker.R;
  * Draws a simple white circle on which the numbers will be drawn.
  */
 public class CircleView extends View {
-    private static final String TAG = "CircleView";
+	private static final String TAG = "CircleView";
 
-    private final Paint mPaint = new Paint();
-    private boolean mIs24HourMode;
-    private int mWhite;
-    private int mBlack;
-    private float mCircleRadiusMultiplier;
-    private float mAmPmCircleRadiusMultiplier;
-    private boolean mIsInitialized;
+	private final Paint mPaint = new Paint();
+	private boolean mIs24HourMode;
+	private int mBackground;
+	private int mBlack;
+	private float mCircleRadiusMultiplier;
+	private float mAmPmCircleRadiusMultiplier;
+	private boolean mIsInitialized;
 
-    private boolean mDrawValuesReady;
-    private int mXCenter;
-    private int mYCenter;
-    private int mCircleRadius;
+	private boolean mDrawValuesReady;
+	private int mXCenter;
+	private int mYCenter;
+	private int mCircleRadius;
 
-    public CircleView(Context context) {
-        super(context);
+	public CircleView(Context context) {
+		super(context);
 
-        Resources res = context.getResources();
-        mWhite = res.getColor(R.color.white);
-        mBlack = res.getColor(R.color.numbers_text_color);
-        mPaint.setAntiAlias(true);
+		Resources res = context.getResources();
+		mBlack = res.getColor(R.color.numbers_text_color);
+		mPaint.setAntiAlias(true);
 
-        mIsInitialized = false;
-    }
+		mIsInitialized = false;
+	}
 
-    public void initialize(Context context, boolean is24HourMode) {
-        if (mIsInitialized) {
-            Log.e(TAG, "CircleView may only be initialized once.");
-            return;
-        }
+	public void initialize(Context context, boolean is24HourMode) {
+		if (mIsInitialized) {
+			Log.e(TAG, "CircleView may only be initialized once.");
+			return;
+		}
 
-        Resources res = context.getResources();
-        mIs24HourMode = is24HourMode;
-        if (is24HourMode) {
-            mCircleRadiusMultiplier = Float.parseFloat(
-                    res.getString(R.string.circle_radius_multiplier_24HourMode));
-        } else {
-            mCircleRadiusMultiplier = Float.parseFloat(
-                    res.getString(R.string.circle_radius_multiplier));
-            mAmPmCircleRadiusMultiplier =
-                    Float.parseFloat(res.getString(R.string.ampm_circle_radius_multiplier));
-        }
+		Resources res = context.getResources();
+		mIs24HourMode = is24HourMode;
+		if (is24HourMode) {
+			mCircleRadiusMultiplier = Float.parseFloat(res.getString(R.string.circle_radius_multiplier_24HourMode));
+		} else {
+			mCircleRadiusMultiplier = Float.parseFloat(res.getString(R.string.circle_radius_multiplier));
+			mAmPmCircleRadiusMultiplier = Float.parseFloat(res.getString(R.string.ampm_circle_radius_multiplier));
+		}
 
-        mIsInitialized = true;
-    }
+		mIsInitialized = true;
+	}
 
+	public void setBackground(boolean dark) {
+		if (dark) mBackground = getResources().getColor(R.color.gray);
+		else mBackground = getResources().getColor(R.color.white);
+	}
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        int viewWidth = getWidth();
-        if (viewWidth == 0 || !mIsInitialized) {
-            return;
-        }
+	@Override
+	public void onDraw(Canvas canvas) {
+		int viewWidth = getWidth();
+		if (viewWidth == 0 || !mIsInitialized) {
+			return;
+		}
 
-        if (!mDrawValuesReady) {
-            mXCenter = getWidth() / 2;
-            mYCenter = getHeight() / 2;
-            mCircleRadius = (int) (Math.min(mXCenter, mYCenter) * mCircleRadiusMultiplier);
+		if (!mDrawValuesReady) {
+			mXCenter = getWidth() / 2;
+			mYCenter = getHeight() / 2;
+			mCircleRadius = (int) (Math.min(mXCenter, mYCenter) * mCircleRadiusMultiplier);
 
-            if (!mIs24HourMode) {
-                // We'll need to draw the AM/PM circles, so the main circle will need to have
-                // a slightly higher center. To keep the entire view centered vertically, we'll
-                // have to push it up by half the radius of the AM/PM circles.
-                int amPmCircleRadius = (int) (mCircleRadius * mAmPmCircleRadiusMultiplier);
-                mYCenter -= amPmCircleRadius / 2;
-            }
+			if (!mIs24HourMode) {
+				// We'll need to draw the AM/PM circles, so the main circle will
+				// need to have
+				// a slightly higher center. To keep the entire view centered
+				// vertically, we'll
+				// have to push it up by half the radius of the AM/PM circles.
+				int amPmCircleRadius = (int) (mCircleRadius * mAmPmCircleRadiusMultiplier);
+				mYCenter -= amPmCircleRadius / 2;
+			}
 
-            mDrawValuesReady = true;
-        }
+			mDrawValuesReady = true;
+		}
 
-        // Draw the white circle.
-        mPaint.setColor(mWhite);
-        canvas.drawCircle(mXCenter, mYCenter, mCircleRadius, mPaint);
+		// Draw the white circle.
+		mPaint.setColor(mBackground);
+		canvas.drawCircle(mXCenter, mYCenter, mCircleRadius, mPaint);
 
-        // Draw a small black circle in the center.
-        mPaint.setColor(mBlack);
-        canvas.drawCircle(mXCenter, mYCenter, 2, mPaint);
-    }
+		// Draw a small black circle in the center.
+		mPaint.setColor(mBlack);
+		canvas.drawCircle(mXCenter, mYCenter, 2, mPaint);
+	}
 }

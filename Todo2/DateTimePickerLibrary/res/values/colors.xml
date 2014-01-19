@@ -16,4 +16,9 @@
     <color name="numbers_text_color">#8c8c8c</color>
 
     <color name="transparent_black">#7F000000</color>
+    
+    <color name="gray">#ff444444</color>
+    <color name="dark_gray">#ff393939</color>
+    <color name="line_background_dark">#ff666666</color>
+    <color name="numbers_text_color_light">#acacac</color>
 </resources>

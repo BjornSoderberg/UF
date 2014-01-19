@@ -4,11 +4,11 @@ import org.acra.*;
 import org.acra.annotation.*;
 
 // Change formUri when the server is set up
-@ReportsCrashes(formKey = "", formUri = "http://www.backendofyourchoice.com/reportpath")
+//@ReportsCrashes(formKey = "", formUri = "http://www.backendofyourchoice.com/reportpath")
 public class Application extends android.app.Application {
 	public void onCreate() {
 		super.onCreate();
-		ACRA.init(this);
+//		ACRA.init(this);
 	}
 
 	// Use this php code to save the information. Implement this when the server is set up.

@@ -109,6 +109,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 
 	// Enable/Disable Vibrations
 	private boolean mVibrate = false;
+	private boolean mDark = false;
 
 	/**
 	 * The callback interface used to indicate the user is done filling in the
@@ -131,17 +132,17 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 		// Empty constructor required for dialog fragment. DO NOT REMOVE
 	}
 
-	public static TimePickerDialog newInstance(OnTimeSetListener callback, int hourOfDay, int minute, boolean is24HourMode) {
-		return newInstance(callback, hourOfDay, minute, is24HourMode, false);
+	public static TimePickerDialog newInstance(OnTimeSetListener callback, int hourOfDay, int minute, boolean is24HourMode, boolean dark) {
+		return newInstance(callback, hourOfDay, minute, is24HourMode, false, dark);
 	}
 
-	public static TimePickerDialog newInstance(OnTimeSetListener callback, int hourOfDay, int minute, boolean is24HourMode, boolean vibrate) {
+	public static TimePickerDialog newInstance(OnTimeSetListener callback, int hourOfDay, int minute, boolean is24HourMode, boolean vibrate, boolean dark) {
 		TimePickerDialog ret = new TimePickerDialog();
-		ret.initialize(callback, hourOfDay, minute, is24HourMode, vibrate);
+		ret.initialize(callback, hourOfDay, minute, is24HourMode, vibrate, dark);
 		return ret;
 	}
 
-	public void initialize(OnTimeSetListener callback, int hourOfDay, int minute, boolean is24HourMode, boolean vibrate) {
+	public void initialize(OnTimeSetListener callback, int hourOfDay, int minute, boolean is24HourMode, boolean vibrate, boolean dark) {
 		mCallback = callback;
 
 		mInitialHourOfDay = hourOfDay;
@@ -149,6 +150,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 		mIs24HourMode = is24HourMode;
 		mInKbMode = false;
 		mVibrate = vibrate;
+		mDark = dark;
 	}
 
 	public void setOnTimeSetListener(OnTimeSetListener callback) {
@@ -175,6 +177,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 			mIs24HourMode = savedInstanceState.getBoolean(KEY_IS_24_HOUR_VIEW);
 			mInKbMode = savedInstanceState.getBoolean(KEY_IN_KB_MODE);
 			mVibrate = savedInstanceState.getBoolean(KEY_VIBRATE);
+			mDark = savedInstanceState.getBoolean("dark");
 		}
 	}
 
@@ -224,6 +227,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 		mPmText = amPmTexts[1];
 
 		mTimePicker = (RadialPickerLayout) view.findViewById(R.id.time_picker);
+		mTimePicker.isDark(mDark);
 		mTimePicker.setOnValueSelectedListener(this);
 		mTimePicker.setOnKeyListener(keyboardListener);
 		mTimePicker.initialize(getActivity(), mInitialHourOfDay, mInitialMinute, mIs24HourMode, mVibrate);
@@ -319,8 +323,31 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 		} else if (mTypedTimes == null) {
 			mTypedTimes = new ArrayList<Integer>();
 		}
+		
+		setColors(view);
 
 		return view;
+	}
+	
+	private void setColors(View parent) {
+		if(!mDark) return;
+		Resources r = getResources();
+//		mHourView.setBackgroundColor(r.getColor(R.color.dark_gray));
+//		mHourView.setVisibility(View.GONE);
+		
+		parent.findViewById(R.id.time_header).setBackgroundColor(r.getColor(R.color.gray));
+		parent.findViewById(R.id.time_picker_dialog).setBackgroundColor(r.getColor(R.color.dark_gray));
+		parent.findViewById(R.id.time_footer).setBackgroundColor(r.getColor(R.color.gray));
+		parent.findViewById(R.id.line_separator).setBackgroundColor(r.getColor(R.color.line_background_dark));
+		
+		/*mHourView = (TextView) view.findViewById(R.id.hours);
+		mHourView.setOnKeyListener(keyboardListener);
+		mHourSpaceView = (TextView) view.findViewById(R.id.hour_space);
+		mMinuteSpaceView = (TextView) view.findViewById(R.id.minutes_space);
+		mMinuteView = (TextView) view.findViewById(R.id.minutes);
+		mMinuteView.setOnKeyListener(keyboardListener);
+		mAmPmTextView = (TextView) view.findViewById(R.id.ampm_label);
+		mAmPmTextView.setOnKeyListener(keyboardListener);*/
 	}
 
 	private void updateAmPmDisplay(int amOrPm) {
@@ -349,6 +376,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 				outState.putIntegerArrayList(KEY_TYPED_TIMES, mTypedTimes);
 			}
 			outState.putBoolean(KEY_VIBRATE, mVibrate);
+			outState.putBoolean("dark", mDark);
 		}
 	}
 

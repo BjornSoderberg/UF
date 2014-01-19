@@ -93,6 +93,8 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
 
     private AnimatorSet mTransition;
     private Handler mHandler = new Handler();
+    
+    private boolean mDark = false;
 
     public interface OnValueSelectedListener {
         void onValueSelected(int pickerIndex, int newValue, boolean autoAdvance);
@@ -143,6 +145,11 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
         mTimeInitialized = false;
     }
 
+    public void isDark(boolean dark) {
+    	mDark = dark;
+    	mCircleView.setBackground(mDark);
+    }
+    
     /**
      * Measure the view to end up as a square, based on the minimum of the height and width.
      */
@@ -524,7 +531,8 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
      *
      * @param animate True to animate the transition, false to show with no animation.
      */
-    public void setCurrentItemShowing(int index, boolean animate) {
+    @SuppressLint("NewApi")
+	public void setCurrentItemShowing(int index, boolean animate) {
         if (index != HOUR_INDEX && index != MINUTE_INDEX) {
             Log.e(TAG, "TimePicker does not support view at index " + index);
             return;
@@ -773,7 +781,8 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
      * Necessary for accessibility, to ensure we support "scrolling" forward and backward
      * in the circle.
      */
-    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    @SuppressLint("NewApi")
+	public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         if (Build.VERSION.SDK_INT >= 14) {
             super.onInitializeAccessibilityNodeInfo(info);
             info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);

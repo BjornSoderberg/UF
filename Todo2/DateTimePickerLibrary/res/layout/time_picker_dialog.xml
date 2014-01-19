@@ -23,6 +23,7 @@
     android:orientation="vertical" >
 
     <FrameLayout
+        android:id="@+id/time_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white" >
@@ -43,11 +44,13 @@
         android:focusableInTouchMode="true" />
 
     <View
+        android:id="@+id/line_separator"
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="@color/line_background" />
 
     <LinearLayout
+        android:id="@+id/time_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

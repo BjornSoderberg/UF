@@ -22,9 +22,11 @@ public class YearPickerView extends ListView implements AdapterView.OnItemClickL
 	private final DatePickerController mController;
 	private TextViewWithCircularIndicator mSelectedView;
 	private int mViewSize;
+	private boolean mDark = false;
 
-	public YearPickerView(Context context, DatePickerController datePickerController) {
+	public YearPickerView(Context context, DatePickerController datePickerController, boolean dark) {
 		super(context);
+		mDark = dark;
 		this.mController = datePickerController;
 		this.mController.registerOnDateChangedListener(this);
 		setLayoutParams(new ViewGroup.LayoutParams(-1, -2));
@@ -51,12 +53,12 @@ public class YearPickerView extends ListView implements AdapterView.OnItemClickL
 		}
 		this.mAdapter = new YearAdapter(context, R.layout.year_label_text_view, years);
 		setAdapter(this.mAdapter);
+		setVerticalScrollBarEnabled(false);
 	}
 
 	public int getFirstPositionOffset() {
 		View view = getChildAt(0);
-		if (view == null)
-			return 0;
+		if (view == null) return 0;
 		return view.getTop();
 	}
 
@@ -64,7 +66,6 @@ public class YearPickerView extends ListView implements AdapterView.OnItemClickL
 		this.mAdapter.notifyDataSetChanged();
 		postSetSelectionCentered(this.mController.getSelectedDay().year - this.mController.getMinYear());
 	}
-
 
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		this.mController.tryVibrate();
@@ -108,7 +109,8 @@ public class YearPickerView extends ListView implements AdapterView.OnItemClickL
 
 			int year = getYearFromTextView(textViewWithCircularIndicator);
 			textViewWithCircularIndicator.drawIndicator(YearPickerView.this.mController.getSelectedDay().year == year);
-			
+
+			if (mDark) textViewWithCircularIndicator.setBackgroundColor(getResources().getColor(R.color.dark_gray));
 			return textViewWithCircularIndicator;
 		}
 	}

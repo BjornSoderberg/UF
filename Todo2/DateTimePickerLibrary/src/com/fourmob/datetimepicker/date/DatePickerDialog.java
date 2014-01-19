@@ -62,6 +62,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 	private static int dueYear = -1, dueMonth = -1, dueDay = -1;
 
 	private boolean mVibrate = false;
+	private boolean mDark = false;
 
 	private void adjustDayInMonthIfNeeded(int month, int year) {
 		int currentDay = this.mCalendar.get(Calendar.DAY_OF_MONTH);
@@ -72,18 +73,18 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 	public DatePickerDialog() {
 		// Empty constructor required for dialog fragment. DO NOT REMOVE
 	}
-	
-	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day) {
-		return newInstance(onDateSetListener, year, month, day, -1, -1, -1, false);
+
+	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, boolean dark) {
+		return newInstance(onDateSetListener, year, month, day, -1, -1, -1, false, dark);
 	}
 
-	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, int dueYear, int dueMonth, int dueDay) {
-		return newInstance(onDateSetListener, year, month, day, dueYear, dueMonth, dueDay, false);
+	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, int dueYear, int dueMonth, int dueDay, boolean dark) {
+		return newInstance(onDateSetListener, year, month, day, dueYear, dueMonth, dueDay, false, dark);
 	}
 
-	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, int dueYear, int dueMonth, int dueDay, boolean vibrate) {
+	public static DatePickerDialog newInstance(OnDateSetListener onDateSetListener, int year, int month, int day, int dueYear, int dueMonth, int dueDay, boolean vibrate, boolean dark) {
 		DatePickerDialog datePickerDialog = new DatePickerDialog();
-		datePickerDialog.initialize(onDateSetListener, year, month, day, vibrate);
+		datePickerDialog.initialize(onDateSetListener, year, month, day, vibrate, dark);
 		setDueDate(dueYear, dueMonth, dueDay);
 		return datePickerDialog;
 	}
@@ -178,7 +179,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 		return new SimpleMonthAdapter.CalendarDay(this.mCalendar);
 	}
 
-	public void initialize(OnDateSetListener onDateSetListener, int year, int month, int day, boolean vibrate) {
+	public void initialize(OnDateSetListener onDateSetListener, int year, int month, int day, boolean vibrate, boolean dark) {
 		if (year > MAX_YEAR) throw new IllegalArgumentException("year end must < " + MAX_YEAR);
 		if (year < MIN_YEAR) throw new IllegalArgumentException("year end must > " + MIN_YEAR);
 		this.mCallBack = onDateSetListener;
@@ -186,6 +187,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 		this.mCalendar.set(Calendar.MONTH, month);
 		this.mCalendar.set(Calendar.DAY_OF_MONTH, day);
 		this.mVibrate = vibrate;
+		this.mDark = dark;
 	}
 
 	public void onClick(View view) {
@@ -204,11 +206,11 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 			this.mCalendar.set(Calendar.MONTH, bundle.getInt("month"));
 			this.mCalendar.set(Calendar.DAY_OF_MONTH, bundle.getInt("day"));
 			this.mVibrate = bundle.getBoolean("vibrate");
+			this.mDark = bundle.getBoolean("dark");
 		}
 	}
 
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup parent, Bundle bundle) {
-		Log.d("DatePickerDialog", "onCreateView: ");
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		View view = layoutInflater.inflate(R.layout.date_picker_dialog, null);
 		this.mDayOfWeekView = ((TextView) view.findViewById(R.id.date_picker_header));
@@ -231,7 +233,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 		}
 		Activity activity = getActivity();
 		this.mDayPickerView = new DayPickerView(activity, this, dueYear, dueMonth, dueDay);
-		this.mYearPickerView = new YearPickerView(activity, this);
+		this.mYearPickerView = new YearPickerView(activity, this, mDark);
 		Resources resources = getResources();
 		this.mDayPickerDescription = resources.getString(R.string.day_picker_description);
 		this.mSelectDay = resources.getString(R.string.select_day);
@@ -274,7 +276,32 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 				this.mYearPickerView.postSetSelectionFromTop(listPosition, listPositionOffset);
 			}
 		}
+
+		setColors(view);
+
 		return view;
+	}
+
+	private void setColors(View view) {
+		if (!mDark) return;
+
+		Resources r = getResources();
+		mDayPickerView.setBackgroundColor(r.getColor(R.color.dark_gray));
+		
+		view.findViewById(R.id.date_background).setBackgroundColor(r.getColor(R.color.gray));
+		view.findViewById(R.id.line_separator).setBackgroundColor(r.getColor(R.color.line_background_dark));
+
+		/*
+		 * this.mDayOfWeekView = ((TextView)
+		 * view.findViewById(R.id.date_picker_header)); this.mMonthAndDayView =
+		 * ((LinearLayout) view.findViewById(R.id.date_picker_month_and_day));
+		 * this.mMonthAndDayView.setOnClickListener(this);
+		 * this.mSelectedMonthTextView = ((TextView)
+		 * view.findViewById(R.id.date_picker_month)); this.mSelectedDayTextView
+		 * = ((TextView) view.findViewById(R.id.date_picker_day));
+		 * this.mYearView = ((TextView)
+		 * view.findViewById(R.id.date_picker_year));
+		 */
 	}
 
 	public void onDayOfMonthSelected(int year, int month, int day) {
@@ -302,6 +329,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 			bundle.putInt("list_position_offset", this.mYearPickerView.getFirstPositionOffset());
 		}
 		bundle.putBoolean("vibrate", this.mVibrate);
+		bundle.putBoolean("dark", this.mDark);
 	}
 
 	public void onYearSelected(int year) {
