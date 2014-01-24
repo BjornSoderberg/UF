@@ -128,7 +128,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 				// delta time
 				double dt = (System.currentTimeMillis() - startTime) / 1000D;
 
-				if (Math.abs(x - startX) / dt > viewConfig.getScaledMinimumFlingVelocity() * 4) {
+				if (Math.abs(x - startX) / dt > viewConfig.getScaledMinimumFlingVelocity()) {
 					if (dragStartLocation == MENU_OPEN) activity.hideMenu();
 					else activity.showMenu();
 				} else {
@@ -221,8 +221,10 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		if (add.getLeft() < x && x < add.getRight()) {
 			if (add.getTop() < y && y < add.getBottom()) {
 				if (e.getAction() == MotionEvent.ACTION_DOWN) {
-					addTouch = true;
-					return true;
+					if (!activity.isInSettings()) {
+						addTouch = true;
+						return true;
+					}
 				}
 			}
 		}
@@ -242,8 +244,11 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	public void onSwipe(int direction) {
 		if (!isDragging) {
 			if (direction == SimpleGestureFilter.SWIPE_RIGHT) {
+				int posBefore = activity.getPosInWrapper();
 				if (activity.getPosInWrapper() == 0) activity.showMenu();
 				else activity.goBack();
+				// Should solve bug with nothing happening on swipe
+				if(posBefore == activity.getPosInWrapper()) activity.showMenu();
 			}
 		}
 	}

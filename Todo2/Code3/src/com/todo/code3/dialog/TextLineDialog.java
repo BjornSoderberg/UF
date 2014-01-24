@@ -12,6 +12,7 @@ import android.speech.SpeechRecognizer;
 import android.widget.EditText;
 
 import com.todo.code3.MainActivity;
+import com.todo.code3.R;
 import com.todo.code3.misc.App;
 
 public class TextLineDialog extends Dialog {
@@ -47,5 +48,6 @@ public class TextLineDialog extends Dialog {
 		
 		ArrayList<String> l = result.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 		if(l.size() > 0) editText.setText(App.capitalizeFirstWordInSentences(l.get(0)));
+		else editText.setText(activity.getResources().getString(R.string.sorry_did_not_catch_that));
 	}
 }

@@ -283,25 +283,16 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 	}
 
 	private void setColors(View view) {
+		mCancelButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		mDoneButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		view.findViewById(R.id.date_background).setBackgroundColor(getResources().getColor(R.color.white));
 		if (!mDark) return;
 
 		Resources r = getResources();
 		mDayPickerView.setBackgroundColor(r.getColor(R.color.dark_gray));
-		
+
 		view.findViewById(R.id.date_background).setBackgroundColor(r.getColor(R.color.gray));
 		view.findViewById(R.id.line_separator).setBackgroundColor(r.getColor(R.color.line_background_dark));
-
-		/*
-		 * this.mDayOfWeekView = ((TextView)
-		 * view.findViewById(R.id.date_picker_header)); this.mMonthAndDayView =
-		 * ((LinearLayout) view.findViewById(R.id.date_picker_month_and_day));
-		 * this.mMonthAndDayView.setOnClickListener(this);
-		 * this.mSelectedMonthTextView = ((TextView)
-		 * view.findViewById(R.id.date_picker_month)); this.mSelectedDayTextView
-		 * = ((TextView) view.findViewById(R.id.date_picker_day));
-		 * this.mYearView = ((TextView)
-		 * view.findViewById(R.id.date_picker_year));
-		 */
 	}
 
 	public void onDayOfMonthSelected(int year, int month, int day) {

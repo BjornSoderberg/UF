@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/date_background"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/date_picker_view_animator_height"
     android:gravity="center"
@@ -9,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:background="@color/white"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -24,6 +24,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/line_separator"
             android:layout_width="fill_parent"
             android:layout_height="1.0dip"
             android:background="@color/line_background" />

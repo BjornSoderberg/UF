@@ -71,7 +71,11 @@ public class AddItemDialog extends Dialog {
 
 	public void askForName(final String type) {
 		Resources r = activity.getResources();
-		TextLineDialog d = new TextLineDialog(activity, r.getString(R.string.add_new) + " " + type, null, true, r.getString(R.string.add), r.getString(R.string.cancel)) {
+		String t = "";
+		if (type.equals(App.TASK)) t = activity.getResources().getString(R.string.task);
+		else if (type.equals(App.NOTE)) t = activity.getResources().getString(R.string.note);
+		else if (type.equals(App.FOLDER)) t = activity.getResources().getString(R.string.folder);
+		TextLineDialog d = new TextLineDialog(activity, r.getString(R.string.add_new) + " " + t, null, true, r.getString(R.string.add), r.getString(R.string.cancel)) {
 			protected void onResult(Object result) {
 				super.onResult(result);
 

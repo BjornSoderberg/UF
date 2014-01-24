@@ -6,6 +6,7 @@ import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -85,6 +87,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private int width, height;
 
+	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -114,10 +117,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor = new SPEditor(prefs);
 
 		contentViews = new ArrayList<ContentView>();
-		
+
 		// Setting correct language (locale)
 		Configuration c = getBaseContext().getResources().getConfiguration();
-		if(getLocale() != null) {
+		if (getLocale() != null) {
 			Locale.setDefault(getLocale());
 			c.locale = getLocale();
 			getBaseContext().getResources().updateConfiguration(c, getResources().getDisplayMetrics());
@@ -133,8 +136,17 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (getIntent().hasExtra(App.OPEN)) {
 			if (getIntent().getIntExtra(App.OPEN, -1) == App.SETTINGS) {
 				openSettings();
-				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_voice_recognition_language), false);
+				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_language), false);
 			} else openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
+		}
+
+		// Set theme
+		if (Build.VERSION.SDK_INT >= 11) {
+			if (!isDarkTheme()) setTheme(android.R.style.Theme_Holo_Light);
+			else setTheme(android.R.style.Theme_Holo_Panel);
+		} else {
+			if (!isDarkTheme()) setTheme(android.R.style.Theme_Light);
+			else setTheme(android.R.style.Theme_Black);
 		}
 	}
 
@@ -269,19 +281,8 @@ public class MainActivity extends FlyInFragmentActivity {
 				updateData();
 			}
 		});
-		
-		sortSpinner.setVisibility(View.GONE);
 
-		// Just for testing
-		Button b = new Button(this);
-		b.setText(getResources().getString(R.string.settings));
-		b.setLayoutParams(new LayoutParams(300, -2));
-		b.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				openSettings();
-			}
-		});
-		((Wrapper) findViewById(R.id.bigWrapper)).addView(b);
+		sortSpinner.setVisibility(View.GONE);
 	}
 
 	private void initAddButton() {
@@ -309,7 +310,22 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		customView.addView(addFolderButton);
+		Button settingsButton = new Button(this);
+		settingsButton.setText(getResources().getString(R.string.settings));
+		settingsButton.setBackgroundColor(0);
+		settingsButton.setTextColor(getResources().getColorStateList(R.color.add_folder_text_color));
+		settingsButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				openSettings();
+			}
+		});
+		LinearLayout l = new LinearLayout(this);
+		l.setOrientation(LinearLayout.VERTICAL);
+
+		l.addView(addFolderButton);
+		l.addView(settingsButton);
+
+		customView.addView(l);
 		getFlyInMenu().setCustomView(customView);
 		getFlyInMenu().getCustomView().setVisibility(View.VISIBLE);
 	}
@@ -390,7 +406,7 @@ public class MainActivity extends FlyInFragmentActivity {
 						mi.setTitle(folder.getString(App.NAME) + " - " + numChildren);
 						mi.setId(folder.getInt(App.ID));
 						mi.setType(folder.getString(App.TYPE));
-						mi.isOpen(App.isParentOf(openObjectId, folder.getInt(App.ID), data));
+						if (!isInSettings()) mi.isOpen(App.isParentOf(openObjectId, folder.getInt(App.ID), data));
 						menu.addMenuItem(mi);
 					}
 				}
@@ -434,6 +450,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	// When clicking on the button
 	public void addDialog(View v) {
+		if (isInSettings()) return;
 		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), getResources().getString(R.string.select_type), null, getResources().getString(R.string.cancel)) {
 			public void onResult(String name, String type) {
 				super.onResult(name, type);
@@ -448,10 +465,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void addDialog(final String type) {
 		String t = "";
 		if (type.equals(App.TASK)) t = getResources().getString(R.string.task);
-		else if(type.equals(App.NOTE)) t = getResources().getString(R.string.note);
+		else if (type.equals(App.NOTE)) t = getResources().getString(R.string.note);
 		else if (type.equals(App.FOLDER)) t = getResources().getString(R.string.folder);
-		
-		TextLineDialog i = new TextLineDialog(this,getResources().getString(R.string.add_new) + " " + t, null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel)) {
+
+		TextLineDialog i = new TextLineDialog(this, getResources().getString(R.string.add_new) + " " + t, null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel)) {
 			public void onResult(Object result) {
 				super.onResult(result);
 
@@ -707,6 +724,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void openSettings() {
+		if (getFlyInMenu().isVisible()) hideMenu();
 		if (contentViews.get(posInWrapper) instanceof SettingsView) return;
 
 		posInWrapper = 0;
@@ -721,7 +739,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		updateData();
 	}
-	
+
 	public void openSettingsItem(int id, String title) {
 		openSettingsItem(id, title, true);
 	}
@@ -736,8 +754,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		setTitle(title);
 
-		if (id == SettingsView.SELECT_VOICE_RECOGNITION) contentViews.add(posInWrapper, new SelectLanguage(this, App.SETTINGS_VOICE_RECOGNITION_LANGUAGE));
-		else if (id == SettingsView.SELECT_APP_LANGUAGE) contentViews.add(posInWrapper, new SelectLanguage(this, App.SETTINGS_APP_LANGUAGE));
+		if (id == SettingsView.SELECT_APP_LANGUAGE) contentViews.add(posInWrapper, new SelectLanguage(this));
 
 		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, (animate) ? App.ANIMATION_DURATION : 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
@@ -843,6 +860,9 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void startEditTitle() {
+		if (isInSettings())
+		;
+
 		nameTV.setVisibility(View.GONE);
 		nameET.setVisibility(View.VISIBLE);
 		saveButton.setVisibility(View.VISIBLE);
@@ -1060,7 +1080,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public boolean isDarkTheme() {
 		return getColorTheme().equals(App.SETTINGS_THEME_DARK);
 	}
-	
+
 	public boolean is24HourMode() {
 		return prefs.getBoolean(App.SETTINGS_24_HOUR_CLOCK, true);
 	}
@@ -1073,29 +1093,33 @@ public class MainActivity extends FlyInFragmentActivity {
 		Configuration c = r.getConfiguration();
 		c.locale = l;
 		r.updateConfiguration(c, dm);
-		
+
 		editor.put(App.LANGUAGE, lang);
 
 		Intent refresh = new Intent(this, MainActivity.class);
+		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, App.SETTINGS);
 		startActivity(refresh);
 	}
-	
+
 	public Locale getLocale() {
 		String lang = prefs.getString(App.LANGUAGE, "");
-		Log.i("asdasd", lang);
 		Configuration c = getBaseContext().getResources().getConfiguration();
-		if(!lang.equals("") && !c.locale.getLanguage().equals(lang)) return new Locale(lang);
-		
+		if (!lang.equals("") && !c.locale.getLanguage().equals(lang)) return new Locale(lang);
+
 		return null;
 	}
-	
+
+	public String getLocaleString() {
+		return prefs.getString(App.LANGUAGE, "");
+	}
+
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		
+
 		Locale l = getLocale();
-		if(l == null) return;
+		if (l == null) return;
 		newConfig.locale = l;
 		Locale.setDefault(l);
 		getBaseContext().getResources().updateConfiguration(newConfig, getBaseContext().getResources().getDisplayMetrics());
@@ -1106,8 +1130,16 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		for (ContentView i : contentViews)
 			i.setColors();
+
+		if (Build.VERSION.SDK_INT >= 11) {
+			if (!isDarkTheme()) setTheme(android.R.style.Theme_Holo_Light);
+			else setTheme(android.R.style.Theme_Holo_Panel);
+		} else {
+			if (!isDarkTheme()) setTheme(android.R.style.Theme_Light);
+			else setTheme(android.R.style.Theme_Black);
+		}
 	}
-	
+
 	public void saveSetting(String settingName, boolean settingValue) {
 		editor.put(settingName, settingValue);
 	}

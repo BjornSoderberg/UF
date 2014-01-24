@@ -1,11 +1,8 @@
 package com.todo.code3.dialog;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -18,38 +15,47 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.misc.App;
+import com.todo.code3.xml.CircularPulser;
 
 public abstract class Dialog extends AlertDialog.Builder {
 
 	protected String title, message;
 	protected boolean hasVoiceRecognition;
+	protected boolean isListening = false;
 
 	protected LinearLayout content;
 	protected MainActivity activity;
 	protected Button voiceRecognitionButton;
 
+	protected SpeechRecognizer speechRecognizer;
+
 	protected String posButtonString = null;
 	protected String negButtonString = null;
 
+	private CircularPulser cp;
+
+	@SuppressLint("NewApi")
 	public Dialog(MainActivity activity, String title, String message, boolean hasVoiceRecognition) {
-		super(activity);
+		super(activity, (Build.VERSION.SDK_INT < 11) ? 0 : activity.isDarkTheme() ? AlertDialog.THEME_HOLO_DARK : AlertDialog.THEME_HOLO_LIGHT);
 		this.activity = activity;
 		this.title = title;
 		this.message = message;
 		this.hasVoiceRecognition = hasVoiceRecognition;
 	}
 
+	@SuppressLint("NewApi")
 	public Dialog(MainActivity activity, String title, String message, boolean hasVoiceRecognition, String posButtonString, String negButtonString) {
-		super(activity);
+		super(activity, (Build.VERSION.SDK_INT < 11) ? 0 : activity.isDarkTheme() ? AlertDialog.THEME_HOLO_DARK : AlertDialog.THEME_HOLO_LIGHT);
 		this.activity = activity;
 		this.title = title;
 		this.message = message;
@@ -73,12 +79,17 @@ public abstract class Dialog extends AlertDialog.Builder {
 		if (negButtonString != null) setNegativeButton();
 	}
 
+	@SuppressLint("NewApi")
 	private void initVoiceRecognition() {
 		if (Build.VERSION.SDK_INT < App.MIN_API_FOR_VOICE_RECOGNITION) return;
 
-		voiceRecognitionButton = new Button(activity);
-		voiceRecognitionButton.setBackgroundColor(0xffcccccc);
-		voiceRecognitionButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		View view = LayoutInflater.from(activity).inflate(R.layout.dialog_voice_recognition, null);
+		speechRecognizer = SpeechRecognizer.createSpeechRecognizer(activity);
+
+		voiceRecognitionButton = (Button) view.findViewById(R.id.button1);
+		voiceRecognitionButton.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.voice_recognition_button));
+		voiceRecognitionButton.getLayoutParams().height = App.dpToPx(80, activity.getResources());
+		voiceRecognitionButton.getLayoutParams().width = App.dpToPx(80, activity.getResources());
 
 		PackageManager pm = activity.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
@@ -88,11 +99,17 @@ public abstract class Dialog extends AlertDialog.Builder {
 			voiceRecognitionButton.setText(activity.getResources().getString(R.string.press_me_to_speak));
 			voiceRecognitionButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					startVoiceRecognition();
+					if (!isListening) startVoiceRecognition();
+					else endVoiceRecognition();
 				}
 			});
 
-			content.addView(voiceRecognitionButton);
+			// content.addView(voiceRecognitionButton);
+
+			cp = (CircularPulser) view.findViewById(R.id.circularPulsar1);
+			cp.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, App.dpToPx(150, activity.getResources())));
+			// content.addView(cp);
+			content.addView(view);
 		}
 	}
 
@@ -100,8 +117,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 	private void startVoiceRecognition() {
 		if (Build.VERSION.SDK_INT < App.MIN_API_FOR_VOICE_RECOGNITION) return;
 
-		SpeechRecognizer r = SpeechRecognizer.createSpeechRecognizer(getContext());
-		r.setRecognitionListener(new RecognitionListener() {
+		speechRecognizer.setRecognitionListener(new RecognitionListener() {
 			public void onBeginningOfSpeech() {
 			}
 
@@ -109,7 +125,6 @@ public abstract class Dialog extends AlertDialog.Builder {
 			}
 
 			public void onEndOfSpeech() {
-				voiceRecognitionButton.setBackgroundColor(0xffcccccc);
 			}
 
 			public void onError(int error) {
@@ -125,10 +140,12 @@ public abstract class Dialog extends AlertDialog.Builder {
 			}
 
 			public void onResults(Bundle results) {
+				endVoiceRecognition();
 				onVoiceRecognitionResult(results);
 			}
 
 			public void onRmsChanged(float rmsdB) {
+				cp.update(rmsdB);
 			}
 		});
 
@@ -137,13 +154,23 @@ public abstract class Dialog extends AlertDialog.Builder {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 		intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, activity.getApplication().getPackageName());
-		// intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
-		// Locale.ENGLISH.toString());
-		if (!activity.getSetting(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE).equals("")) intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, activity.getSetting(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE));
+
+		if (activity.getLocaleString() != "") intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, activity.getLocaleString());
 		// http://stackoverflow.com/questions/7973023/what-is-the-list-of-supported-languages-locales-on-android
 
-		voiceRecognitionButton.setBackgroundColor(0xff999999);
-		r.startListening(intent);
+		voiceRecognitionButton.setBackground(getContext().getResources().getDrawable(R.drawable.ic_launcher));
+		isListening = true;
+
+		speechRecognizer.startListening(intent);
+	}
+
+	@SuppressLint("NewApi")
+	private void endVoiceRecognition() {
+		if (speechRecognizer != null && Build.VERSION.SDK_INT >= App.MIN_API_FOR_VOICE_RECOGNITION) {
+			speechRecognizer.stopListening();
+			isListening = false;
+			voiceRecognitionButton.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.voice_recognition_button));
+		}
 	}
 
 	public abstract void onVoiceRecognitionResult(Bundle result);

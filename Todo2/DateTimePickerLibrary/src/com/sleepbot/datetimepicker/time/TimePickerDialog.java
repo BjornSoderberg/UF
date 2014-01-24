@@ -273,7 +273,9 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 		mCancelButton = (Button) view.findViewById(R.id.cancel_button);
 		mCancelButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				mCallback.onTimeSet(mTimePicker, -1, -1);
+				if (mCallback != null) {
+					mCallback.onTimeSet(mTimePicker, mTimePicker.getHours(), mTimePicker.getMinutes());
+				}
 				dismiss();
 			}
 		});
@@ -323,31 +325,22 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 		} else if (mTypedTimes == null) {
 			mTypedTimes = new ArrayList<Integer>();
 		}
-		
+
 		setColors(view);
 
 		return view;
 	}
-	
+
 	private void setColors(View parent) {
-		if(!mDark) return;
+		mCancelButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		mDoneButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		if (!mDark) return;
 		Resources r = getResources();
-//		mHourView.setBackgroundColor(r.getColor(R.color.dark_gray));
-//		mHourView.setVisibility(View.GONE);
-		
+
 		parent.findViewById(R.id.time_header).setBackgroundColor(r.getColor(R.color.gray));
-		parent.findViewById(R.id.time_picker_dialog).setBackgroundColor(r.getColor(R.color.dark_gray));
 		parent.findViewById(R.id.time_footer).setBackgroundColor(r.getColor(R.color.gray));
 		parent.findViewById(R.id.line_separator).setBackgroundColor(r.getColor(R.color.line_background_dark));
-		
-		/*mHourView = (TextView) view.findViewById(R.id.hours);
-		mHourView.setOnKeyListener(keyboardListener);
-		mHourSpaceView = (TextView) view.findViewById(R.id.hour_space);
-		mMinuteSpaceView = (TextView) view.findViewById(R.id.minutes_space);
-		mMinuteView = (TextView) view.findViewById(R.id.minutes);
-		mMinuteView.setOnKeyListener(keyboardListener);
-		mAmPmTextView = (TextView) view.findViewById(R.id.ampm_label);
-		mAmPmTextView.setOnKeyListener(keyboardListener);*/
+		parent.setBackgroundColor(r.getColor(R.color.dark_gray));
 	}
 
 	private void updateAmPmDisplay(int amOrPm) {

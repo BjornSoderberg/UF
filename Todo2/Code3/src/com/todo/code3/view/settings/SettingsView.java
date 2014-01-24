@@ -46,18 +46,10 @@ public class SettingsView extends ContentView {
 		b.setChecked(!activity.isDarkTheme());
 		bb.setChecked(activity.is24HourMode());
 
-		// Set visible over api 8 (edit in layouts (layout-v8))
-		Button asd = (Button) findViewById(R.id.voiceRecogLang);
-		asd.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				activity.openSettingsItem(SELECT_VOICE_RECOGNITION, getContext().getResources().getString(R.string.set_voice_recognition_language));
-			}
-		});
-
 		Button asdf = (Button) findViewById(R.id.textLang);
 		asdf.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				activity.openSettingsItem(SELECT_APP_LANGUAGE, getContext().getResources().getString(R.string.set_voice_recognition_language));
+				activity.openSettingsItem(SELECT_APP_LANGUAGE, getContext().getResources().getString(R.string.set_language));
 			}
 		});
 

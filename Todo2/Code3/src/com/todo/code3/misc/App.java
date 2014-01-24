@@ -65,7 +65,6 @@ public class App {
 	public static final String SETTINGS_THEME = "settingsTheme";
 	public static final String SETTINGS_THEME_DARK = "settingsThemeDark";
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";
-	public static final String SETTINGS_VOICE_RECOGNITION_LANGUAGE = "settingsVoiceRecognitionLanguage";
 	public static final String SETTINGS_APP_LANGUAGE = "settingsAppLanguage";
 	public static final String SETTINGS_24_HOUR_CLOCK = "settings24HourClock";
 	
@@ -80,7 +79,7 @@ public class App {
 		return px;
 	}
 
-	public static int pxToDp(int px, Resources r) {
+	public static int pxToDp(float px, Resources r) {
 		DisplayMetrics displayMetrics = r.getDisplayMetrics();
 		int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
 		return dp;

@@ -23,6 +23,7 @@ import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.fourmob.datetimepicker.R;
 
@@ -40,7 +41,7 @@ public class AmPmCirclesView extends View {
     private static final int PRESSED_ALPHA = 175;
 
     private final Paint mPaint = new Paint();
-    private int mWhite;
+    private int mBackground;
     private int mAmPmTextColor;
     private int mBlue;
     private float mCircleRadiusMultiplier;
@@ -59,6 +60,8 @@ public class AmPmCirclesView extends View {
     private int mAmPmYCenter;
     private int mAmOrPm;
     private int mAmOrPmPressed;
+    
+    private boolean mDark = false;
 
     public AmPmCirclesView(Context context) {
         super(context);
@@ -72,7 +75,7 @@ public class AmPmCirclesView extends View {
         }
 
         Resources res = context.getResources();
-        mWhite = res.getColor(R.color.white);
+        mBackground = res.getColor(R.color.white);
         mAmPmTextColor = res.getColor(R.color.ampm_text_color);
         mBlue = res.getColor(R.color.blue);
         String typefaceFamily = res.getString(R.string.sans_serif);
@@ -93,6 +96,10 @@ public class AmPmCirclesView extends View {
         mAmOrPmPressed = -1;
 
         mIsInitialized = true;
+    }
+    
+    public void isDark(boolean dark) {
+    	mDark = dark;
     }
 
     public void setAmOrPm(int amOrPm) {
@@ -131,6 +138,9 @@ public class AmPmCirclesView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
+    	if(mDark) mBackground = getResources().getColor(R.color.gray);
+    	else mBackground = getResources().getColor(R.color.white);
+    	
         int viewWidth = getWidth();
         if (viewWidth == 0 || !mIsInitialized) {
             return;
@@ -157,9 +167,9 @@ public class AmPmCirclesView extends View {
 
         // We'll need to draw either a lighter blue (for selection), a darker blue (for touching)
         // or white (for not selected).
-        int amColor = mWhite;
+        int amColor = mBackground;
         int amAlpha = 255;
-        int pmColor = mWhite;
+        int pmColor = mBackground;
         int pmAlpha = 255;
         if (mAmOrPm == AM) {
             amColor = mBlue;

@@ -27,12 +27,9 @@ public class SelectLanguage extends ContentView {
 
 	private String[] languages;
 	private String[] values;
-	
-	private String type;
 
-	public SelectLanguage(MainActivity activity, String type) {
+	public SelectLanguage(MainActivity activity) {
 		super(activity, 0);
-		this.type = type;
 		init();
 	}
 
@@ -48,28 +45,23 @@ public class SelectLanguage extends ContentView {
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(type.equals(App.SETTINGS_APP_LANGUAGE)) activity.setLocale(values[position]);
-				else activity.saveSetting(type, values[position]);
+				activity.setLocale(values[position]);
 			}
 		});
 
 		setColors();
 	}
-	
+
 	private void initLanguages() {
-		if(type.equals(App.SETTINGS_VOICE_RECOGNITION_LANGUAGE) || type.equals(App.SETTINGS_APP_LANGUAGE)) {
-			languages = new String[3];
-			values = new String[3];
-			
-			languages[0] = "Svenska";
-			languages[1] = "English";
-			languages[2] = "Deutsch";
-			values[0] = "sv";
-			values[1] = "en";
-			values[2] = "de";
-		} 
-		
-		Log.i("asdasd", Locale.GERMAN.toString() + "");
+		languages = new String[3];
+		values = new String[3];
+
+		languages[0] = "Svenska";
+		languages[1] = "English";
+		languages[2] = "Deutsch";
+		values[0] = "sv";
+		values[1] = "en";
+		values[2] = "de";
 	}
 
 	public void setColors() {
