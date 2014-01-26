@@ -44,7 +44,7 @@ public class CircularPulser extends View {
 	}
 
 	public void onDraw(Canvas c) {
-		c.drawColor(0xff8800ff);
+//		c.drawColor(0);
 
 		int radius = getRadius();
 		if (radius > getHeight() / 2) radius = getHeight() / 2;
@@ -53,9 +53,13 @@ public class CircularPulser extends View {
 		int x = getWidth() / 2;
 		int y = getHeight() / 2;
 
-		paint.setColor(0xffffff76);
+		paint.setColor(0xffdddddd);
 		paint.setAntiAlias(true);
 		c.drawCircle(x, y, radius, paint);
+
+		paint.setColor(0xffff8888);
+		paint.setAntiAlias(true);
+		c.drawCircle(x, y, getMinSizeInDp(), paint);
 	}
 
 	public void update(float db) {

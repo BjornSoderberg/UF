@@ -17,6 +17,7 @@ public class SettingsView extends ContentView {
 
 	public static final int SELECT_VOICE_RECOGNITION = 0;
 	public static final int SELECT_APP_LANGUAGE = 1;
+	public static final int SEND_FEEDBACK = 2;
 
 	public SettingsView(MainActivity activity) {
 		super(activity, 0);
@@ -50,6 +51,12 @@ public class SettingsView extends ContentView {
 		asdf.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				activity.openSettingsItem(SELECT_APP_LANGUAGE, getContext().getResources().getString(R.string.set_language));
+			}
+		});
+		
+		((Button) findViewById(R.id.feedback)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				activity.openSettingsItem(SEND_FEEDBACK, getContext().getResources().getString(R.string.send_feedback));
 			}
 		});
 

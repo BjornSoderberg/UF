@@ -1,6 +1,8 @@
 package com.todo.code3.misc;
 
 import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +50,7 @@ public class App {
 	public static final String OPEN = "open";
 
 	public static final String DUE_DATE = "dueDate";
-//	public static final String REMINDER = "reminder";
+	// public static final String REMINDER = "reminder";
 	public static final String REPEAT = "repeat";
 
 	public static final int BEZEL_AREA_DP = 16;
@@ -59,17 +61,17 @@ public class App {
 	public static final int OPTIONS_GROUP_ITEMS = 1;
 	public static final int OPTIONS_SELECT_ALL = 2;
 	public static final int OPTIONS_MOVE = 3;
-	
-	//Settings
+
+	// Settings
 	public static final int SETTINGS = -10; // unusual number
 	public static final String SETTINGS_THEME = "settingsTheme";
 	public static final String SETTINGS_THEME_DARK = "settingsThemeDark";
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";
 	public static final String SETTINGS_APP_LANGUAGE = "settingsAppLanguage";
 	public static final String SETTINGS_24_HOUR_CLOCK = "settings24HourClock";
-	
+
 	public static final int MIN_API_FOR_VOICE_RECOGNITION = 8;
-	
+
 	public static final String LANGUAGE = "language";
 
 	// converting dp to pixels and vice versa
@@ -374,33 +376,6 @@ public class App {
 		return sb.toString();
 	}
 
-	public static int[] getDifferenceBetweenTimestamps(long t1, long t2) {
-		if (t1 > t2) return null;
-
-		// years, months, days, hours, minutes
-		int[] time = new int[5];
-
-		Calendar c1 = Calendar.getInstance();
-		Calendar c2 = Calendar.getInstance();
-
-		c1.setTimeInMillis(t1 * 1000);
-		c2.setTimeInMillis(t2 * 1000);
-
-		int years = c2.get(Calendar.YEAR) - c1.get(Calendar.YEAR);
-		int months = c2.get(Calendar.MONTH) - c1.get(Calendar.MONTH);
-		int days = c2.get(Calendar.DAY_OF_YEAR) - c1.get(Calendar.DAY_OF_YEAR);
-		int hours = c2.get(Calendar.HOUR_OF_DAY) - c1.get(Calendar.HOUR_OF_DAY);
-		int minutes = c2.get(Calendar.MINUTE) - c1.get(Calendar.MINUTE);
-
-		time[0] = years;
-		time[1] = months;
-		time[2] = days;
-		time[3] = hours;
-		time[4] = minutes;
-
-		return time;
-	}
-
 	public static int getNumberOfTasksOverDue(int parentId, JSONObject data) {
 		int numTasksOverDue = 0;
 
@@ -505,6 +480,15 @@ public class App {
 		return "";
 	}
 
+	public static boolean isEmailValid(String email) {
+		String regExp = "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
+		CharSequence input = email;
+		Pattern pattern = Pattern.compile(regExp, Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(input);
+		
+		return matcher.matches();
+	}
+
 	public static void showKeyboard(Context c) {
 		((InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 	}
@@ -512,4 +496,5 @@ public class App {
 	public static void hideKeyboard(Context c, View v) {
 		((InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
+
 }

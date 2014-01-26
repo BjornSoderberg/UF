@@ -31,7 +31,7 @@ import com.espian.flyin.library.SimpleGestureFilter.SimpleGestureListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
-public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
+public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 	public static final int FLY_IN_WITH_ACTIVITY = 0;
 	public static final int FLY_IN_OVER_ACTIVITY = 1;
@@ -53,8 +53,9 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	private int width;
 	private int animationDuration = 300;
 	private int movingItemId = -1;
-	
+
 	private boolean isDragging = false;
+	private boolean hidden = false;
 
 	private OnFlyInItemClickListener callback;
 
@@ -87,7 +88,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		inflateLayout();
 
 		initUi();
-		
+
 		detector = new SimpleGestureFilter(getContext(), this);
 
 	}
@@ -223,8 +224,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	}
 
 	public void showMenu() {
-		if(getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
-		
+		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
+
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -249,13 +250,14 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		showFlyIn.setDuration(animationDuration).start();
 
 		contentOffset = width;
-		
+
 		isDragging = false;
+		hidden = false;
 	}
 
 	public void hideMenu() {
-		if(getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
-		
+		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
+
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
 			mCustomView.setVisibility(View.VISIBLE);
@@ -281,25 +283,26 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		// Hides the menu views when the animation has ended
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				mMenuHolder.setVisibility(View.GONE);
-				if (mCustomView != null) {
-					mCustomView.setVisibility(View.GONE);
-				}
-				
+				// mMenuHolder.setVisibility(View.GONE);
+				// if (mCustomView != null) {
+				// mCustomView.setVisibility(View.GONE);
+				// }
+
 				isDragging = false;
 			}
 		}, animationDuration);
 
 		contentOffset = 0;
+		hidden = true;
 	}
 
 	public void moveMenu(int dx) {
-		if(getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
-		
+		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
+
 		if (contentOffset + dx < 0) dx = 0 - contentOffset;
 		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
-		
+
 		isDragging = true;
 
 		// mOutsideView.setVisibility(View.VISIBLE);
@@ -323,6 +326,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		showFlyIn.setDuration(0).start();
 
 		contentOffset += dx;
+		hidden = false;
 	}
 
 	private void expandView(final View view) {
@@ -375,7 +379,11 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	}
 
 	public boolean isVisible() {
-		return contentOffset != 0;
+		return contentOffset != 0 && !hidden;
+	}
+
+	public int test() {
+		return contentOffset;
 	}
 
 	public int getContentOffset() {
@@ -389,7 +397,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 	public void setMovingItemId(int id) {
 		movingItemId = id;
 	}
-	
+
 	public DynamicListView getListView() {
 		return listView;
 	}
@@ -472,7 +480,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 			TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
 			FlyInMenuItem item = menuItems.get(position);
 
-			text.setText(item.getTitle());;
+			text.setText(item.getTitle());
+			;
 
 			if (item.getId() == getExpandingItemId()) {
 				invalidateExpandingItemId();
@@ -485,8 +494,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 			if (item.getId() == movingItemId) {
 				view.setVisibility(View.INVISIBLE);
 			}
-			
-			if(item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));
+
+			if (item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));
 
 			view.setId(item.getId());
 
@@ -495,7 +504,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 		}
 
 	}
-	
+
 	public boolean dispatchTouchEvent(MotionEvent e) {
 		detector.onTouchEvent(e);
 		return super.dispatchTouchEvent(e);
@@ -503,6 +512,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener{
 
 	public void onSwipe(int direction) {
 		Log.i("" + isDragging, direction + "");
-		if(!isDragging) if(direction == SimpleGestureFilter.SWIPE_LEFT) hideMenu();
+		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_LEFT) hideMenu();
 	}
 }

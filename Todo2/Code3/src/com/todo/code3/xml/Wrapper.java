@@ -210,7 +210,9 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		// the button, the menu should not open
 		if (x < b.getRight() && y < b.getBottom()) {
 			if (activity.getPosInWrapper() != 0) return false;
-			else return true;
+			else {
+				return true;
+			}
 		}
 
 		// If the touch is inside the touch area for the drag, the user should
@@ -245,10 +247,12 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		if (!isDragging) {
 			if (direction == SimpleGestureFilter.SWIPE_RIGHT) {
 				int posBefore = activity.getPosInWrapper();
-				if (activity.getPosInWrapper() == 0) activity.showMenu();
-				else activity.goBack();
+				if (activity.getPosInWrapper() == 0) {
+					activity.showMenu();
+					return;
+				} else activity.goBack();
 				// Should solve bug with nothing happening on swipe
-				if(posBefore == activity.getPosInWrapper()) activity.showMenu();
+				if (posBefore == activity.getPosInWrapper()) activity.showMenu();
 			}
 		}
 	}

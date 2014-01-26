@@ -29,8 +29,16 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 		String name = intent.getStringExtra(App.NAME);
 
+		String timeString = getTimeString(intent, context);
+
 		String title = (name != null) ? name : "There is something you have to do";
-		String text = "This is some further information.";
+		String tickerText = title;
+		String text = "";
+
+		if (timeString != null) {
+			tickerText += " ( " + context.getResources().getString(R.string.in) + " " + timeString + " ) ";
+			text = App.capitalizeFirstWordInSentences(context.getResources().getString(R.string.in)) + " " + timeString;
+		}
 
 		PendingIntent p = PendingIntent.getActivity(context, 0, intent, 0);
 
@@ -41,7 +49,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			i.putExtra(App.OPEN, id);
 			PendingIntent pi = PendingIntent.getActivity(context, id, i, 0);
-			
+
 			Notification.Builder b = new Notification.Builder(context);
 			b.setContentTitle(title);
 			b.setContentText(text);
@@ -50,17 +58,17 @@ public class NotificationReceiver extends BroadcastReceiver {
 			b.setContentIntent(pi);
 			n = b.getNotification();
 		} else {
-			n = new Notification(R.drawable.ic_launcher, title, System.currentTimeMillis());
+			n = new Notification(R.drawable.ic_launcher, tickerText, System.currentTimeMillis());
 			n.setLatestEventInfo(context, title, text, p);
 		}
-		
+
 		notificationManager.notify(id, n);
 
 		if (intent.hasExtra(Reminder.REMINDER_INFO)) {
 			String reminderInfo = intent.getStringExtra(Reminder.REMINDER_INFO);
 
 			long next = Reminder.getNext(reminderInfo, intent.getLongExtra(App.DUE_DATE, -1));
-			if(next == -1) return;
+			if (next == -1) return;
 			else next *= 1000;
 
 			// Logs the next
@@ -72,37 +80,42 @@ public class NotificationReceiver extends BroadcastReceiver {
 			am.set(AlarmManager.RTC_WAKEUP, next, PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT));
 		}
 	}
-	
-	
 
-	// if (intent.hasExtra(App.DUE_DATE) && System.currentTimeMillis() / 1000 <
-	// intent.getExtras().getLong(App.DUE_DATE)) {
-	// int[] dt = App.getDifferenceBetweenTimestamps(System.currentTimeMillis()
-	// / 1000, intent.getExtras().getLong(App.DUE_DATE));
-	// if (dt != null) {
-	// int years = dt[0];
-	// int months = dt[1];
-	// int days = dt[2];
-	// int hours = dt[3];
-	// int minutes = dt[4];
-	//
-	// if (years > 3) difference = years + " years";
-	// else if (years == 0) {
-	// if (months > 3) difference = months + " months";
-	// else if (months == 0) {
-	// if (days == 21) difference = "3 weeks";
-	// else if (days == 14) difference = "2 weeks";
-	// else if (days == 7) difference = "1 week";
-	// else if (days > 0) difference = days + " days";
-	// else if (days == 0) {
-	// if (hours > 0) difference = hours + " hours";
-	// else if (hours == 0) {
-	// if (minutes > 0) difference = minutes + " minutes";
-	// if (minutes == 0) difference = "now";
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
+	private String getTimeString(Intent intent, Context context) {
+		if (intent.hasExtra(App.DUE_DATE) && System.currentTimeMillis() / 1000 < intent.getExtras().getLong(App.DUE_DATE)) {
+			long dt = intent.getExtras().getLong(App.DUE_DATE) - System.currentTimeMillis() / 1000;
+
+			int year = 3600 * 24 * 365;
+			int month = 3600 * 24 * 30;
+			int day = 3600 * 24;
+			int hour = 3600;
+			int minute = 60;
+
+			if (dt >= year * 2) return getTimeString(context, (int) (dt / year + 0.5), R.string.years);
+			else if (dt >= year + month) return getTimeString(context, 1, R.string.year, (int) ((dt % year) / month + 0.5), R.string.months);
+			else if (dt >= year) return getTimeString(context, (int) (dt / year), R.string.year, 1, R.string.month);
+			else if (dt >= month * 2) return getTimeString(context, (int) (dt / month + 0.5), R.string.months);
+			else if (dt >= month + day) return getTimeString(context, 1, R.string.month, (int) ((dt % month) / day + 0.5), R.string.days);
+			else if (dt >= month) return getTimeString(context, 1, R.string.month, 1, R.string.day);
+			else if ((int) (dt / day) == 7) return getTimeString(context, 1, R.string.week);
+			else if ((int) (dt / day) == 14) return getTimeString(context, 2, R.string.weeks);
+			else if ((int) (dt / day) == 21) return getTimeString(context, 3, R.string.weeks);
+			else if (dt >= day * 2) return getTimeString(context, (int) (dt / day + 0.5), R.string.days);
+			else if (dt >= day + hour) return getTimeString(context, 1, R.string.day, (int) ((dt % day) / hour + 0.5), R.string.hours);
+			else if (dt >= day) return getTimeString(context, 1, R.string.day, 1, R.string.hour);
+			else if (dt >= hour * 2) return getTimeString(context, (int) (dt / hour + 0.5), R.string.hours);
+			else if (dt >= hour + minute) return getTimeString(context, 1, R.string.hour, (int) ((dt % hour) / minute + 0.5), R.string.minutes);
+			else if (dt >= hour) return getTimeString(context, 1, R.string.hour, 1, R.string.minute);
+			else if (dt >= minute) return getTimeString(context, (int) (dt / minute + 0.5), R.string.minutes);
+			else return context.getResources().getString(R.string.now);
+		} else return null;
+	}
+
+	private String getTimeString(Context context, int va, int sa) {
+		return va + " " + context.getResources().getString(sa);
+	}
+
+	private String getTimeString(Context c, int va, int sa, int vb, int sb) {
+		return getTimeString(c, va, sa) + " " + c.getResources().getString(R.string.and) + " " + getTimeString(c, vb, sb);
+	}
 }

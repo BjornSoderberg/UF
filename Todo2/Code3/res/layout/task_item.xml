@@ -15,11 +15,11 @@
 
         <ImageView
             android:id="@+id/checkbox"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/box" />
+            android:src="@drawable/ic_unchecked" />
     </FrameLayout>
 
     <TextView
@@ -45,12 +45,12 @@
         android:layout_centerVertical="true" >
 
         <ImageView
-            android:id="@+id/icon"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
+            android:id="@+id/star"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/box" />
+            android:src="@drawable/ic_star" />
     </FrameLayout>
 
 </RelativeLayout>

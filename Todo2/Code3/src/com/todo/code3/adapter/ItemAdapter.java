@@ -2,6 +2,8 @@ package com.todo.code3.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.PorterDuffColorFilter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -128,7 +130,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Is prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
-		ImageView i = (ImageView) view.findViewById(R.id.icon);
+		ImageView i = (ImageView) view.findViewById(R.id.star);
 
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -139,9 +141,9 @@ public class ItemAdapter extends BaseAdapter {
 			}
 		});
 
-		if (item.isPrioritized()) i.setImageResource(R.drawable.checked);
-		else i.setImageResource(R.drawable.box);
-
+		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_launcher);
+		else i.setImageResource(R.drawable.ic_launcher);
+		
 		// Checkbox and image
 		FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
 		ImageView iv = (ImageView) view.findViewById(R.id.checkbox);
@@ -156,11 +158,11 @@ public class ItemAdapter extends BaseAdapter {
 		});
 
 		if (item.isCompleted()) {
-			iv.setImageResource(R.drawable.checked);
+			iv.setImageResource(R.drawable.ic_checked);
 			text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_checked_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_checked_dark));
 			text.setPaintFlags(text.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 		} else {
-			iv.setImageResource(R.drawable.box);
+			iv.setImageResource(R.drawable.ic_unchecked);
 			text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 			text.setPaintFlags(257);
 		}
@@ -179,7 +181,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Init prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
-		ImageView i = (ImageView) view.findViewById(R.id.icon);
+		ImageView i = (ImageView) view.findViewById(R.id.star);
 
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -190,8 +192,11 @@ public class ItemAdapter extends BaseAdapter {
 			}
 		});
 
-		if (item.isPrioritized()) i.setImageResource(R.drawable.checked);
-		else i.setImageResource(R.drawable.box);
+		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_launcher);
+		else i.setImageResource(R.drawable.ic_launcher);
+
+		// Set correct color on icon (through filter)
+		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
@@ -207,11 +212,11 @@ public class ItemAdapter extends BaseAdapter {
 	}
 
 	private View getNoteView(int position, final NoteItem item) {
-		View view = inflater.inflate(R.layout.folder_item, null);
+		View view = inflater.inflate(R.layout.note_item, null);
 
 		// Init prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
-		ImageView i = (ImageView) view.findViewById(R.id.icon);
+		ImageView i = (ImageView) view.findViewById(R.id.star);
 
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -222,12 +227,15 @@ public class ItemAdapter extends BaseAdapter {
 			}
 		});
 
-		if (item.isPrioritized()) i.setImageResource(R.drawable.checked);
-		else i.setImageResource(R.drawable.box);
+		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_launcher);
+		else i.setImageResource(R.drawable.ic_launcher);
+
+		// Set correct color on icon (through filter)
+		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
-		text.setText(item.getTitle() + " (" +itemView.getActivity().getResources().getString(R.string.note)+")");
+		text.setText(item.getTitle() + " (" + itemView.getActivity().getResources().getString(R.string.note) + ")");
 		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// Sets the background (which is dependent on its state (pressed,

@@ -13,7 +13,6 @@ public final class R {
 		public static final int rbm_out_to_left = 0x7f040002;
 	}
 	public static final class color {
-		public static final int add_folder_text_color = 0x7f06002a;
 		public static final int item_color_dark = 0x7f060002;
 		public static final int item_color_light = 0x7f060003;
 		public static final int item_text_color = 0x7f060001;
@@ -30,19 +29,19 @@ public final class R {
 		public static final int item_text_size = 0x7f070004;
 	}
 	public static final class drawable {
-		public static final int fly_item_background = 0x7f020003;
-		public static final int fly_item_background_light = 0x7f020004;
+		public static final int fly_item_background = 0x7f020001;
+		public static final int fly_item_background_light = 0x7f020002;
 	}
 	public static final class id {
-		public static final int fly_custom = 0x7f080015;
-		public static final int fly_listview = 0x7f080014;
-		public static final int fly_menu_holder = 0x7f080013;
+		public static final int fly_custom = 0x7f080019;
+		public static final int fly_listview = 0x7f080018;
+		public static final int fly_menu_holder = 0x7f080017;
 		public static final int fly_searchview = 0x7f080000;
-		public static final int rbm_item_text = 0x7f080012;
+		public static final int rbm_item_text = 0x7f080016;
 	}
 	public static final class layout {
-		public static final int fly_item = 0x7f030008;
-		public static final int fly_menu = 0x7f030009;
+		public static final int fly_item = 0x7f030009;
+		public static final int fly_menu = 0x7f03000a;
 	}
 	public static final class string {
 		public static final int is_in_master_view = 0x7f090000;

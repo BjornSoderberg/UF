@@ -4,6 +4,7 @@
     
     <color name="selected_light_gray">#ffe8e8e8</color>
     <color name="selected_semi_transparent">#33000000</color>
+    
     <color name="transparent">#00000000</color>
     
     <color name="light_blue">#ffC7E7FF</color>
@@ -11,4 +12,6 @@
     
     <color name="light_red">#ffFFC7C7</color>
     <color name="selected_light_red">#FFFF9687</color>
+    
+    <color name="icon_color">#ffC8C8C8</color>
 </resources>

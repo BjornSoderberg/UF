@@ -14,11 +14,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -53,6 +56,7 @@ import com.todo.code3.view.NoteView;
 import com.todo.code3.view.TaskView;
 import com.todo.code3.view.settings.SelectLanguage;
 import com.todo.code3.view.settings.SettingsView;
+import com.todo.code3.view.settings.feedback.FeedbackView;
 import com.todo.code3.xml.OptionsBar;
 import com.todo.code3.xml.Wrapper;
 
@@ -290,13 +294,22 @@ public class MainActivity extends FlyInFragmentActivity {
 		LinearLayout customView = new LinearLayout(this);
 		customView.setOrientation(LinearLayout.VERTICAL);
 
-		Button addFolderButton = new Button(this);
-		addFolderButton.setText("+  " + getResources().getString(R.string.add_new_folder));
-		// Makes it transparent
-		addFolderButton.setBackgroundColor(0);
-		// addFolderButton.setTextColor(getResources().getColor(com.espian.flyin.library.R.color.item_text_color));
-		addFolderButton.setTextColor(getResources().getColorStateList(R.color.add_folder_text_color));
-		addFolderButton.setOnClickListener(new OnClickListener() {
+		TextView addFolderButton = new TextView(this);
+		addFolderButton.setText(getResources().getString(R.string.add_new_folder));
+		addFolderButton.setTextSize(App.pxToDp(getResources().getDimension(R.dimen.item_text_size), getResources()));
+		addFolderButton.setTextColor(getResources().getColor(R.color.item_text_color));
+
+		LinearLayout lll = new LinearLayout(this);
+		lll.setOrientation(LinearLayout.HORIZONTAL);
+		lll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, (int) getResources().getDimension(R.dimen.item_height)));
+		lll.setGravity(Gravity.CENTER);
+		ImageView ii = new ImageView(this);
+		ii.setBackgroundResource(R.drawable.ic_add);
+		ii.getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
+		lll.addView(ii);
+		lll.addView(addFolderButton);
+		lll.setBackgroundDrawable(getResources().getDrawable(R.drawable.menu_button_selector));
+		lll.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				TextLineDialog b = new TextLineDialog(MainActivity.this, getResources().getString(R.string.add_new_folder), null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel)) {
 					protected void onResult(Object result) {
@@ -310,20 +323,32 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		Button settingsButton = new Button(this);
+		TextView settingsButton = new TextView(this);
 		settingsButton.setText(getResources().getString(R.string.settings));
-		settingsButton.setBackgroundColor(0);
-		settingsButton.setTextColor(getResources().getColorStateList(R.color.add_folder_text_color));
-		settingsButton.setOnClickListener(new OnClickListener() {
+		settingsButton.setTextSize(App.pxToDp(getResources().getDimension(R.dimen.item_text_size), getResources()));
+		settingsButton.setTextColor(getResources().getColor(R.color.item_text_color));
+
+		LinearLayout ll = new LinearLayout(this);
+		ll.setOrientation(LinearLayout.HORIZONTAL);
+		ll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, (int) getResources().getDimension(R.dimen.item_height)));
+		ll.setGravity(Gravity.CENTER);
+		ImageView i = new ImageView(this);
+		i.setBackgroundResource(R.drawable.ic_settings);
+		i.getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
+		ll.addView(i);
+		ll.addView(settingsButton);
+		ll.setBackgroundDrawable(getResources().getDrawable(R.drawable.menu_button_selector));
+		ll.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				openSettings();
 			}
 		});
+
 		LinearLayout l = new LinearLayout(this);
 		l.setOrientation(LinearLayout.VERTICAL);
 
-		l.addView(addFolderButton);
-		l.addView(settingsButton);
+		l.addView(lll);
+		l.addView(ll);
 
 		customView.addView(l);
 		getFlyInMenu().setCustomView(customView);
@@ -331,28 +356,30 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void initBars() {
-		// Together the button height and the border
-		// height are as high as the bar
-		int barContentHeight = getBarHeight() * 9 / 10;
-		int borderHeight = getBarHeight() * 1 / 10;
+		int barHeight = getBarHeight();
+		int borderHeight = getBarBorderHeight();
 
 		FrameLayout[] buttons = { dragButton, backButton, (FrameLayout) findViewById(R.id.addButton) };
 
 		for (int i = 0; i < buttons.length; i++) {
-			buttons[i].getLayoutParams().height = barContentHeight;
-			buttons[i].getLayoutParams().width = barContentHeight;
+			buttons[i].getLayoutParams().height = barHeight;
+			buttons[i].getLayoutParams().width = barHeight;
 
-			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().height = (int) (barContentHeight * 0.8);
-			((ImageView) buttons[i].findViewById(R.id.icon)).getLayoutParams().width = (int) (barContentHeight * 0.8);
+			// ((ImageView)
+			// buttons[i].findViewById(R.id.icon)).getLayoutParams().height =
+			// (int) (barHeight * 0.8);
+			// ((ImageView)
+			// buttons[i].findViewById(R.id.icon)).getLayoutParams().width =
+			// (int) (barHeight * 0.8);
 		}
 
-		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = barContentHeight;
-		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = barContentHeight;
+		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = barHeight;
+		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = barHeight;
 
 		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
-		((LinearLayout) findViewById(R.id.titleBar)).getLayoutParams().height = barContentHeight;
+		((LinearLayout) findViewById(R.id.titleBar)).getLayoutParams().height = barHeight;
 
-		options.getLayoutParams().height = barContentHeight;
+		options.getLayoutParams().height = barHeight;
 	}
 
 	private void updateData() {
@@ -755,6 +782,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		setTitle(title);
 
 		if (id == SettingsView.SELECT_APP_LANGUAGE) contentViews.add(posInWrapper, new SelectLanguage(this));
+		else if (id == SettingsView.SEND_FEEDBACK) contentViews.add(posInWrapper, new FeedbackView(this));
 
 		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, (animate) ? App.ANIMATION_DURATION : 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
@@ -860,8 +888,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void startEditTitle() {
-		if (isInSettings())
-		;
+		if (isInSettings()) return;
 
 		nameTV.setVisibility(View.GONE);
 		nameET.setVisibility(View.VISIBLE);
@@ -1012,8 +1039,11 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public int getBarHeight() {
-		if (getResources().getDimension(R.dimen.item_height) < height * 1 / 12) return height * 1 / 12;
-		else return (int) getResources().getDimension(R.dimen.item_height);
+		return (int) getResources().getDimension(R.dimen.item_height);
+	}
+
+	public int getBarBorderHeight() {
+		return (int) getResources().getDimension(R.dimen.bar_border_height);
 	}
 
 	public int getContentWidth() {
@@ -1022,7 +1052,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public int getContentHeight() {
-		return height - getBarHeight();
+		return height - getBarHeight() - getBarBorderHeight();
 	}
 
 	public JSONObject getData() {
@@ -1068,8 +1098,11 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public boolean isInSettings() {
-		for (ContentView i : contentViews)
-			if (i instanceof SettingsView) return true;
+		for (ContentView i : contentViews) {
+			if (i instanceof SettingsView) {
+				return true;
+			}
+		}
 		return false;
 	}
 

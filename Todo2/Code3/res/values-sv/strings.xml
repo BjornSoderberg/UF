@@ -57,4 +57,5 @@
     <string name="set_custom_reminder">Välj egen påminnelse</string>
     <string name="set_monthly_reminder">Välj månatlig påminnelse</string>
     <string name="sorry_did_not_catch_that">Ursäkta, jag förstod inte</string>
+    <string name="send_feedback">Skicka feedback</string>
 </resources>

@@ -97,4 +97,7 @@ public class CustomReminderListAdapter extends BaseAdapter {
 
 		return -1;
 	}
+	
+	// Update icons
+	// White/dark theme for custom reminder items (set colors)
 }

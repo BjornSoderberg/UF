@@ -57,6 +57,23 @@
     <string name="set_custom_reminder">Set custom reminder</string>
     <string name="set_monthly_reminder">Set monthly reminder</string>
     <string name="sorry_did_not_catch_that">Sorry, didn\'t catch that</string>
+    <string name="send_feedback">Send feedback</string>
+    
+    <string name="year">year</string>
+    <string name="years">years</string>
+    <string name="month">month</string>
+    <string name="months">months</string>
+    <string name="week">week</string>
+    <string name="weeks">weeks</string>
+    <string name="day">day</string>
+    <string name="days">days</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
+    <string name="minute">minute</string>
+    <string name="minutes">minutes</string>
+    <string name="and">and</string>
+    <string name="now">now</string>
+    <string name="in">in</string>
     
     <!-- Don't forget to translate DateTimePickerLibrary strings as well -->
 </resources>

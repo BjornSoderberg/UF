@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="40dp"
-    android:background="#35ADCF"
+    android:background="#38ADCF"
     android:orientation="horizontal" >
 
     <FrameLayout
@@ -11,11 +11,11 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/menu" />
+            android:src="@drawable/ic_menu" />
     </FrameLayout>
 
     <FrameLayout
@@ -27,11 +27,11 @@
 
         <ImageView
             android:id="@id/icon"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/plus" />
+            android:src="@drawable/ic_left" />
     </FrameLayout>
 
     <LinearLayout
@@ -66,7 +66,7 @@
 
         <EditText
             android:id="@+id/nameET"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:background="@color/transparent"
@@ -102,11 +102,11 @@
 
         <ImageView
             android:id="@id/icon"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/plus" />
+            android:src="@drawable/ic_add" />
     </FrameLayout>
 
     <!-- End of title -->

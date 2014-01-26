@@ -96,7 +96,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 		// If can use voice recognition and has internet connection
 		if (activities.size() != 0 && App.isNetworkAvailable(activity)) {
-			voiceRecognitionButton.setText(activity.getResources().getString(R.string.press_me_to_speak));
+			voiceRecognitionButton.setText("");
 			voiceRecognitionButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					if (!isListening) startVoiceRecognition();
@@ -157,8 +157,8 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 		if (activity.getLocaleString() != "") intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, activity.getLocaleString());
 		// http://stackoverflow.com/questions/7973023/what-is-the-list-of-supported-languages-locales-on-android
-
-		voiceRecognitionButton.setBackground(getContext().getResources().getDrawable(R.drawable.ic_launcher));
+		
+//		voiceRecognitionButton.setBackgroundResource(R.drawable.ic_launcher);
 		isListening = true;
 
 		speechRecognizer.startListening(intent);

@@ -28,11 +28,11 @@
 
         <ImageView
             android:id="@+id/expandIcon"
-            android:layout_width="@dimen/item_image_width"
-            android:layout_height="@dimen/item_image_height"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/box" />
+            android:src="@drawable/ic_right" />
     </FrameLayout>
 
 </RelativeLayout>

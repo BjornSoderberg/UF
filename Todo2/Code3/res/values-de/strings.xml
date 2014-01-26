@@ -57,4 +57,5 @@
     <string name="set_custom_reminder">Eigene Erinnerung wählen</string>
     <string name="set_monthly_reminder">Monatliche Erinnerung wählen</string>
     <string name="sorry_did_not_catch_that">Ich könnte es nicht verstehen</string>
+    <string name="send_feedback">Feedback senden</string>
 </resources>
