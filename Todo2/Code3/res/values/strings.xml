@@ -16,9 +16,12 @@
     <string name="add_new">Add new</string>
     <string name="select_type">Select type</string>
     <string name="cancel">Cancel</string>
-    <string name="task">Task</string>
-    <string name="note">Note</string>
-    <string name="folder">Folder</string>
+    <string name="task">task</string>
+    <string name="note">note</string>
+    <string name="folder">folder</string>
+    <string name="Task">Task</string>
+    <string name="Note">Note</string>
+    <string name="Folder">Folder</string>
     <string name="set_time_for_weekly_reminder">Set time for weekly reminder</string>
     <string name="add_to_menu">Add to menu</string>
     <string name="you_cannot_move_tasks_and_notes_to_the_menu">You cannot move tasks and notes to the menu</string>

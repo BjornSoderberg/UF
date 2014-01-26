@@ -12,7 +12,7 @@ public final class R {
     }
     public static final class color {
         public static int ampm_text_color=0x7f03000b;
-        public static int blue=0x7f030005;
+        public static int aqua_blue=0x7f030005;
         public static int calendar_header=0x7f030009;
         public static int circle_background=0x7f030001;
         public static int dark_gray=0x7f03000f;

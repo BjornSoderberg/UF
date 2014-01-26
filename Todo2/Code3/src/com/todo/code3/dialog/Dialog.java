@@ -14,13 +14,13 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
@@ -65,8 +65,16 @@ public abstract class Dialog extends AlertDialog.Builder {
 	}
 
 	protected void init() {
-		if (title != null) setTitle(title);
 		if (message != null) setMessage(message);
+		if (title != null) {
+			TextView t = new TextView(activity);
+			t.setText(title);
+			t.setPadding(30, 30, 0, 30);
+			t.setBackgroundColor(activity.getResources().getColor(R.color.aqua_blue));
+			t.setTextSize(App.pxToDp(activity.getResources().getDimension(R.dimen.text_extra_large), activity.getResources()));
+			t.setTextColor(activity.getResources().getColor(R.color.white));
+			setCustomTitle(t);
+		}
 
 		content = new LinearLayout(activity);
 		content.setOrientation(LinearLayout.VERTICAL);
@@ -87,7 +95,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 		speechRecognizer = SpeechRecognizer.createSpeechRecognizer(activity);
 
 		voiceRecognitionButton = (Button) view.findViewById(R.id.button1);
-		voiceRecognitionButton.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.voice_recognition_button));
+		voiceRecognitionButton.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.ic_mic_big));
 		voiceRecognitionButton.getLayoutParams().height = App.dpToPx(80, activity.getResources());
 		voiceRecognitionButton.getLayoutParams().width = App.dpToPx(80, activity.getResources());
 
@@ -101,14 +109,12 @@ public abstract class Dialog extends AlertDialog.Builder {
 				public void onClick(View v) {
 					if (!isListening) startVoiceRecognition();
 					else endVoiceRecognition();
+
 				}
 			});
 
-			// content.addView(voiceRecognitionButton);
-
 			cp = (CircularPulser) view.findViewById(R.id.circularPulsar1);
 			cp.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, App.dpToPx(150, activity.getResources())));
-			// content.addView(cp);
 			content.addView(view);
 		}
 	}
@@ -128,12 +134,14 @@ public abstract class Dialog extends AlertDialog.Builder {
 			}
 
 			public void onError(int error) {
+				if (cp != null) cp.disable();
 			}
 
 			public void onEvent(int eventType, Bundle params) {
 			}
 
 			public void onPartialResults(Bundle partialResults) {
+				if (cp != null) cp.disable();
 			}
 
 			public void onReadyForSpeech(Bundle params) {
@@ -142,6 +150,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 			public void onResults(Bundle results) {
 				endVoiceRecognition();
 				onVoiceRecognitionResult(results);
+				if (cp != null) cp.disable();
 			}
 
 			public void onRmsChanged(float rmsdB) {
@@ -157,8 +166,8 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 		if (activity.getLocaleString() != "") intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, activity.getLocaleString());
 		// http://stackoverflow.com/questions/7973023/what-is-the-list-of-supported-languages-locales-on-android
-		
-//		voiceRecognitionButton.setBackgroundResource(R.drawable.ic_launcher);
+
+		cp.enable();
 		isListening = true;
 
 		speechRecognizer.startListening(intent);
@@ -169,8 +178,9 @@ public abstract class Dialog extends AlertDialog.Builder {
 		if (speechRecognizer != null && Build.VERSION.SDK_INT >= App.MIN_API_FOR_VOICE_RECOGNITION) {
 			speechRecognizer.stopListening();
 			isListening = false;
-			voiceRecognitionButton.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.voice_recognition_button));
 		}
+
+		if (cp != null) cp.disable();
 	}
 
 	public abstract void onVoiceRecognitionResult(Bundle result);

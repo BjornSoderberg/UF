@@ -5,14 +5,32 @@
     android:background="#ffffff"
     android:orientation="horizontal" >
 
+    <FrameLayout
+        android:id="@+id/item_icon"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/item_padding_leftright"
+        android:visibility="invisible" >
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_note" />
+    </FrameLayout>
+    
     <TextView
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@id/item_icon"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/item_text_padding_left"
+        android:layout_marginRight="@dimen/item_padding_leftright"
         android:layout_toLeftOf="@+id/item_drag"
         android:ellipsize="end"
         android:gravity="center_vertical"
@@ -35,7 +53,7 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_unchecked" />
+            android:src="@drawable/ic_drag" />
     </FrameLayout>
 
 </RelativeLayout>

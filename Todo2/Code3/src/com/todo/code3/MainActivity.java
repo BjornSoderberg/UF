@@ -255,7 +255,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 		});
 
-		initAddButton();
+		initMenuButtons();
 
 		Resources r = getResources();
 		String[] paths = { r.getString(R.string.prioritized), //
@@ -289,13 +289,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		sortSpinner.setVisibility(View.GONE);
 	}
 
-	private void initAddButton() {
+	private void initMenuButtons() {
 		// Makes the custom view
 		LinearLayout customView = new LinearLayout(this);
 		customView.setOrientation(LinearLayout.VERTICAL);
 
 		TextView addFolderButton = new TextView(this);
-		addFolderButton.setText(getResources().getString(R.string.add_new_folder));
+		addFolderButton.setText("  " + getResources().getString(R.string.add_new_folder));
 		addFolderButton.setTextSize(App.pxToDp(getResources().getDimension(R.dimen.item_text_size), getResources()));
 		addFolderButton.setTextColor(getResources().getColor(R.color.item_text_color));
 
@@ -304,7 +304,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		lll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, (int) getResources().getDimension(R.dimen.item_height)));
 		lll.setGravity(Gravity.CENTER);
 		ImageView ii = new ImageView(this);
-		ii.setBackgroundResource(R.drawable.ic_add);
+		ii.setLayoutParams(new LinearLayout.LayoutParams((int)(getResources().getDimension(R.dimen.item_height) / 2),(int)(getResources().getDimension(R.dimen.item_height) / 2)));
+		ii.setBackgroundResource(R.drawable.ic_plus_small);
 		ii.getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
 		lll.addView(ii);
 		lll.addView(addFolderButton);
@@ -324,7 +325,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		});
 
 		TextView settingsButton = new TextView(this);
-		settingsButton.setText(getResources().getString(R.string.settings));
+		settingsButton.setText("  " + getResources().getString(R.string.settings));
 		settingsButton.setTextSize(App.pxToDp(getResources().getDimension(R.dimen.item_text_size), getResources()));
 		settingsButton.setTextColor(getResources().getColor(R.color.item_text_color));
 
@@ -335,6 +336,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		ImageView i = new ImageView(this);
 		i.setBackgroundResource(R.drawable.ic_settings);
 		i.getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
+		i.setLayoutParams(new LinearLayout.LayoutParams((int)(getResources().getDimension(R.dimen.item_height) / 2),(int)(getResources().getDimension(R.dimen.item_height) / 2)));
 		ll.addView(i);
 		ll.addView(settingsButton);
 		ll.setBackgroundDrawable(getResources().getDrawable(R.drawable.menu_button_selector));
@@ -364,17 +366,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		for (int i = 0; i < buttons.length; i++) {
 			buttons[i].getLayoutParams().height = barHeight;
 			buttons[i].getLayoutParams().width = barHeight;
-
-			// ((ImageView)
-			// buttons[i].findViewById(R.id.icon)).getLayoutParams().height =
-			// (int) (barHeight * 0.8);
-			// ((ImageView)
-			// buttons[i].findViewById(R.id.icon)).getLayoutParams().width =
-			// (int) (barHeight * 0.8);
 		}
-
-		((LinearLayout) findViewById(R.id.line1)).getLayoutParams().height = barHeight;
-		((LinearLayout) findViewById(R.id.line2)).getLayoutParams().height = barHeight;
 
 		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
 		((LinearLayout) findViewById(R.id.titleBar)).getLayoutParams().height = barHeight;
@@ -478,7 +470,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	// When clicking on the button
 	public void addDialog(View v) {
 		if (isInSettings()) return;
-		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), getResources().getString(R.string.select_type), null, getResources().getString(R.string.cancel)) {
+		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), null, null, getResources().getString(R.string.cancel)) {
 			public void onResult(String name, String type) {
 				super.onResult(name, type);
 				add(name, type);
@@ -673,6 +665,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
+	
+	public void saveTask(View v) {
+		
+	}
 
 	private void openMenuItem(int id) {
 		if (isMoving) return;
@@ -740,6 +736,14 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
+			
+			if(object.getString(App.TYPE).equals(App.TASK)) {
+				findViewById(R.id.saveTask).setVisibility(View.VISIBLE);
+				findViewById(R.id.addButton).setVisibility(View.GONE);
+			} else {
+				findViewById(R.id.saveTask).setVisibility(View.GONE);
+				findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+			}
 
 			backButton.setVisibility(View.VISIBLE);
 			dragButton.setVisibility(View.GONE);
@@ -854,6 +858,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			posInWrapper--;
 
 			if (posInWrapper >= 0 && posInWrapper < contentViews.size()) if (contentViews.get(posInWrapper) == null) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
+			
+			// Toggles the check and add button (just in case)
+			findViewById(R.id.saveTask).setVisibility(View.GONE);
+			findViewById(R.id.addButton).setVisibility(View.VISIBLE);
 
 			updateData();
 		} catch (JSONException e) {
@@ -957,6 +965,11 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateData();
 	}
 
+	public boolean isInOptions() {
+		if (contentViews.get(posInWrapper) instanceof ItemView) return ((ItemView) contentViews.get(posInWrapper)).isInOptionsMode();
+		return false;
+	}
+
 	public void updateChildrenOrder(String children, int parentId) {
 		data = App.updateChildrenOrder(children, parentId, data);
 
@@ -1036,6 +1049,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public ContentView getOpenContentView() {
 		return contentViews.get(posInWrapper);
+	}
+	
+	public OptionsBar getOptionsBar() {
+		return options;
 	}
 
 	public int getBarHeight() {

@@ -9,7 +9,7 @@ package com.fourmob.datetimepicker;
 public final class R {
 	public static final class color {
 		public static final int ampm_text_color = 0x7f060010;
-		public static final int blue = 0x7f06000a;
+		public static final int aqua_blue = 0x7f06000a;
 		public static final int calendar_header = 0x7f06000e;
 		public static final int circle_background = 0x7f060006;
 		public static final int dark_gray = 0x7f060014;

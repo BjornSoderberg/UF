@@ -2,10 +2,16 @@ package com.todo.code3.dialog;
 
 import android.app.AlertDialog;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.R;
@@ -30,13 +36,16 @@ public class AddItemDialog extends Dialog {
 	protected void init() {
 		super.init();
 
-		LinearLayout l = new LinearLayout(activity);
-		l.setOrientation(LinearLayout.HORIZONTAL);
+		RelativeLayout r = new RelativeLayout(activity);
+//		l.setWeightSum(3);
 
 		alert = create();
 
-		Button task = new Button(activity);
-		task.setText(activity.getString(R.string.task));
+		FrameLayout task = new FrameLayout(activity);
+		ImageView taskImg = new ImageView(activity);
+		task.addView(taskImg);
+		task.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		((RelativeLayout.LayoutParams)task.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 		task.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				askForName(App.TASK);
@@ -44,8 +53,11 @@ public class AddItemDialog extends Dialog {
 			}
 		});
 
-		Button note = new Button(activity);
-		note.setText(activity.getString(R.string.note));
+		FrameLayout note = new FrameLayout(activity);
+		ImageView noteImg = new ImageView(activity);
+		note.addView(noteImg);
+		note.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		((RelativeLayout.LayoutParams) note.getLayoutParams()).addRule(RelativeLayout.CENTER_HORIZONTAL);
 		note.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				askForName(App.NOTE);
@@ -53,8 +65,11 @@ public class AddItemDialog extends Dialog {
 			}
 		});
 
-		Button folder = new Button(activity);
-		folder.setText(activity.getString(R.string.folder));
+		FrameLayout folder = new FrameLayout(activity);
+		ImageView folderImg = new ImageView(activity);
+		folder.addView(folderImg);
+		folder.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		((RelativeLayout.LayoutParams)folder.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		folder.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				askForName(App.FOLDER);
@@ -62,11 +77,44 @@ public class AddItemDialog extends Dialog {
 			}
 		});
 
-		l.addView(task);
-		l.addView(note);
-		l.addView(folder);
+		r.addView(task);
+		r.addView(note);
+		r.addView(folder);
 
-		alert.setView(l);
+		alert.setView(r);
+		
+		DisplayMetrics dm = new DisplayMetrics();
+		alert.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+		int s =(int)( dm.widthPixels * 1 / 3);
+		note.getLayoutParams().height = s;
+		note.getLayoutParams().width = s;
+		task.getLayoutParams().height = s;
+		task.getLayoutParams().width = s;
+		folder.getLayoutParams().height = s;
+		folder.getLayoutParams().width = s;
+		
+		int ss = s * 2/3;
+		int p = (s-ss) / 2;
+
+		taskImg.setLayoutParams(new FrameLayout.LayoutParams(ss, ss));
+		noteImg.setLayoutParams(new FrameLayout.LayoutParams(ss, ss));
+		folderImg.setLayoutParams(new FrameLayout.LayoutParams(ss, ss));
+
+		task.setPadding(p, p, p, p);
+		note.setPadding(p, p, p, p);
+		folder.setPadding(p, p, p, p);
+		
+		Drawable d = alert.getContext().getResources().getDrawable(R.drawable.ic_folder).mutate();
+		d.setColorFilter(new PorterDuffColorFilter(alert.getContext().getResources().getColor(R.color.aqua_blue), PorterDuff.Mode.MULTIPLY));
+		folderImg.setBackgroundDrawable(d);
+		
+		d = alert.getContext().getResources().getDrawable(R.drawable.ic_edit).mutate();
+		d.setColorFilter(new PorterDuffColorFilter(alert.getContext().getResources().getColor(R.color.aqua_blue), PorterDuff.Mode.MULTIPLY));
+		noteImg.setBackgroundDrawable(d);
+		
+		d = alert.getContext().getResources().getDrawable(R.drawable.ic_task).mutate();
+		d.setColorFilter(new PorterDuffColorFilter(alert.getContext().getResources().getColor(R.color.aqua_blue), PorterDuff.Mode.MULTIPLY));
+		taskImg.setBackgroundDrawable(d);
 	}
 
 	public void askForName(final String type) {

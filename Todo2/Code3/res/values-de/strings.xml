@@ -19,6 +19,9 @@
     <string name="task">Aufgabe</string>
     <string name="note">Notiz</string>
     <string name="folder">Mappe</string>
+    <string name="Task">Aufgabe</string>
+    <string name="Note">Notiz</string>
+    <string name="Folder">Mappe</string>
     <string name="set_time_for_weekly_reminder">Zeit angeben für wöchentliche Erinnerung</string>
     <string name="add_to_menu">Zu Menü hinzufügen</string>
     <string name="you_cannot_move_tasks_and_notes_to_the_menu">Nicht möglich Aufgaben und Notizen zu Menü wechseln</string>

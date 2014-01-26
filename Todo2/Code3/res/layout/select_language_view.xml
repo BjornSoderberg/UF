@@ -10,7 +10,7 @@
         android:layout_height="fill_parent"
         android:fadingEdgeLength="0dp"
         android:cacheColorHint="#00000000"
-        android:divider="@color/divider_color"
+        android:divider="@color/divider_color_light"
         android:dividerHeight="@dimen/divider_height"
         android:visibility="visible" >
     </ListView>

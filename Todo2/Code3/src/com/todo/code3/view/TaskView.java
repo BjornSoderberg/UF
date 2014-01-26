@@ -382,15 +382,6 @@ public class TaskView extends ContentView {
 		setReminderInfo(info);
 	}
 
-	// private int getWeekButtons() {
-	// int tot = 0;
-	// for (int i = 0; i < weekDays.length; i++) {
-	// if (weekDays[i].isChecked()) tot += Math.pow(2, i);
-	// }
-	//
-	// return tot;
-	// }
-
 	public String getReminderInfo() {
 		if (task != null) {
 			try {
@@ -422,6 +413,14 @@ public class TaskView extends ContentView {
 		App.hideKeyboard(getContext(), focusDummy);
 
 		activity.setProperty(App.DESCRIPTION, desc, parentId);
+	}
+	
+	public boolean isChecked() {
+		try {
+			if (task.has(App.COMPLETED) && task.getBoolean(App.COMPLETED)) return true;
+		} catch (JSONException e) {
+		}
+		return false;
 	}
 
 	// not used

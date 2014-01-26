@@ -34,15 +34,6 @@
             android:src="@drawable/ic_left" />
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/line1"
-        android:layout_width="2px"
-        android:layout_height="40dp"
-        android:background="#298DA9"
-        android:enabled="false"
-        android:orientation="horizontal"
-        android:visibility="visible" />
-
     <!-- Title -->
 
     <LinearLayout
@@ -86,14 +77,6 @@
             android:visibility="gone" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/line2"
-        android:layout_width="2px"
-        android:layout_height="40dp"
-        android:background="#298DA9"
-        android:enabled="false"
-        android:orientation="horizontal" />
-
     <FrameLayout
         android:id="@+id/addButton"
         android:layout_width="40dp"
@@ -106,7 +89,23 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_add" />
+            android:src="@drawable/ic_plus" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/saveTask"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:onClick="saveTask"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@id/icon"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_check" />
     </FrameLayout>
 
     <!-- End of title -->

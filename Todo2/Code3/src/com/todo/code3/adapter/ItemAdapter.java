@@ -3,7 +3,7 @@ package com.todo.code3.adapter;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PorterDuffColorFilter;
-import android.util.Log;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -107,6 +107,8 @@ public class ItemAdapter extends BaseAdapter {
 			}
 		});
 
+		((ImageView) view.findViewById(R.id.drag)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
+
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
 		if (itemView.isSelected(item.getId())) {
@@ -130,20 +132,27 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Is prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
-		ImageView i = (ImageView) view.findViewById(R.id.star);
+		final ImageView i = (ImageView) view.findViewById(R.id.star);
 
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if (itemView.getActivity().isMoving()) return;
+				final boolean shouldPrio = !item.isPrioritized();
 
-				boolean shouldPrio = !item.isPrioritized();
-				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+					}
+				}, App.ANIMATION_DURATION);
+
+				if (shouldPrio) i.setImageResource(R.drawable.ic_star);
+				else i.setImageResource(R.drawable.ic_unstar);
 			}
 		});
 
-		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_launcher);
-		else i.setImageResource(R.drawable.ic_launcher);
-		
+		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_star);
+		else i.setImageResource(R.drawable.ic_unstar);
+		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
+
 		// Checkbox and image
 		FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
 		ImageView iv = (ImageView) view.findViewById(R.id.checkbox);
@@ -181,19 +190,27 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Init prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
-		ImageView i = (ImageView) view.findViewById(R.id.star);
+		final ImageView i = (ImageView) view.findViewById(R.id.star);
 
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
-				boolean shouldPrio = !item.isPrioritized();
-				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+				final boolean shouldPrio = !item.isPrioritized();
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+					}
+				}, App.ANIMATION_DURATION);
+
+				if (shouldPrio) i.setImageResource(R.drawable.ic_star);
+				else i.setImageResource(R.drawable.ic_unstar);
 			}
 		});
 
-		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_launcher);
-		else i.setImageResource(R.drawable.ic_launcher);
+		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_star);
+		else i.setImageResource(R.drawable.ic_unstar);
+		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Set correct color on icon (through filter)
 		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
@@ -216,26 +233,34 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Init prio
 		FrameLayout prio = (FrameLayout) view.findViewById(R.id.item_prio);
-		ImageView i = (ImageView) view.findViewById(R.id.star);
+		final ImageView i = (ImageView) view.findViewById(R.id.star);
 
 		prio.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (itemView.getActivity().isMoving()) return;
 
-				boolean shouldPrio = !item.isPrioritized();
-				itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+				final boolean shouldPrio = !item.isPrioritized();
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						itemView.getActivity().setProperty(App.PRIORITIZED, shouldPrio, item.getId());
+					}
+				}, App.ANIMATION_DURATION);
+
+				if (shouldPrio) i.setImageResource(R.drawable.ic_star);
+				else i.setImageResource(R.drawable.ic_unstar);
 			}
 		});
 
-		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_launcher);
-		else i.setImageResource(R.drawable.ic_launcher);
+		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_star);
+		else i.setImageResource(R.drawable.ic_unstar);
+		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Set correct color on icon (through filter)
 		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
-		text.setText(item.getTitle() + " (" + itemView.getActivity().getResources().getString(R.string.note) + ")");
+		text.setText(item.getTitle());
 		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// Sets the background (which is dependent on its state (pressed,

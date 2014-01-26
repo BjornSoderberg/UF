@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="divider_color">#88000000</color>
-    
     <color name="selected_light_gray">#ffe8e8e8</color>
     <color name="selected_semi_transparent">#33000000</color>
     
@@ -14,4 +12,5 @@
     <color name="selected_light_red">#FFFF9687</color>
     
     <color name="icon_color">#ffC8C8C8</color>
+    <color name="star_color">#fffce193</color>
 </resources>

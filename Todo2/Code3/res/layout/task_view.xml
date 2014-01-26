@@ -89,8 +89,8 @@
                     android:id="@+id/customReminderList"
                     android:layout_width="match_parent"
                     android:layout_height="135dp"
-                    android:divider="#888888"
-                    android:dividerHeight="2px" >
+                    android:divider="@color/divider_color_light"
+                    android:dividerHeight="@dimen/divider_height" >
                 </ListView>
 
                 <LinearLayout

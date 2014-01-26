@@ -16,9 +16,12 @@
     <string name="add_new">Lägg till ny</string>
     <string name="select_type">Välj typ</string>
     <string name="cancel">Avbryt</string>
-    <string name="task">Uppgift</string>
-    <string name="note">Anteckning</string>
-    <string name="folder">Mapp</string>
+    <string name="task">uppgift</string>
+    <string name="note">anteckning</string>
+    <string name="folder">mapp</string>
+    <string name="Task">Uppgift</string>
+    <string name="Note">Anteckning</string>
+    <string name="Folder">Mapp</string>
     <string name="set_time_for_weekly_reminder">Ange tid för veckovis påminnelse</string>
     <string name="add_to_menu">Lägg till i menyn</string>
     <string name="you_cannot_move_tasks_and_notes_to_the_menu">Du kan inte flytta uppgifter och anteckningar till menyn</string>

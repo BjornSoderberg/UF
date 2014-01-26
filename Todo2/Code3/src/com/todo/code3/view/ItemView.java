@@ -228,6 +228,8 @@ public class ItemView extends ContentView {
 			if (i.getId() == id) {
 				selectedItems.remove(i);
 				updateBackgroundColor(id);
+				
+				activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 				return;
 			}
 		}
@@ -237,6 +239,8 @@ public class ItemView extends ContentView {
 			if (i.getId() == id && !selectedItems.contains(i)) {
 				selectedItems.add(i);
 				updateBackgroundColor(id);
+				
+				activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 				return;
 			}
 		}
@@ -247,6 +251,7 @@ public class ItemView extends ContentView {
 		if (v == null) return;
 
 		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_item_selector));
+		else if(activity.isDarkTheme()) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_dark));
 		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_light));
 	}
 
@@ -255,6 +260,8 @@ public class ItemView extends ContentView {
 		if (id == App.OPTIONS_GROUP_ITEMS) groupSelectedItems();
 		if (id == App.OPTIONS_SELECT_ALL) toggleSelection();
 		if (id == App.OPTIONS_MOVE) moveSelectedItems();
+		
+		activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 	}
 
 	private void removeSelectedItems() {

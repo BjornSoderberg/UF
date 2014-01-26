@@ -1,14 +1,10 @@
 package com.todo.code3.xml;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -17,6 +13,7 @@ import com.todo.code3.MainActivity;
 import com.todo.code3.gesture.SimpleGestureFilter;
 import com.todo.code3.gesture.SimpleGestureFilter.SimpleGestureListener;
 import com.todo.code3.misc.App;
+import com.todo.code3.view.TaskView;
 
 public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
@@ -223,7 +220,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		if (add.getLeft() < x && x < add.getRight()) {
 			if (add.getTop() < y && y < add.getBottom()) {
 				if (e.getAction() == MotionEvent.ACTION_DOWN) {
-					if (!activity.isInSettings()) {
+					if (!activity.isInSettings() && !activity.isInOptions() && !(activity.getOpenContentView() instanceof TaskView)) {
 						addTouch = true;
 						return true;
 					}
@@ -252,7 +249,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 					return;
 				} else activity.goBack();
 				// Should solve bug with nothing happening on swipe
-				if (posBefore == activity.getPosInWrapper()) activity.showMenu();
+				if (posBefore == activity.getPosInWrapper() && !activity.getFlyInMenu().isVisible()) activity.showMenu();
 			}
 		}
 	}

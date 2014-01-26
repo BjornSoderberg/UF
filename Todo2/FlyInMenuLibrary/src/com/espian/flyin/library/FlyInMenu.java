@@ -283,10 +283,10 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		// Hides the menu views when the animation has ended
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				// mMenuHolder.setVisibility(View.GONE);
-				// if (mCustomView != null) {
-				// mCustomView.setVisibility(View.GONE);
-				// }
+				mMenuHolder.setVisibility(View.GONE);
+				if (mCustomView != null) {
+					mCustomView.setVisibility(View.GONE);
+				}
 
 				isDragging = false;
 			}
@@ -481,7 +481,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 			FlyInMenuItem item = menuItems.get(position);
 
 			text.setText(item.getTitle());
-			;
 
 			if (item.getId() == getExpandingItemId()) {
 				invalidateExpandingItemId();
