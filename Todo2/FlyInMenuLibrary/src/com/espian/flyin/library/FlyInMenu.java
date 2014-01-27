@@ -55,7 +55,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	private int movingItemId = -1;
 
 	private boolean isDragging = false;
-	private boolean hidden = false;
+	private boolean isOpening = false;
 
 	private OnFlyInItemClickListener callback;
 
@@ -226,6 +226,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	public void showMenu() {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
 
+		isOpening = true;
+
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -252,7 +254,12 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		contentOffset = width;
 
 		isDragging = false;
-		hidden = false;
+
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				isOpening = false;
+			}
+		}, animationDuration);
 	}
 
 	public void hideMenu() {
@@ -283,9 +290,11 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		// Hides the menu views when the animation has ended
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				mMenuHolder.setVisibility(View.GONE);
-				if (mCustomView != null) {
-					mCustomView.setVisibility(View.GONE);
+				if (!isOpening) {
+					mMenuHolder.setVisibility(View.GONE);
+					if (mCustomView != null) {
+						mCustomView.setVisibility(View.GONE);
+					}
 				}
 
 				isDragging = false;
@@ -293,7 +302,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		}, animationDuration);
 
 		contentOffset = 0;
-		hidden = true;
 	}
 
 	public void moveMenu(int dx) {
@@ -326,7 +334,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		showFlyIn.setDuration(0).start();
 
 		contentOffset += dx;
-		hidden = false;
 	}
 
 	private void expandView(final View view) {
@@ -379,7 +386,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	}
 
 	public boolean isVisible() {
-		return contentOffset != 0 && !hidden;
+		return contentOffset != 0;
 	}
 
 	public int test() {

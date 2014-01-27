@@ -241,7 +241,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public void onSwipe(int direction) {
-		if (!isDragging) {
+		if (!isDragging && !activity.isMoving()) {
 			if (direction == SimpleGestureFilter.SWIPE_RIGHT) {
 				int posBefore = activity.getPosInWrapper();
 				if (activity.getPosInWrapper() == 0) {
