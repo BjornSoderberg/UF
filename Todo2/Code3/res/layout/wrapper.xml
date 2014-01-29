@@ -18,7 +18,7 @@
         android:layout_below="@+id/titleBar"
         android:background="#35ADCF"
         android:orientation="horizontal"
-        android:visibility="visible" >
+        android:visibility="gone" >
     </com.todo.code3.xml.OptionsBar>
 
     <LinearLayout
@@ -52,10 +52,5 @@
 
         <requestFocus />
     </EditText>
-
-    <Spinner
-        android:id="@+id/sortSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 </com.todo.code3.xml.Wrapper>

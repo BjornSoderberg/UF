@@ -1,15 +1,19 @@
 package com.todo.code3.xml;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.widget.Button;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.todo.code3.MainActivity;
+import com.todo.code3.R;
 import com.todo.code3.gesture.SimpleGestureFilter;
 import com.todo.code3.gesture.SimpleGestureFilter.SimpleGestureListener;
 import com.todo.code3.misc.App;
@@ -30,11 +34,12 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	private boolean hasStarted = false;
 
 	private boolean addTouch = false;
-	private Button[] touchButtons;
 
 	private ViewConfiguration viewConfig;
 	private MainActivity activity;
 	private SimpleGestureFilter detector;
+
+	private ImageView touchImageView;
 
 	public Wrapper(Context context) {
 		super(context);
@@ -51,35 +56,64 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		viewConfig = ViewConfiguration.get(getContext());
 		detector = new SimpleGestureFilter(getContext(), this);
 
-		initTouchButtons();
+		// initTouchImageView();
 	}
 
-	private void initTouchButtons() {
+	private void initTouchImageView() {
 		int numButtons = 3;
 		double v[] = { Math.toRadians(15), Math.toRadians(45), Math.toRadians(75) };
 		int w = App.dpToPx(50, getContext().getResources()); // width
-		int d = App.dpToPx(150, getContext().getResources()); // distance from
-																// upper
-																// right corner
+		// distance from upper right corner
+		int d = App.dpToPx(150, getContext().getResources());
 
-		touchButtons = new Button[numButtons];
+		touchImageView = new ImageView(getContext());
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(d, d);
+		params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		touchImageView.setLayoutParams(params);
+		addView(touchImageView);
 
-		for (int i = 0; i < numButtons; i++) {
-			touchButtons[i] = new Button(getContext());
-			touchButtons[i].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
-			RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(w, w);
+		// touchImageView = (ImageView)
+		// activity.findViewById(R.id.touchImageView);
+		// if(touchImageView != null) Log.i("asdasdasdassa",
+		// touchImageView.toString());
+		// else Log.i("asdas", "why is this null?");
+		// touchImageView.setBackgroundColor(0xffff8823);
 
-			p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-			p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		// touchImageView = new ImageView(getContext());
+		// touchImageView.setBackgroundColor(0xff883399);
+		// RelativeLayout.LayoutParams params = new
+		// RelativeLayout.LayoutParams(w, w);
+		// params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		// params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		// touchImageView.setLayoutParams(params);
+		// addView(touchImageView);
 
-			p.rightMargin = (int) (d * Math.cos(v[i])) - w / 2;
-			p.topMargin = (int) (d * Math.sin(v[i])) - w / 2;
+		// Log.i("asdasd", touchImageView.getParent() + "");
+		//
+		// touchImageView.bringToFront();
+		// touchImageView.requestLayout();
+		//
+		// touchButtons = new Button[numButtons];
+		//
+		// for (int i = 0; i < numButtons; i++) {
+		// touchButtons[i] = new Button(getContext());
+		// touchButtons[i].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
+		// RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(w,
+		// w);
+		//
+		// p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		// p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		//
+		// p.rightMargin = (int) (d * Math.cos(v[i])) - w / 2;
+		// p.topMargin = (int) (d * Math.sin(v[i])) - w / 2;
+		//
+		// touchButtons[i].setLayoutParams(p);
+		// addView(touchButtons[i]);
+		// }
 
-			touchButtons[i].setLayoutParams(p);
-			addView(touchButtons[i]);
-		}
-
-		hideAddOptions();
+		// hideAddOptions();
+		// showAddOptions();
 	}
 
 	public boolean onTouchEvent(MotionEvent e) {
@@ -161,16 +195,18 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
 				v = Math.toDegrees(v);
 
-				for (Button b : touchButtons)
-					b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
+				// for (Button b : touchButtons)
+				// b.setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners));
 
-				int selected = -1;
+				int selected = R.drawable.select_left;
 
-				if (-90 < v && v < -60) selected = 2;
-				else if (-60 < v && v < -30) selected = 1;
-				else if (-30 < v && v < 0) selected = 0;
+				if ((-90 <= v && v < -60) || (60 <= v && v <= 90)) selected = R.drawable.select_right;
+				else if (-60 <= v && v < -30) selected = R.drawable.select_middle;
+				else if ((-30 <= v && v < 0) || (0 <= v && v <= 30)) selected = R.drawable.select_left;
 
-				if (selected != -1) touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
+				touchImageView.setBackgroundDrawable(getContext().getResources().getDrawable(selected));
+				// if (selected != -1)
+				// touchButtons[selected].setBackgroundDrawable(getContext().getResources().getDrawable(com.todo.code3.R.drawable.rounded_corners_selected));
 
 			}
 		} else if (e.getAction() == MotionEvent.ACTION_UP) {
@@ -182,9 +218,9 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 				double v = Math.atan((y - startY) * 1.0 / (x - startX) * 1.0);
 				v = Math.toDegrees(v);
 
-				if (-90 < v && v < -60) activity.addDialog(App.FOLDER);
-				else if (-60 < v && v < -30) activity.addDialog(App.NOTE);
-				else if (-30 < v && v < 0) activity.addDialog(App.TASK);
+				if ((-90 <= v && v < -60) || (60 <= v && v <= 90)) activity.addDialog(App.FOLDER);
+				else if (-60 <= v && v < -30) activity.addDialog(App.NOTE);
+				else if ((-30 <= v && v < 0) || (0 <= v && v <= 30)) activity.addDialog(App.TASK);
 			}
 		}
 
@@ -206,7 +242,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		// if the back button is visible and the user touches
 		// the button, the menu should not open
 		if (x < b.getRight() && y < b.getBottom()) {
-			if (activity.getPosInWrapper() != 0) return false;
+			if (activity.getPosInWrapper() != 0 || activity.isInOptions()) return false;
 			else {
 				return true;
 			}
@@ -255,15 +291,27 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	private void showAddOptions() {
-		for (Button b : touchButtons) {
-			b.setVisibility(View.VISIBLE);
-			b.bringToFront();
-			b.requestLayout();
-		}
+		if (touchImageView == null) initTouchImageView();
+
+		touchImageView.setVisibility(View.VISIBLE);
+		touchImageView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.select_left));
+		touchImageView.bringToFront();
+		touchImageView.requestLayout();
+
+		Animation animation = new AlphaAnimation(0, 1);
+		animation.setDuration(App.ANIMATION_DURATION);
+		touchImageView.startAnimation(animation);
 	}
 
 	private void hideAddOptions() {
-		for (Button b : touchButtons)
-			b.setVisibility(View.GONE);
+		Animation animation = new AlphaAnimation(1, 0);
+		animation.setDuration(App.ANIMATION_DURATION);
+		touchImageView.startAnimation(animation);
+
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				touchImageView.setVisibility(View.GONE);
+			}
+		}, App.ANIMATION_DURATION);
 	}
 }

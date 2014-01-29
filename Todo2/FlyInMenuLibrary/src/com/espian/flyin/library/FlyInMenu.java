@@ -3,6 +3,9 @@ package com.espian.flyin.library;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,7 +21,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -55,7 +57,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	private int movingItemId = -1;
 
 	private boolean isDragging = false;
-	private boolean isOpening = false;
+	private boolean isInOptionsMode = false;
 
 	private OnFlyInItemClickListener callback;
 
@@ -226,8 +228,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	public void showMenu() {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
 
-		isOpening = true;
-
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -254,12 +254,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		contentOffset = width;
 
 		isDragging = false;
-
-		new Handler().postDelayed(new Runnable() {
-			public void run() {
-				isOpening = false;
-			}
-		}, animationDuration);
 	}
 
 	public void hideMenu() {
@@ -290,11 +284,9 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		// Hides the menu views when the animation has ended
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
-				if (!isOpening) {
-					mMenuHolder.setVisibility(View.GONE);
-					if (mCustomView != null) {
-						mCustomView.setVisibility(View.GONE);
-					}
+				mMenuHolder.setVisibility(View.GONE);
+				if (mCustomView != null) {
+					mCustomView.setVisibility(View.GONE);
 				}
 
 				isDragging = false;
@@ -484,7 +476,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 			// if (convertView == null || convertView instanceof TextView)
 			View view = inflater.inflate(R.layout.fly_item, null);
 
-			TextView text = (TextView) view.findViewById(R.id.rbm_item_text);
+			TextView text = (TextView) view.findViewById(R.id.item_text);
 			FlyInMenuItem item = menuItems.get(position);
 
 			text.setText(item.getTitle());
@@ -500,6 +492,14 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 			if (item.getId() == movingItemId) {
 				view.setVisibility(View.INVISIBLE);
 			}
+			
+			int drawableId = R.drawable.ic_folder;
+			if(App.getNumberOfTasksOverDue(item.getId(), activity.getData()) > 0) drawableId = R.drawable.ic_folder_due;
+			else if(App.getNumberOfTasksCompleted(item.getId(), false, activity.getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, activity.getData()) > 0) drawableId = R.drawable.ic_folder_check;
+			
+			Drawable d = getContext().getResources().getDrawable(drawableId).mutate();
+			d.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
+			((ImageView) view.findViewById(R.id.icon)).setBackgroundDrawable(d);
 
 			if (item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));
 
@@ -517,7 +517,19 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	}
 
 	public void onSwipe(int direction) {
-		Log.i("" + isDragging, direction + "");
 		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_LEFT) hideMenu();
+	}
+	
+	public void toggleOptions() {
+		if(isInOptionsMode) disableOptions();
+		else enableOptions();
+	}
+	
+	public void enableOptions() {
+		
+	}
+	
+	public void disableOptions() {
+		
 	}
 }

@@ -405,7 +405,7 @@ public class DynamicListView extends ListView {
 					setEnabled(true);
 					invalidate();
 
-//					itemView.updateContentItemsOrder();
+					itemView.updateContentItemsOrder();
 				}
 			}, MOVE_DURATION);
 

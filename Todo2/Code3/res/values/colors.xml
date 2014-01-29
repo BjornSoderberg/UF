@@ -11,6 +11,5 @@
     <color name="light_red">#ffFFC7C7</color>
     <color name="selected_light_red">#FFFF9687</color>
     
-    <color name="icon_color">#ffC8C8C8</color>
     <color name="star_color">#fffce193</color>
 </resources>

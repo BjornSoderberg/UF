@@ -1,6 +1,8 @@
 package com.todo.code3.misc;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,6 +71,11 @@ public class App {
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";
 	public static final String SETTINGS_APP_LANGUAGE = "settingsAppLanguage";
 	public static final String SETTINGS_24_HOUR_CLOCK = "settings24HourClock";
+	public static final String SETTINGS_SORT_TYPE = "settingsSortType";
+
+	public static final String DATE_FORMAT_AMPM = "EEE, dd MMM yyyy 'at' hh':'mm aaa";
+	public static final String DATE_FORMAT_24_HOUR_CLOCK = "EEE, dd MMM yyyy 'at' HH':'mm";
+	public static final String DATE_FORMAT_SIMPLE = "dd MMM yyyy";
 
 	public static final int MIN_API_FOR_VOICE_RECOGNITION = 8;
 
@@ -400,7 +407,8 @@ public class App {
 				}
 			} else if (parent.getString(App.TYPE).equals(App.TASK)) {
 				if (parent.has(App.DUE_DATE) && parent.getLong(App.DUE_DATE) != -1) {
-					if (isOverDue(parent.getLong(App.DUE_DATE))) return 1;
+					// If the item is over due and not completed
+					if (isOverDue(parent.getLong(App.DUE_DATE)) && (!parent.has(App.COMPLETED) || !parent.getBoolean(App.COMPLETED))) return 1;
 
 				}
 			}
@@ -478,6 +486,17 @@ public class App {
 		}
 
 		return "";
+	}
+	
+	public static String getFormattedDateString(long timestamp, boolean is24HourClock) {
+		String format = is24HourClock ? DATE_FORMAT_24_HOUR_CLOCK : DATE_FORMAT_AMPM;
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(new Date(timestamp * 1000));
+	}
+	
+	public static String getSimpleFormattedDateString(long timestamp) {
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_SIMPLE);
+		return sdf.format(new Date(timestamp * 1000));
 	}
 
 	public static boolean isEmailValid(String email) {

@@ -6,6 +6,6 @@
     <color name="item_color_dark">#353535</color>
     <color name="item_color_light">#404040</color>
     
-    <color name="main_color">#35ADCF</color>
+    <color name="icon_color">#ffC8C8C8</color>
 
 </resources>

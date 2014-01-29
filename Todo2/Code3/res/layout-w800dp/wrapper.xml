@@ -53,9 +53,4 @@
         <requestFocus />
     </EditText>
 
-    <Spinner
-        android:id="@+id/sortSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
 </com.todo.code3.xml.Wrapper>

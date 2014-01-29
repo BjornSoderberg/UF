@@ -212,12 +212,16 @@ public class ItemAdapter extends BaseAdapter {
 		else i.setImageResource(R.drawable.ic_unstar);
 		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
+		// If there are items over due
+		if(App.getNumberOfTasksOverDue(item.getId(), itemView.getActivity().getData()) > 0) ((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_folder_due);
+		else if(App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) != 0)((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_folder_check);
 		// Set correct color on icon (through filter)
 		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
-
+		
+		
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
-		text.setText(item.getTitle() + " (" + App.getNumberOfTasksOverDue(item.getId(), itemView.getActivity().getData()) + " od, " + App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) + " c, " + App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData()) + "uc)");
+		text.setText(item.getTitle());
 		text.setTextColor((itemView.getActivity().isDarkTheme()) ? itemView.getActivity().getResources().getColor(R.color.text_color_dark) : itemView.getActivity().getResources().getColor(R.color.text_color_light));
 
 		// Sets the background (which is dependent on its state (pressed,

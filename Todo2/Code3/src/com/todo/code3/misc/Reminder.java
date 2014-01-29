@@ -16,11 +16,12 @@ import com.todo.code3.notification.NotificationReceiver;
 
 public class Reminder {
 	public static final String REMINDER_WEEKLY = "a";
-	public static final String REMINDER_EVERY_TWO_WEEKS = "b";
+	// public static final String REMINDER_EVERY_TWO_WEEKS = "b";
 	public static final String REMINDER_MONTHLY = "c";
 	public static final String REMINDER_INTERVAL = "d";
 	// public static final String REMINDER_SINGLE_TIMESTAMPS = "e";
 	public static final String REMINDER_RELATIVE_TO_DUE_DATE = "f";
+	public static final String REMINDER_CUSTOM = "g";
 
 	public static final int ONE_MONTH_RELATIVE_TO_DUE = 2592000;
 	// seconds in month with 30 days (used for checking)
@@ -38,138 +39,44 @@ public class Reminder {
 	public static final int SATURDAY = 2;
 	public static final int SUNDAY = 1;
 
+	public static final int PART_DUE_DATE = 0;
+	public static final int PART_REMINDER = 1;
+	public static final int PART_REPEAT = 2;
+
 	public static final String DAYS_IN_WEEK = "daysInWeek";
 
 	public static final String HOUR_OF_DAY = "hourOfDay";
 	public static final String MINUTE_OF_HOUR = "minuteOfHour";
 
 	public static final String REMINDER_INFO = "reminderInfo";
+	public static final String REPEAT_INFO = "repeatInfo";
 
 	public static long getNext(String reminderInfo, long dueDate) {
 		Calendar c = Calendar.getInstance();
+		// Makes the reminder only go off once
+		c.set(Calendar.SECOND, 0);
+		c.add(Calendar.MINUTE, 1);
 
-		if (getType(reminderInfo).equals(Reminder.REMINDER_WEEKLY) || getType(reminderInfo).equals(Reminder.REMINDER_EVERY_TWO_WEEKS)) {
-			int gap = 1;
-			if (getType(reminderInfo).equals(Reminder.REMINDER_WEEKLY)) gap = 1;
-			else if (getType(reminderInfo).equals(Reminder.REMINDER_EVERY_TWO_WEEKS)) gap = 2;
+		long next = -1;
+		String[] info = reminderInfo.split(",");
 
-			int days = Integer.parseInt(getPart(reminderInfo, 1));
-			int hour = Integer.parseInt(getPart(reminderInfo, 2));
-			int minute = Integer.parseInt(getPart(reminderInfo, 3));
-			int startWeek = 1;
-			if (hasPart(reminderInfo, 4)) startWeek = Integer.parseInt(getPart(reminderInfo, 4));
-
-			int count = 0;
-			while (count < 2000) {
-				if (existsIn(c.get(Calendar.DAY_OF_WEEK), days)) {
-					// if gap = 2, startWeek = 8: only 8, 10, 12, 14... will be
-					// true
-					if (startWeek % gap == c.get(Calendar.WEEK_OF_YEAR) % gap) {
-						c.set(Calendar.HOUR_OF_DAY, hour);
-						c.set(Calendar.MINUTE, minute);
-						c.set(Calendar.SECOND, 0);
-
-						// Return only if the time is in the future
-						if (System.currentTimeMillis() < c.getTimeInMillis()) { //
-							return c.getTimeInMillis() / 1000;
-						}
-					}
-				}
-
-				c.add(Calendar.DAY_OF_MONTH, 1);
-				count++;
-			}
-
-			return -1;
-		} else if (getType(reminderInfo).equals(Reminder.REMINDER_MONTHLY)) {
-			int dayOfMonth = Integer.parseInt(getPart(reminderInfo, 1));
-			int hour = Integer.parseInt(getPart(reminderInfo, 2));
-			int minute = Integer.parseInt(getPart(reminderInfo, 3));
-
-			int count = 0;
-			while (count < 2000) {
-				int d = dayOfMonth;
-				if (c.getActualMaximum(Calendar.DAY_OF_MONTH) < d) d = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-				if (c.get(Calendar.DAY_OF_MONTH) == d) {
-					c.set(Calendar.HOUR_OF_DAY, hour);
-					c.set(Calendar.MINUTE, minute);
-					c.set(Calendar.SECOND, 0);
-
-					// Return only if the time is in the future
-					if (System.currentTimeMillis() < c.getTimeInMillis()) { //
-						return c.getTimeInMillis() / 1000;
-					}
-				}
-
-				c.add(Calendar.DAY_OF_MONTH, 1);
-				count++;
-			}
-		} else if (getType(reminderInfo).equals(Reminder.REMINDER_INTERVAL)) {
-			int type = -1;
+		for (String i : info) {
 			try {
-				type = Integer.parseInt((String) getPart(reminderInfo, 1));
+				long l = Long.parseLong(i);
+				if (l < 3600 * 24 * 365) l = dueDate - l;
+
+				if (l < c.getTimeInMillis() / 1000) continue;
+
+				if (next > l || next == -1) next = l;
 			} catch (NumberFormatException e) {
-				return -1;
 			}
-			int intervalLength = Integer.parseInt(getPart(reminderInfo, 2));
-			long start = Long.parseLong(getPart(reminderInfo, 3));
-
-			int cycle = intervalLength;
-			if(cycle == -1) return -1;
-			
-			if (type == Reminder.INTERVAL_WEEK) cycle *= 7 * 24 * 60 * 60;
-			else if (type == Reminder.INTERVAL_DAY) cycle *= 24 * 60 * 60;
-			else if (type == Reminder.INTERVAL_HOUR) cycle *= 60 * 60;
-			else if (type == Reminder.INTERVAL_MINUTE) cycle *= 60;
-			else return -1;
-
-			c.setTimeInMillis(start * 1000);
-
-			int count = 0;
-			while (count < 100000) {
-				// Return only if the time is in the future
-				if (System.currentTimeMillis() < c.getTimeInMillis()) {
-					return c.getTimeInMillis() / 1000;
-				}
-
-				count++;
-				c.setTimeInMillis(c.getTimeInMillis() + cycle * 1000);
-			}
-		} else if (getType(reminderInfo).equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
-			long now = System.currentTimeMillis() / 1000;
-			long closest = -1;
-
-			// 0 is type
-			int part = 1;
-			while (part < 1000) {
-				if (hasPart(reminderInfo, part)) {
-					try {
-						long l = Long.parseLong(getPart(reminderInfo, part));
-						long t = 0;
-						// Exception for month (num seconds in month vary)
-						if (l == Reminder.ONE_MONTH_RELATIVE_TO_DUE) {
-							c.setTimeInMillis(dueDate * 1000);
-							c.add(Calendar.MONTH, -1);
-							t = c.getTimeInMillis() / 1000;
-							// If t is larger than 10 years, it is a custom
-							// timestamp (not relative to due date)
-						} else if (l > 10 * 365 * 24 * 3600) {
-							t = l;
-						} else if (dueDate != -1) t = dueDate - l;
-
-						if (t > now && (t < closest || closest == -1)) closest = t;
-					} catch (NumberFormatException e) {
-
-					}
-				} else break;
-
-				part++;
-			}
-			return closest;
 		}
 
-		return -1;
+		// Sets the next reminder to due date if it is closer than the closest
+		// reminder
+		if (dueDate < next) if (dueDate > c.getTimeInMillis() / 1000) next = dueDate;
+
+		return next;
 	}
 
 	public static boolean existsIn(int day, int days) {

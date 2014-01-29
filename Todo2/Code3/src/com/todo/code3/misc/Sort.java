@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import android.content.Context;
+
 import com.todo.code3.item.ContentItem;
 import com.todo.code3.item.TaskItem;
+import com.todo.code3.notification.NotificationReceiver;
 
 public class Sort {
 
@@ -14,6 +17,7 @@ public class Sort {
 	public static final int SORT_COMPLETED = 2;
 	public static final int SORT_ALPHABETICALLY = 3;
 	public static final int SORT_DUE_DATE = 4;
+	public static final int SORT_NOTHING = 5;
 
 	public static void sortPrioritized(ArrayList<ContentItem> oldList, boolean invert) {
 		ArrayList<ContentItem> newList = new ArrayList<ContentItem>();
@@ -42,7 +46,7 @@ public class Sort {
 		Collections.sort(list, c);
 
 		for (ContentItem ia : list)
-			ia.setTitle(ia.getTimestampCreated() + " : " + ia.getTitle());
+			ia.setTitle(ia.getTitle() + " (" + App.getSimpleFormattedDateString(ia.getTimestampCreated()) + ")");
 	}
 
 	public static void sortCompleted(ArrayList<ContentItem> oldList) {
@@ -83,7 +87,7 @@ public class Sort {
 		Collections.sort(list, comparator);
 	}
 
-	public static void sortDueDate(ArrayList<ContentItem> list) {
+	public static void sortDueDate(ArrayList<ContentItem> list, Context context) {
 		ArrayList<ContentItem> sorted = new ArrayList<ContentItem>();
 
 		for (ContentItem i : list)
@@ -113,7 +117,10 @@ public class Sort {
 		list.clear();
 		list.addAll(sorted);
 
-		for (ContentItem ia : list)
-			if (ia instanceof TaskItem) ia.setTitle(((TaskItem) ia).getDueDate() + " : " + ia.getTitle());
+		for (ContentItem ia : list) {
+			if (ia instanceof TaskItem) {
+				if (((TaskItem) ia).getDueDate() != -1) ia.setTitle(ia.getTitle() + " (" + NotificationReceiver.getTimeString(((TaskItem) ia).getDueDate(), context) + ") ");
+			}
+		}
 	}
 }

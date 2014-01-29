@@ -11,7 +11,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import com.todo.code3.MainActivity;
 import com.todo.code3.item.ContentItem;
-import com.todo.code3.xml.HierarchyParent;
+import com.todo.code3.xml.hierarchy.HierarchyParent;
 
 public class FolderSelectionDialog extends Dialog {
 

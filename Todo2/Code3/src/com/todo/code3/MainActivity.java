@@ -27,9 +27,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Scroller;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.espian.flyin.library.FlyInFragmentActivity;
@@ -49,6 +45,7 @@ import com.todo.code3.dialog.TextLineDialog;
 import com.todo.code3.misc.App;
 import com.todo.code3.misc.Reminder;
 import com.todo.code3.misc.SPEditor;
+import com.todo.code3.misc.Sort;
 import com.todo.code3.notification.NotificationReceiver;
 import com.todo.code3.view.ContentView;
 import com.todo.code3.view.ItemView;
@@ -71,7 +68,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	private OptionsBar options;
 	private Button saveButton;
 	private FrameLayout dragButton, backButton;
-	private Spinner sortSpinner;
 	private LinearLayout titleBar;
 
 	private JSONObject data;
@@ -256,37 +252,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		});
 
 		initMenuButtons();
-
-		Resources r = getResources();
-		String[] paths = { r.getString(R.string.prioritized), //
-				r.getString(R.string.created), //
-				r.getString(R.string.completed), //
-				r.getString(R.string.alphabetically),//
-				r.getString(R.string.due_date), //
-				r.getString(R.string.include_subitems) };
-
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paths);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
-		sortSpinner.setAdapter(adapter);
-		sortSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				int position = sortSpinner.getSelectedItemPosition();
-
-				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(position);
-
-				updateData();
-			}
-
-			public void onNothingSelected(AdapterView<?> arg0) {
-				if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).setSortType(-1);
-
-				updateData();
-			}
-		});
-
-		sortSpinner.setVisibility(View.GONE);
 	}
 
 	private void initMenuButtons() {
@@ -304,7 +269,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		lll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, (int) getResources().getDimension(R.dimen.item_height)));
 		lll.setGravity(Gravity.CENTER);
 		ImageView ii = new ImageView(this);
-		ii.setLayoutParams(new LinearLayout.LayoutParams((int)(getResources().getDimension(R.dimen.item_height) / 2),(int)(getResources().getDimension(R.dimen.item_height) / 2)));
+		ii.setLayoutParams(new LinearLayout.LayoutParams((int) (getResources().getDimension(R.dimen.item_height) / 2), (int) (getResources().getDimension(R.dimen.item_height) / 2)));
 		ii.setBackgroundResource(R.drawable.ic_plus_small);
 		ii.getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
 		lll.addView(ii);
@@ -336,7 +301,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		ImageView i = new ImageView(this);
 		i.setBackgroundResource(R.drawable.ic_settings);
 		i.getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
-		i.setLayoutParams(new LinearLayout.LayoutParams((int)(getResources().getDimension(R.dimen.item_height) / 2),(int)(getResources().getDimension(R.dimen.item_height) / 2)));
+		i.setLayoutParams(new LinearLayout.LayoutParams((int) (getResources().getDimension(R.dimen.item_height) / 2), (int) (getResources().getDimension(R.dimen.item_height) / 2)));
 		ll.addView(i);
 		ll.addView(settingsButton);
 		ll.setBackgroundDrawable(getResources().getDrawable(R.drawable.menu_button_selector));
@@ -665,9 +630,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		editor.put(App.DATA, data.toString());
 		updateData();
 	}
-	
+
 	public void saveTask(View v) {
-		
+		if (contentViews.get(posInWrapper) instanceof TaskView) ((TaskView) contentViews.get(posInWrapper)).endEditDescription(true);
 	}
 
 	private void openMenuItem(int id) {
@@ -736,13 +701,11 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (object.getString(App.TYPE).equals(App.TASK)) contentViews.add(posInWrapper, new TaskView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
-			
-			if(object.getString(App.TYPE).equals(App.TASK)) {
-				findViewById(R.id.saveTask).setVisibility(View.VISIBLE);
-				findViewById(R.id.addButton).setVisibility(View.GONE);
+
+			if (object.getString(App.TYPE).equals(App.TASK)) {
+				showCheck();
 			} else {
-				findViewById(R.id.saveTask).setVisibility(View.GONE);
-				findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+				hideCheck();
 			}
 
 			backButton.setVisibility(View.VISIBLE);
@@ -858,10 +821,9 @@ public class MainActivity extends FlyInFragmentActivity {
 			posInWrapper--;
 
 			if (posInWrapper >= 0 && posInWrapper < contentViews.size()) if (contentViews.get(posInWrapper) == null) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
-			
+
 			// Toggles the check and add button (just in case)
-			findViewById(R.id.saveTask).setVisibility(View.GONE);
-			findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+			hideCheck();
 
 			updateData();
 		} catch (JSONException e) {
@@ -1050,7 +1012,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public ContentView getOpenContentView() {
 		return contentViews.get(posInWrapper);
 	}
-	
+
 	public OptionsBar getOptionsBar() {
 		return options;
 	}
@@ -1134,6 +1096,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	public boolean is24HourMode() {
 		return prefs.getBoolean(App.SETTINGS_24_HOUR_CLOCK, true);
 	}
+	
+	public int getSortType() {
+		return prefs.getInt(App.SETTINGS_SORT_TYPE, Sort.SORT_NOTHING);
+	}
 
 	// not tested yet
 	public void setLocale(String lang) {
@@ -1190,7 +1156,32 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
+	public void showCheck() {
+		if (contentViews.get(posInWrapper) instanceof TaskView) {
+			findViewById(R.id.saveTask).setVisibility(View.VISIBLE);
+			findViewById(R.id.addButton).setVisibility(View.GONE);
+			disableCheck();
+		}
+	}
+
+	public void hideCheck() {
+		findViewById(R.id.saveTask).setVisibility(View.GONE);
+		findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+	}
+	
+	public void disableCheck() {
+		((FrameLayout) findViewById(R.id.saveTask)).findViewById(R.id.icon).getBackground().setAlpha((int) (0.3 * 255));
+	}
+	
+	public void enableCheck() {
+		((FrameLayout) findViewById(R.id.saveTask)).findViewById(R.id.icon).getBackground().setAlpha(255);
+	}
+
 	public void saveSetting(String settingName, boolean settingValue) {
+		editor.put(settingName, settingValue);
+	}
+
+	public void saveSetting(String settingName, int settingValue) {
 		editor.put(settingName, settingValue);
 	}
 

@@ -61,4 +61,22 @@
     <string name="set_monthly_reminder">Monatliche Erinnerung wählen</string>
     <string name="sorry_did_not_catch_that">Ich könnte es nicht verstehen</string>
     <string name="send_feedback">Feedback senden</string>
+    
+    <string name="year">Jahr</string>
+    <string name="years">Jahren</string>
+    <string name="month">Monat</string>
+    <string name="months">Monaten</string>
+    <string name="week">Woche</string>
+    <string name="weeks">Wochen</string>
+    <string name="day">Tag</string>
+    <string name="days">Tagen</string>
+    <string name="hour">Stunde</string>
+    <string name="hours">Stunden</string>
+    <string name="minute">Minute</string>
+    <string name="minutes">Minuten</string>
+    <string name="and">und</string>
+    <string name="now">jetzt</string>
+    <string name="in">in</string>
+    
+    <string name="nothing">Nichts</string>
 </resources>

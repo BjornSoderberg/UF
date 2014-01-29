@@ -105,7 +105,7 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_check" />
+            android:background="@drawable/ic_check" />
     </FrameLayout>
 
     <!-- End of title -->

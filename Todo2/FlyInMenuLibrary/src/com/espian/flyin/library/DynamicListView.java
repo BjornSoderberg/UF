@@ -134,24 +134,30 @@ public class DynamicListView extends ListView {
 	 */
 	private AdapterView.OnItemLongClickListener mOnItemLongClickListener = new AdapterView.OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
-			mTotalOffset = 0;
-
-			int position = pointToPosition(mDownX, mDownY);
-			int itemNum = position - getFirstVisiblePosition();
-
-			View selectedView = getChildAt(itemNum);
-			mMobileItemId = getAdapter().getItemId(position);
-			mHoverCell = getAndAddHoverView(selectedView);
-			selectedView.setVisibility(INVISIBLE);
-
-			mCellIsMobile = true;
-
-			updateNeighborViewsForID(mMobileItemId);
-			activity.getFlyInMenu().setMovingItemId((int) mMobileItemId);
+			
+			
+//			startDragging();
 
 			return true;
 		}
 	};
+	
+	private void startDragging() {
+		mTotalOffset = 0;
+
+		int position = pointToPosition(mDownX, mDownY);
+		int itemNum = position - getFirstVisiblePosition();
+
+		View selectedView = getChildAt(itemNum);
+		mMobileItemId = getAdapter().getItemId(position);
+		mHoverCell = getAndAddHoverView(selectedView);
+		selectedView.setVisibility(INVISIBLE);
+
+		mCellIsMobile = true;
+
+		updateNeighborViewsForID(mMobileItemId);
+		activity.getFlyInMenu().setMovingItemId((int) mMobileItemId);
+	}
 
 	/**
 	 * Creates the hover cell with the appropriate bitmap and of appropriate

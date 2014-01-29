@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.content.res.Resources;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,7 +41,6 @@ public class ItemView extends ContentView {
 
 	private int itemHeight;
 	private int expandingItemId = -1;
-	private int sortType;
 
 	private boolean optionsMode = false;
 	private boolean sortPrioritized = false;
@@ -98,15 +98,19 @@ public class ItemView extends ContentView {
 		try {
 			contentItems.clear();
 
-			if (includeSubFolders || sortType == 4) {
-				if (data.has(parentId + "")) {
-					JSONObject parent = new JSONObject(data.getString(parentId + ""));
-					if (parent.has(App.CHILDREN_IDS)) getItemsIncludingSubFolders(data, parent.getString(App.CHILDREN_IDS).split(","));
-				}
-			} else getItemsFromThisFolder(data);
+			// if (includeSubFolders) {
+			// if (data.has(parentId + "")) {
+			// JSONObject parent = new JSONObject(data.getString(parentId +
+			// ""));
+			// if (parent.has(App.CHILDREN_IDS))
+			// getItemsIncludingSubFolders(data,
+			// parent.getString(App.CHILDREN_IDS).split(","));
+			// }
+			// } else
+			getItemsFromThisFolder(data);
 
-			sortItems();
-
+			if (!isInOptionsMode()) sortItems();
+			
 			adapter.notifyDataSetChanged();
 
 			listView.setContentItems(contentItems);
@@ -228,7 +232,7 @@ public class ItemView extends ContentView {
 			if (i.getId() == id) {
 				selectedItems.remove(i);
 				updateBackgroundColor(id);
-				
+
 				activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 				return;
 			}
@@ -239,7 +243,7 @@ public class ItemView extends ContentView {
 			if (i.getId() == id && !selectedItems.contains(i)) {
 				selectedItems.add(i);
 				updateBackgroundColor(id);
-				
+
 				activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 				return;
 			}
@@ -251,7 +255,7 @@ public class ItemView extends ContentView {
 		if (v == null) return;
 
 		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_item_selector));
-		else if(activity.isDarkTheme()) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_dark));
+		else if (activity.isDarkTheme()) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_dark));
 		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_light));
 	}
 
@@ -260,7 +264,7 @@ public class ItemView extends ContentView {
 		if (id == App.OPTIONS_GROUP_ITEMS) groupSelectedItems();
 		if (id == App.OPTIONS_SELECT_ALL) toggleSelection();
 		if (id == App.OPTIONS_MOVE) moveSelectedItems();
-		
+
 		activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 	}
 
@@ -366,9 +370,10 @@ public class ItemView extends ContentView {
 	}
 
 	private void sortItems() {
+		int sortType = activity.getSortType();
+
 		if (sortType == Sort.SORT_PRIORITIZED) {
 			Sort.sortPrioritized(contentItems, sortPrioritized);
-			// sortPrioritized = !sortPrioritized;
 		} else if (sortType == Sort.SORT_TIMESTAMP_CREATED) {
 			Sort.sortTimestampCreated(contentItems);
 		} else if (sortType == Sort.SORT_COMPLETED) {
@@ -376,14 +381,8 @@ public class ItemView extends ContentView {
 		} else if (sortType == Sort.SORT_ALPHABETICALLY) {
 			Sort.sortAlphabetically(contentItems);
 		} else if (sortType == Sort.SORT_DUE_DATE) {
-			Sort.sortDueDate(contentItems);
+			Sort.sortDueDate(contentItems, activity);
 		}
-	}
-
-	public void setSortType(int type) {
-		sortType = type;
-
-		// sortPrioritized = false;
 	}
 
 	private View getViewById(int id) {

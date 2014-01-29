@@ -16,10 +16,10 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
+        public static int icon_color=0x7f050004;
         public static int item_color_dark=0x7f050002;
         public static int item_color_light=0x7f050003;
         public static int item_text_color=0x7f050001;
-        public static int main_color=0x7f050004;
         public static int menu_background=0x7f050000;
     }
     public static final class dimen {
@@ -34,13 +34,18 @@ public final class R {
     public static final class drawable {
         public static int fly_item_background=0x7f020000;
         public static int fly_item_background_light=0x7f020001;
+        public static int ic_folder=0x7f020002;
+        public static int ic_folder_check=0x7f020003;
+        public static int ic_folder_due=0x7f020004;
     }
     public static final class id {
-        public static int fly_custom=0x7f070004;
-        public static int fly_listview=0x7f070003;
-        public static int fly_menu_holder=0x7f070002;
+        public static int fly_custom=0x7f070006;
+        public static int fly_listview=0x7f070005;
+        public static int fly_menu_holder=0x7f070004;
         public static int fly_searchview=0x7f070000;
-        public static int rbm_item_text=0x7f070001;
+        public static int icon=0x7f070002;
+        public static int item_icon=0x7f070001;
+        public static int item_text=0x7f070003;
     }
     public static final class layout {
         public static int fly_item=0x7f030000;

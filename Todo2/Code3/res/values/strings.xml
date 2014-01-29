@@ -78,5 +78,7 @@
     <string name="now">now</string>
     <string name="in">in</string>
     
+    <string name="nothing">Nothing</string>
+    
     <!-- Don't forget to translate DateTimePickerLibrary strings as well -->
 </resources>

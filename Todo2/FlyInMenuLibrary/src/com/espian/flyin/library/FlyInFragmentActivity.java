@@ -1,5 +1,7 @@
 package com.espian.flyin.library;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
@@ -112,8 +114,8 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	public boolean onFlyInItemClick(FlyInMenuItem flyInMenuItem, int position) {
 		return true;
 	}
-
-	public int getSDKVersion() {
-		return Build.VERSION.SDK_INT;
+	
+	public JSONObject getData() {
+		return null;
 	}
 }

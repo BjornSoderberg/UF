@@ -2,131 +2,114 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:padding="10dp" >
 
-    <LinearLayout
-        android:layout_width="146dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-        <EditText
-            android:id="@+id/descET"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:visibility="gone" >
-        </EditText>
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/descTV"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/tap_to_write_a_description" />
-
-        <EditText
-            android:id="@+id/focusDummy"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:ems="10"
-            android:inputType="textMultiLine"
-            android:visibility="gone" >
-
-            <requestFocus />
-        </EditText>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <ScrollView
-            android:id="@+id/scrollView1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical" >
 
-                <Button
-                    android:id="@+id/dueButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/set_due_date" />
+                <TextView
+                    android:id="@+id/tvDescriptionHeader"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:text="Desc"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/text_normal" />
 
-                <Button
-                    android:id="@+id/clearDue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:text="@string/remove_due_date" />
-
-                <Button
-                    android:id="@+id/reminderButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/set_custom_reminder" />
-
-                <Button
-                    android:id="@+id/clearReminder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/remove_reminder" />
-
-                <ListView
-                    android:id="@+id/customReminderList"
-                    android:layout_width="match_parent"
-                    android:layout_height="135dp"
-                    android:divider="@color/divider_color_light"
-                    android:dividerHeight="@dimen/divider_height" >
-                </ListView>
-
-                <LinearLayout
-                    android:id="@+id/relativeToDueContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:hint="@string/tap_to_write_a_description"
+                    android:textSize="@dimen/text_normal" />
 
                 <EditText
-                    android:id="@+id/dayOfMonth"
+                    android:id="@+id/etDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:inputType="number" />
+                    android:ems="10"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:minLines="4"
+                    android:textSize="@dimen/text_normal"
+                    android:visibility="gone" >
+                </EditText>
 
-                <Button
-                    android:id="@+id/monthlyReminder"
+                <TextView
+                    android:id="@+id/tvDueHeader"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="@dimen/item_height"
+                    android:gravity="center_vertical"
+                    android:text="Due"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/text_normal" />
+
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:text="@string/set_monthly_reminder" />
+                    android:layout_height="@dimen/item_height" >
 
-                <LinearLayout
-                    android:id="@+id/daysOfWeekContainer"
+                    <TextView
+                        android:id="@+id/tvDue"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/dueRemove"
+                        android:gravity="center_vertical"
+                        android:text="Due"
+                        android:textSize="@dimen/text_normal" />
+
+                    <ImageView
+                        android:id="@+id/dueRemove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_trash" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tvReminderHeader"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:text="Reminder"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/text_normal" />
+
+                <ListView
+                    android:id="@+id/lvReminder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-                <LinearLayout
-                    android:id="@+id/intervalType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:divider="@color/transparent"
+                    android:dividerHeight="0dp" >
+                </ListView>
             </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+
+            <EditText
+                android:id="@+id/focusDummy"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:visibility="gone" >
+
+                <requestFocus />
+            </EditText>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_height"
-    android:background="@drawable/fly_item_background"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/item_padding_topbottom"
-    android:paddingLeft="@dimen/item_padding_leftright"
-    android:paddingRight="@dimen/item_padding_leftright"
-    android:paddingTop="@dimen/item_padding_topbottom" >
+    android:background="@drawable/fly_item_background" >
 
-    <!--
-    <ImageView
-            android:id="@+id/rbm_item_icon"
-            android:layout_height="@dimen/item_image_height"
-            android:layout_width="@dimen/item_image_width"
+    <FrameLayout
+        android:id="@+id/item_icon"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/item_padding_leftright" >
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
             android:scaleType="fitCenter"
-            />
-    -->
+            android:background="@drawable/ic_folder" />
+    </FrameLayout>
 
     <TextView
-        android:id="@+id/rbm_item_text"
+        android:id="@+id/item_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/item_padding_leftright"
+        android:layout_toRightOf="@id/item_icon"
         android:ellipsize="end"
+        android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_text_padding_left"
         android:singleLine="true"
         android:textColor="@color/item_text_color"
         android:textSize="@dimen/item_text_size" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -26,7 +26,7 @@ public class DateAndTimeDialog {
 	private int minute = 0;
 
 	private int showYear, showMonth, showDay, showHour, showMinute;
-	
+
 	private long timestamp;
 
 	private String type;
@@ -53,9 +53,10 @@ public class DateAndTimeDialog {
 		this.timestamp = timestamp;
 		this.activity = activity;
 		this.object = object;
-		
-		initStandardTimeAndDateFromTimestamp();
-		
+
+		if (timestamp == -1) initStandardTimeAndDateFromJSONObject();
+		else initStandardTimeAndDateFromTimestamp();
+
 		init();
 	}
 
@@ -106,10 +107,10 @@ public class DateAndTimeDialog {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void initStandardTimeAndDateFromTimestamp() {
 		calendar.setTimeInMillis(timestamp * 1000);
-		
+
 		showYear = calendar.get(Calendar.YEAR);
 		showMonth = calendar.get(Calendar.MONTH);
 		showDay = calendar.get(Calendar.DAY_OF_MONTH);
@@ -121,10 +122,8 @@ public class DateAndTimeDialog {
 		DatePickerDialog d = null;
 
 		try {
-			if (type.equals(Reminder.REMINDER_RELATIVE_TO_DUE_DATE)) {
-				int due[] = App.getDueDate(object.getLong(App.DUE_DATE));
-				d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, due[0], due[1], due[2], activity.isDarkTheme());
-			}
+			int due[] = App.getDueDate(object.getLong(App.DUE_DATE));
+			d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, due[0], due[1], due[2], activity.isDarkTheme());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

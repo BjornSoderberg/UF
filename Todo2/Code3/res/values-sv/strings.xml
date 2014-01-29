@@ -61,4 +61,22 @@
     <string name="set_monthly_reminder">Välj månatlig påminnelse</string>
     <string name="sorry_did_not_catch_that">Ursäkta, jag förstod inte</string>
     <string name="send_feedback">Skicka feedback</string>
+    
+    <string name="year">år</string>
+    <string name="years">år</string>
+    <string name="month">månad</string>
+    <string name="months">månader</string>
+    <string name="week">vecka</string>
+    <string name="weeks">veckor</string>
+    <string name="day">dag</string>
+    <string name="days">dagar</string>
+    <string name="hour">timme</string>
+    <string name="hours">timmar</string>
+    <string name="minute">minut</string>
+    <string name="minutes">minuter</string>
+    <string name="and">och</string>
+    <string name="now">nu</string>
+    <string name="in">om</string>
+    
+    <string name="nothing">Inget</string>
 </resources>

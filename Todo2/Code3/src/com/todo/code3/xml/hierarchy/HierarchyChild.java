@@ -1,13 +1,15 @@
-package com.todo.code3.xml;
+package com.todo.code3.xml.hierarchy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -86,7 +88,9 @@ public class HierarchyChild extends RelativeLayout {
 		});
 
 		if (!isExpandable()) expandButton.setVisibility(View.GONE);
-		if (!isSelectable()) text.setText(text.getText() + " (" + getContext().getResources().getString(R.string.current)+")");
+		if (!isSelectable()) text.setText(text.getText() + " (" + getContext().getResources().getString(R.string.current) + ")");
+
+		((ImageView) findViewById(R.id.expandIcon)).getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
 	}
 
 	public int getItemParentId() {
