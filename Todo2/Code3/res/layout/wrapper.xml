@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.todo.code3.xml.Wrapper xmlns:android="http://schemas.android.com/apk/res/android"
+<se.nextapp.task.full.xml.Wrapper xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bigWrapper"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         layout="@layout/title_bar" />
 
-    <com.todo.code3.xml.OptionsBar
+    <se.nextapp.task.full.xml.OptionsBar
         android:id="@+id/optionsBar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
