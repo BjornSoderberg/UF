@@ -1,6 +1,5 @@
 package com.todo.code3.view;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -15,8 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,7 +31,7 @@ public class TaskView extends ContentView {
 
 	private EditText descET, focusDummy;
 	private TextView descTV, dueTV;
-	private ImageView dueRemove;
+	private FrameLayout dueRemove;
 	private ListView reminderListView;
 
 	private JSONObject task;
@@ -75,8 +74,8 @@ public class TaskView extends ContentView {
 			}
 		});
 
-		dueRemove = (ImageView) findViewById(R.id.dueRemove);
-		dueRemove.getDrawable().mutate().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
+		dueRemove = (FrameLayout) findViewById(R.id.item_remove);
+		((ImageView)findViewById(R.id.dueRemove)).getDrawable().mutate().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 		dueRemove.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				clearDueDate();
@@ -99,14 +98,16 @@ public class TaskView extends ContentView {
 		Resources r = activity.getResources();
 		boolean dark = activity.isDarkTheme();
 		setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
-		// descTV.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark)
-		// : r.getColor(R.color.white));
-		// descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) :
-		// r.getColor(R.color.text_color_light));
-		// descET.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark)
-		// : r.getColor(R.color.selected_light));
-		// descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) :
-		// r.getColor(R.color.text_color_light));
+
+		descTV.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
+		descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		descET.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
+		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		
+		dueTV.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
+		dueTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		
+		dueRemove.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
 	}
 
 	public void update(JSONObject data) {
@@ -119,10 +120,10 @@ public class TaskView extends ContentView {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(task.getLong(App.DUE_DATE) * 1000);
 					
-					dueTV.setText(App.getFormattedDateString(task.getLong(App.DUE_DATE), activity.is24HourMode()));
+					dueTV.setText(App.getFormattedDateString(task.getLong(App.DUE_DATE), activity.is24HourMode(), activity.getLocaleString()));
 					dueRemove.setVisibility(View.VISIBLE);
 				} else {
-					dueTV.setText("Set due date (change)");
+					dueTV.setText(activity.getResources().getString(R.string.set_due_date));
 					dueRemove.setVisibility(View.GONE);
 				}
 			}
@@ -301,9 +302,6 @@ public class TaskView extends ContentView {
 		}
 		if (info.length() > 0 && info.charAt(info.length() - 1) == ',') info = info.substring(0, info.length() - 1);
 
-		Log.i("new should be " + info, list.toString());
-
-		// if (!info.equals(getReminderInfo()))
 		setReminderInfo(info);
 	}
 }

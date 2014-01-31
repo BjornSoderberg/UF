@@ -79,4 +79,16 @@
     <string name="in">om</string>
     
     <string name="nothing">Inget</string>
+    <string name="description">Beskrivning</string>
+    <string name="tap_to_set_a_due_date">Tryck för att sätta förfallodatum</string>
+    <string name="reminders">Påminnelser</string>
+    <string name="theme">Tema</string>
+    <string name="language">Språk</string>
+    <string name="sort_items_by">Sortera efter</string>
+    <string name="time_mode">Klocktyp</string>
+    <string name="mail_optional">Mail (frivillig)</string>
+    <string name="message">Meddelande</string>
+    <string name="thank_you_for_your_feedback">Tack för din feedback</string>
+    <string name="oops_something_went_wrong">Oj! Något gick fel.</string>
+    <string name="send">Skicka</string>
 </resources>

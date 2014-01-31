@@ -34,7 +34,7 @@ public class Sort {
 		oldList.addAll(newList);
 	}
 
-	public static void sortTimestampCreated(ArrayList<ContentItem> list) {
+	public static void sortTimestampCreated(ArrayList<ContentItem> list, String lang) {
 		// Highest at top
 		Comparator<ContentItem> c = new Comparator<ContentItem>() {
 			public int compare(ContentItem lhs, ContentItem rhs) {
@@ -46,7 +46,7 @@ public class Sort {
 		Collections.sort(list, c);
 
 		for (ContentItem ia : list)
-			ia.setTitle(ia.getTitle() + " (" + App.getSimpleFormattedDateString(ia.getTimestampCreated()) + ")");
+			ia.setTitle(ia.getTitle() + " (" + App.getSimpleFormattedDateString(ia.getTimestampCreated(), lang) + ")");
 	}
 
 	public static void sortCompleted(ArrayList<ContentItem> oldList) {

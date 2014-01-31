@@ -14,11 +14,11 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:background="@drawable/ic_folder" />
+            android:background="@drawable/ic_folder"
+            android:scaleType="fitCenter" />
     </FrameLayout>
 
     <TextView

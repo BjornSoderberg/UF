@@ -2,16 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="@dimen/content_padding" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/mailTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mail  OPTIONAL" />
+        android:textSize="@dimen/text_normal"
+        android:text="@string/mail_optional" />
 
     <EditText
-        android:id="@+id/mail"
+        android:id="@+id/mailET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -19,9 +21,17 @@
 
         <requestFocus />
     </EditText>
+    
+    <TextView
+        android:id="@+id/messageTV"
+        android:paddingTop="@dimen/text_padding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_normal"
+        android:text="@string/message" />
 
     <EditText
-        android:id="@+id/message"
+        android:id="@+id/messageET"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
@@ -31,7 +41,8 @@
 
     <Button
         android:id="@+id/send"
+        android:layout_marginTop="@dimen/text_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send - CHANGE THIS" />
+        android:text="@string/send" />
 </LinearLayout>

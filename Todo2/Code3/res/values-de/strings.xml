@@ -79,4 +79,16 @@
     <string name="in">in</string>
     
     <string name="nothing">Nichts</string>
+    <string name="description">Beschreibung</string>
+    <string name="tap_to_set_a_due_date">Fälligkeitsdatum wählen</string>
+    <string name="reminders">Erinnerungen</string>
+    <string name="theme">Thema</string>
+    <string name="language">Sprache</string>
+    <string name="sort_items_by">Sortiere Elemente nach</string>
+    <string name="time_mode">Zeitmodus</string>
+    <string name="mail_optional">E-Mail (freiwillig)</string>
+    <string name="message">Mitteilung</string>
+    <string name="thank_you_for_your_feedback">Danke für den Feedback</string>
+    <string name="oops_something_went_wrong">Etwas ist schief gelaufen</string>
+    <string name="send">Senden</string>
 </resources>

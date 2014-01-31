@@ -3,6 +3,7 @@ package com.todo.code3.misc;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -442,9 +443,8 @@ public class App {
 					}
 				}
 			} else if (parent.getString(App.TYPE).equals(App.TASK)) {
-				if (parent.has(App.COMPLETED) && parent.getBoolean(App.COMPLETED) == isCompleted) {
-					return 1;
-				}
+				if ((parent.has(App.COMPLETED) && parent.getBoolean(App.COMPLETED)) == isCompleted) return 1;
+				else return 0;
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -487,15 +487,15 @@ public class App {
 
 		return "";
 	}
-	
-	public static String getFormattedDateString(long timestamp, boolean is24HourClock) {
+
+	public static String getFormattedDateString(long timestamp, boolean is24HourClock, String lang) {
 		String format = is24HourClock ? DATE_FORMAT_24_HOUR_CLOCK : DATE_FORMAT_AMPM;
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		SimpleDateFormat sdf = new SimpleDateFormat(format, new Locale(lang));
 		return sdf.format(new Date(timestamp * 1000));
 	}
-	
-	public static String getSimpleFormattedDateString(long timestamp) {
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_SIMPLE);
+
+	public static String getSimpleFormattedDateString(long timestamp, String lang) {
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_SIMPLE, new Locale(lang));
 		return sdf.format(new Date(timestamp * 1000));
 	}
 
@@ -504,7 +504,7 @@ public class App {
 		CharSequence input = email;
 		Pattern pattern = Pattern.compile(regExp, Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(input);
-		
+
 		return matcher.matches();
 	}
 

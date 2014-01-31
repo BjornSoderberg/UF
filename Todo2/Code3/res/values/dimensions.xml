@@ -2,9 +2,10 @@
 <resources>
 
     <dimen name="item_padding_topbottom">16dp</dimen>
-    <dimen name="item_padding_leftright">16dp</dimen>
-    <dimen name="item_image_height">24dp</dimen>
-    <dimen name="item_image_width">24dp</dimen>
+    <dimen name="item_padding_leftright">8dp</dimen>
+    
+    <dimen name="item_image_height">32dp</dimen>
+    <dimen name="item_image_width">32dp</dimen>
     <dimen name="item_text_size">16dp</dimen>
     <dimen name="item_text_padding_left">12dp</dimen>
     
@@ -16,5 +17,8 @@
     <dimen name="text_normal">16sp</dimen>
     <dimen name="text_large">22sp</dimen>
     <dimen name="text_extra_large">24sp</dimen>
+    
+    <dimen name="content_padding">20dp</dimen>
+    <dimen name="text_padding">10dp</dimen>
 
 </resources>

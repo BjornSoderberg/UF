@@ -118,4 +118,8 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	public JSONObject getData() {
 		return null;
 	}
+	
+	public void remove(int id) {
+		
+	}
 }

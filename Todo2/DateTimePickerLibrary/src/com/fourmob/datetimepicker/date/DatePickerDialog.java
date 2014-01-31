@@ -1,29 +1,34 @@
 package com.fourmob.datetimepicker.date;
 
-import android.app.Activity;
-import android.content.res.Resources;
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.os.Vibrator;
-import android.support.v4.app.DialogFragment;
-import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.*;
-import android.view.animation.AlphaAnimation;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.ViewAnimator;
-import com.fourmob.datetimepicker.R;
-import com.fourmob.datetimepicker.Utils;
-import com.nineoldandroids.animation.ObjectAnimator;
-
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
+
+import android.app.Activity;
+import android.content.res.Resources;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.os.Vibrator;
+import android.support.v4.app.DialogFragment;
+import android.text.format.DateUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.ViewAnimator;
+
+import com.fourmob.datetimepicker.R;
+import com.fourmob.datetimepicker.Utils;
+import com.nineoldandroids.animation.ObjectAnimator;
 
 public class DatePickerDialog extends DialogFragment implements View.OnClickListener, DatePickerController {
 	// https://code.google.com/p/android/issues/detail?id=13050
@@ -250,7 +255,6 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 		outAlphaAnimation.setDuration(300L);
 		this.mAnimator.setOutAnimation(outAlphaAnimation);
 		this.mDoneButton = ((Button) view.findViewById(R.id.done));
-		this.mCancelButton = ((Button) view.findViewById(R.id.cancel));
 		this.mDoneButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				DatePickerDialog.this.tryVibrate();
@@ -258,6 +262,7 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 				DatePickerDialog.this.dismiss();
 			}
 		});
+		this.mCancelButton = ((Button) view.findViewById(R.id.cancel));
 		this.mCancelButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				DatePickerDialog.this.tryVibrate();
@@ -283,8 +288,8 @@ public class DatePickerDialog extends DialogFragment implements View.OnClickList
 	}
 
 	private void setColors(View view) {
-		mCancelButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
-		mDoneButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		if (Build.VERSION.SDK_INT >= 11) mCancelButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		if (Build.VERSION.SDK_INT >= 11) mDoneButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
 		view.findViewById(R.id.date_background).setBackgroundColor(getResources().getColor(R.color.white));
 		if (!mDark) return;
 

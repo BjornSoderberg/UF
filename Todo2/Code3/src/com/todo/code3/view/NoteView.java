@@ -4,9 +4,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,8 +18,7 @@ public class NoteView extends ContentView {
 
 	private TextView descTV;
 	private EditText descET, focusDummy;
-	private Button saveButton;
-	
+
 	private JSONObject note;
 
 	public NoteView(MainActivity activity, int parentId) {
@@ -35,13 +34,6 @@ public class NoteView extends ContentView {
 		descTV = (TextView) findViewById(R.id.descTV);
 		descET = (EditText) findViewById(R.id.descET);
 		focusDummy = (EditText) findViewById(R.id.focusDummy);
-		saveButton = (Button) findViewById(R.id.saveButton);
-
-		saveButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				endEditDescription(true);
-			}
-		});
 
 		descTV.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -61,29 +53,30 @@ public class NoteView extends ContentView {
 				if (hasFocus) App.hideKeyboard(getContext(), focusDummy);
 			}
 		});
-		
+
 		setColors();
 	}
-	
+
 	public void setColors() {
 		Resources r = activity.getResources();
 		boolean dark = activity.isDarkTheme();
 		setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
-		descTV.setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
+
+		descTV.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark) : r.getColor(R.color.light));
 		descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
 		descET.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark) : r.getColor(R.color.selected_light));
-		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.light));
 	}
 
 	public void update(JSONObject data) {
 		try {
 			note = new JSONObject(data.getString(parentId + ""));
-			if(note.getString(App.TYPE).equals(App.NOTE)) {
-				if(note.has(App.DESCRIPTION)) {
+			if (note.getString(App.TYPE).equals(App.NOTE)) {
+				if (note.has(App.DESCRIPTION)) {
 					descTV.setText(note.getString(App.DESCRIPTION));
 				}
 			}
-		} catch(JSONException e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
@@ -91,18 +84,17 @@ public class NoteView extends ContentView {
 	private void startEditDescription() {
 		descTV.setVisibility(View.GONE);
 		descET.setVisibility(View.VISIBLE);
-		saveButton.setVisibility(View.VISIBLE);
+		activity.enableCheck();
 
 		descET.setText(descTV.getText());
 
 		descET.requestFocus();
 	}
 
-	private void endEditDescription(boolean save) {
-
+	public void endEditDescription(boolean save) {
 		descTV.setVisibility(View.VISIBLE);
 		descET.setVisibility(View.GONE);
-		saveButton.setVisibility(View.GONE);
+		activity.disableCheck();
 
 		focusDummy.requestFocus();
 

@@ -1,37 +1,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="40dp"
-    android:background="#38ADCF"
+    android:layout_height="@dimen/item_height"
+    android:background="@color/aqua_blue"
     android:orientation="horizontal" >
 
     <FrameLayout
         android:id="@+id/dragButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp" >
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height" >
 
         <ImageView
-            android:id="@+id/icon"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:id="@+id/drag_icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_menu" />
+            android:background="@drawable/ic_menu" />
     </FrameLayout>
 
     <FrameLayout
         android:id="@+id/backButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
         android:onClick="goBack"
         android:visibility="gone" >
 
         <ImageView
-            android:id="@id/icon"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:id="@+id/back_icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_left" />
+            android:background="@drawable/ic_left" />
     </FrameLayout>
 
     <!-- Title -->
@@ -66,46 +66,40 @@
             android:paddingRight="20dp"
             android:singleLine="true"
             android:textColor="#ffffff"
+            android:textSize="@dimen/text_large"
             android:visibility="gone" >
         </EditText>
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/save"
-            android:visibility="gone" />
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/addButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
         android:onClick="addDialog" >
 
         <ImageView
-            android:id="@id/icon"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:id="@+id/add_icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_plus" />
+            android:background="@drawable/ic_plus" />
     </FrameLayout>
 
     <FrameLayout
         android:id="@+id/saveTask"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
         android:onClick="saveTask"
         android:visibility="gone" >
 
         <ImageView
-            android:id="@id/icon"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:id="@+id/save_icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:background="@drawable/ic_check" />
+            android:background="@drawable/ic_check"
+            android:scaleType="fitCenter" />
     </FrameLayout>
 
     <!-- End of title -->

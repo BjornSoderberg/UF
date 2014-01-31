@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.todo.code3.MainActivity;
 import com.todo.code3.R;
 import com.todo.code3.animation.CollapseAnimation;
 import com.todo.code3.animation.ExpandAnimation;
@@ -29,12 +30,14 @@ public class HierarchyParent extends ScrollView {
 	private ArrayList<ContentItem> selectedItems;
 
 	private Button moveToMenuButton;
+	private MainActivity activity;
 
 	private int selectedItem = -2;
 	private int itemHeight;
 
-	public HierarchyParent(Context context, JSONObject data, ArrayList<ContentItem> selectedItems) {
-		super(context);
+	public HierarchyParent(MainActivity activity, JSONObject data, ArrayList<ContentItem> selectedItems) {
+		super(activity);
+		this.activity = activity;
 		this.data = data;
 		this.selectedItems = selectedItems;
 
@@ -46,7 +49,9 @@ public class HierarchyParent extends ScrollView {
 		contentHolder.setOrientation(LinearLayout.VERTICAL);
 		contentHolder.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		addView(contentHolder);
-
+		
+		setFadingEdgeLength(0);
+		
 		children = new ArrayList<HierarchyChild>();
 
 		try {
@@ -95,10 +100,15 @@ public class HierarchyParent extends ScrollView {
 		contentHolder.addView(moveToMenuButton);
 
 		itemHeight = (int) getContext().getResources().getDimension(R.dimen.item_height);
+
+		// Sets the colors (-10 because -1 is the menu)
+		selectItem(-10);
+		moveToMenuButton.setTextColor(activity.getResources().getColor(activity.isDarkTheme() ? R.color.text_color_dark : R.color.text_color_light));
 	}
 
 	// Same as the other function, but lists the items reversed.
-	// This one is used for the first items (menu items) and are therefore reversed
+	// This one is used for the first items (menu items) and are therefore
+	// reversed
 	private void addChildren(String[] childrenIds) {
 		int level = 0;
 
@@ -111,7 +121,7 @@ public class HierarchyParent extends ScrollView {
 				JSONObject object = new JSONObject(data.getString(id));
 				if (!object.getString(App.TYPE).equals(App.FOLDER)) continue;
 
-				HierarchyChild child = new HierarchyChild(getContext(), object, level, this);
+				HierarchyChild child = new HierarchyChild(activity, object, level, this);
 
 				// If the item is not selected, it is added
 				// (Folders cannot be moved into themselves)
@@ -132,7 +142,7 @@ public class HierarchyParent extends ScrollView {
 				JSONObject object = new JSONObject(data.getString(id));
 				if (!object.getString(App.TYPE).equals(App.FOLDER)) continue;
 
-				HierarchyChild child = new HierarchyChild(getContext(), object, level, this);
+				HierarchyChild child = new HierarchyChild(activity, object, level, this);
 
 				// If the item is not selected, it is added
 				// (Folders cannot be moved into themselves)
@@ -193,19 +203,23 @@ public class HierarchyParent extends ScrollView {
 	public void selectItem(int id) {
 		selectedItem = id;
 
+		boolean dark = activity.isDarkTheme();
+		Resources r = activity.getResources();
+
 		for (HierarchyChild i : children) {
-			if (i.getId() == id) i.getChildAt(0).setBackgroundColor(0xffddddff);
+			if (i.getId() == id) i.getChildAt(0).setBackgroundDrawable(r.getDrawable(dark ? R.drawable.blue_item_selector_dark : R.drawable.blue_item_selector_light));
 			else {
 				i.unselect();
-				i.getChildAt(0).setBackgroundColor(0xffffffff);
+				i.getChildAt(0).setBackgroundDrawable(r.getDrawable(dark ? R.drawable.item_selector_dark : R.drawable.item_selector_white));
 			}
 		}
 
-		if (id == -1) moveToMenuButton.setBackgroundColor(0xffddddff);
-		else moveToMenuButton.setBackgroundColor(0xffffffff);
+		if (id == -1) moveToMenuButton.setBackgroundDrawable(r.getDrawable(dark ? R.drawable.blue_item_selector_dark : R.drawable.blue_item_selector_light));
+		else moveToMenuButton.setBackgroundDrawable(r.getDrawable(dark ? R.drawable.item_selector_dark : R.drawable.item_selector_white));
 
 		// -2 because -1 is the id for the menu
-		onItemSelected(id, id != -2);
+		// in the beginning the colors are set by calling selectItem(-10)
+		if (id != -10) onItemSelected(id, id != -2);
 	}
 
 	private boolean onlyContainsFolders() {

@@ -77,9 +77,8 @@ public class App {
 					}
 				}
 			} else if (parent.getString(App.TYPE).equals(App.TASK)) {
-				if (parent.has(App.COMPLETED) && parent.getBoolean(App.COMPLETED) == isCompleted) {
-					return 1;
-				}
+				if ((parent.has(App.COMPLETED) && parent.getBoolean(App.COMPLETED)) == isCompleted) return 1;
+				else return 0;
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

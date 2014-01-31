@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background_color_light">#ffcccccc</color>
-    <color name="divider_color_light">#ffb9b9b9</color>
-    <color name="selected_light">#ffe8e8e8</color>
+    <color name="divider_color_light">#ffb4b4b4</color>
+    <color name="selected_light">#ffc8c8c8</color>
+    <color name="light">#fff0f0f0</color>
     <color name="white">#ffffffff</color>
     
-    <color name="text_color_light">#ff585858</color>
+    <color name="text_color_light">#ff333333</color>
     <color name="text_color_checked_light">#ff888888</color>
+    
+    
+    <color name="light_blue">#ffC7E7FF</color>
+    <color name="selected_light_blue">#FF96D7FF</color>
+    <color name="light_red">#ffFFC7C7</color>
+    <color name="selected_light_red">#FFFF9687</color>
 </resources>

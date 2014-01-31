@@ -1,9 +1,9 @@
 package com.todo.code3.adapter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -44,7 +44,6 @@ public class ReminderAdapter extends BaseAdapter {
 	private ArrayList<Long> selected;
 
 	private long created;
-	private int customCount = 0;
 
 	public ReminderAdapter(TaskView tv) {
 		inflater = LayoutInflater.from(tv.getActivity());
@@ -55,16 +54,25 @@ public class ReminderAdapter extends BaseAdapter {
 		selected = new ArrayList<Long>();
 		strings = new ArrayList<String>();
 
-		strings.add("Add new item");
-		strings.add("Set custom");
-		strings.add("1 hour");
-		strings.add("2 hours");
-		strings.add("1 day");
+		Resources r = taskView.getActivity().getResources();
+		strings.add(r.getString(R.string.add_new));
+		strings.add(r.getString(R.string.set_custom_reminder));
+		strings.add("1 " + r.getString(R.string.hour));
+		strings.add("2 " + r.getString(R.string.hours));
+		strings.add("1 " + r.getString(R.string.day));
+		strings.add("2 " + r.getString(R.string.days));
+		strings.add("1 " + r.getString(R.string.week));
+		strings.add("2 " + r.getString(R.string.weeks));
+		strings.add("1 " + r.getString(R.string.month));
 		values.add(-1L);
 		values.add(-2L);
-		values.add(3600L);
+		values.add(3600 * 1L);
 		values.add(3600 * 2L);
-		values.add(3600 * 3L);
+		values.add(3600 * 24 * 1L);
+		values.add(3600 * 24 * 2L);
+		values.add(3600 * 24 * 7 * 1L);
+		values.add(3600 * 24 * 7 * 2L);
+		values.add(3600 * 24 * 30 * 1L);
 
 		created = System.currentTimeMillis();
 
@@ -75,8 +83,7 @@ public class ReminderAdapter extends BaseAdapter {
 		for (String s : taskView.getReminderInfo().split(",")) {
 			try {
 				Long l = Long.parseLong(s);
-				if (l > 3600 * 24 * 365) customCount++;
-				else selected.add(l);
+				if (l < 3600 * 24 * 365) selected.add(l);
 			} catch (NumberFormatException e) {
 
 			}
@@ -90,7 +97,7 @@ public class ReminderAdapter extends BaseAdapter {
 
 	public String getItem(int position) {
 		if (taskView.getReminderInfo().split(",").length > position) return taskView.getReminderInfo().split(",")[position];
-		else return "nothing";
+		else return taskView.getActivity().getResources().getString(R.string.no_name);
 	}
 
 	public long getItemId(int position) {
@@ -139,7 +146,7 @@ public class ReminderAdapter extends BaseAdapter {
 				long selected = Long.parseLong(taskView.getReminderInfo().split(",")[position]);
 				String str = selected + "";
 				if (selected > 3600 * 24 * 365) {
-					str = App.getFormattedDateString(selected, taskView.getActivity().is24HourMode());
+					str = App.getFormattedDateString(selected, taskView.getActivity().is24HourMode(), taskView.getActivity().getLocaleString());
 				} else str = getTimeString(selected);
 				if (!s.contains(str)) s.add(str);
 				if (!v.contains(selected)) v.add(selected);
@@ -156,7 +163,7 @@ public class ReminderAdapter extends BaseAdapter {
 
 		// If the version is under 11 the background of the spinner is set
 		// The holo theme did not exist and spinners had a gradient background
-		int colorId = taskView.getActivity().isDarkTheme() ? R.color.dark : R.color.white;
+		int colorId = taskView.getActivity().isDarkTheme() ? R.color.dark : R.color.light;
 		if (Build.VERSION.SDK_INT < 11) spinner.setBackgroundColor(taskView.getActivity().getResources().getColor(colorId));
 
 		if (list.size() > position) list.set(position, v.get(open));
@@ -224,7 +231,7 @@ public class ReminderAdapter extends BaseAdapter {
 		} else {
 			((ImageView) view.findViewById(R.id.icon)).setVisibility(View.GONE);
 		}
-		
+
 		view.setBackgroundColor(taskView.getActivity().getResources().getColor(colorId));
 
 		return view;
@@ -260,9 +267,10 @@ public class ReminderAdapter extends BaseAdapter {
 			}
 		};
 	}
-	
+
 	private String getTimeString(long time) {
 		int index = values.indexOf(time);
-		return strings.get(index);
+		if (index != -1) return strings.get(index);
+		else return "";
 	}
 }

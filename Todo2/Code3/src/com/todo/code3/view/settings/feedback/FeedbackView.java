@@ -2,10 +2,12 @@ package com.todo.code3.view.settings.feedback;
 
 import org.json.JSONObject;
 
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.todo.code3.MainActivity;
@@ -15,7 +17,7 @@ import com.todo.code3.view.ContentView;
 
 public class FeedbackView extends ContentView {
 
-	private EditText editText, mail;
+	private EditText message, mail;
 	private Button send;
 	private FeedbackSender feedbackSender;
 
@@ -29,14 +31,16 @@ public class FeedbackView extends ContentView {
 
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
-		editText = (EditText) findViewById(R.id.message);
-		mail = (EditText) findViewById(R.id.mail);
+		message = (EditText) findViewById(R.id.messageET);
+		mail = (EditText) findViewById(R.id.mailET);
 		send = (Button) findViewById(R.id.send);
 		send.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if (App.isNetworkAvailable(activity)) sendFeedback();
+				sendFeedback();
 			}
 		});
+
+		setColors();
 	}
 
 	private void sendFeedback() {
@@ -45,7 +49,7 @@ public class FeedbackView extends ContentView {
 			return;
 		}
 
-		String msg = editText.getText().toString();
+		String msg = message.getText().toString();
 		String mail = this.mail.getText().toString();
 		if (msg.length() == 0) return;
 
@@ -53,8 +57,11 @@ public class FeedbackView extends ContentView {
 	}
 
 	public void feedbackSent(boolean success) {
-		if (success) send.setText("ty for feedback");
-		else send.setText("error");
+		if (success) {
+			send.setText(getResources().getString(R.string.thank_you_for_your_feedback));
+			message.setText("");
+			mail.setText("");
+		} else send.setText(getResources().getString(R.string.oops_something_went_wrong));
 	}
 
 	public void leave() {
@@ -62,7 +69,7 @@ public class FeedbackView extends ContentView {
 	}
 
 	public void update(JSONObject data) {
-
+		setColors();
 	}
 
 	public void updateContentItemsOrder() {
@@ -70,7 +77,19 @@ public class FeedbackView extends ContentView {
 	}
 
 	public void setColors() {
+		boolean dark = activity.isDarkTheme();
+		Resources r = getResources();
+		setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
 
+		((TextView) findViewById(R.id.mailTV)).setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		((TextView) findViewById(R.id.messageTV)).setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		((TextView) findViewById(R.id.mailET)).setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
+		((TextView) findViewById(R.id.mailET)).setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		((TextView) findViewById(R.id.messageET)).setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
+		((TextView) findViewById(R.id.messageET)).setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+
+		((Button) findViewById(R.id.send)).setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
+		((Button) findViewById(R.id.send)).setBackgroundDrawable((dark) ? r.getDrawable(R.drawable.item_selector_dark) : r.getDrawable(R.drawable.item_selector_light));
 	}
 
 }

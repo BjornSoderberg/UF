@@ -25,7 +25,7 @@
         android:id="@+id/barBorder"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:background="#298DA9"
+        android:background="@color/bar_border"
         android:orientation="horizontal"
         android:layout_below="@+id/optionsBar" >
     </LinearLayout>

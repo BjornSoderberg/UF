@@ -332,8 +332,8 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 	}
 
 	private void setColors(View parent) {
-		mCancelButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
-		mDoneButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		if (Build.VERSION.SDK_INT >= 11) mCancelButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
+		if (Build.VERSION.SDK_INT >= 11) mDoneButton.setTextColor(getResources().getColor(mDark ? R.color.white : R.color.dark_gray));
 		if (!mDark) return;
 		Resources r = getResources();
 

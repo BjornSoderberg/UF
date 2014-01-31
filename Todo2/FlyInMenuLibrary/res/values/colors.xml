@@ -2,7 +2,7 @@
 <resources>
 
     <color name="menu_background">#393C3B</color>
-    <color name="item_text_color">#888888</color>
+    <color name="item_text_color">#6c6c6c</color>
     <color name="item_color_dark">#353535</color>
     <color name="item_color_light">#404040</color>
     

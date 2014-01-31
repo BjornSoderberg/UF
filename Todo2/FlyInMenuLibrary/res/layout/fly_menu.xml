@@ -5,21 +5,24 @@
     android:layout_gravity="left"
     android:orientation="horizontal" >
 
+    <!-- The padding makes the menu items align with the content items -->
+
     <LinearLayout
         android:id="@+id/fly_menu_holder"
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:background="#393C3B"
         android:orientation="vertical"
+        android:paddingTop="4dp"
         android:visibility="gone" >
 
         <com.espian.flyin.library.DynamicListView
             android:id="@+id/fly_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:cacheColorHint="#00000000"
             android:divider="#2E302F"
-            android:layout_weight="1"
             android:dividerHeight="1px"
             android:fadingEdgeLength="0dp" >
         </com.espian.flyin.library.DynamicListView>

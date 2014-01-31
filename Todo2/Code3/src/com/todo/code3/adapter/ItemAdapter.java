@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -112,10 +113,10 @@ public class ItemAdapter extends BaseAdapter {
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
 		if (itemView.isSelected(item.getId())) {
-			view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.blue_item_selector));
+			view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(itemView.getActivity().isDarkTheme() ? R.drawable.blue_item_selector_dark : R.drawable.blue_item_selector_light));
 		} else {
 			if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
-			else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
+			else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_white));
 		}
 
 		return view;
@@ -178,9 +179,9 @@ public class ItemAdapter extends BaseAdapter {
 
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
-		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.red_item_selector));
+		if (App.isOverDue(item.getDueDate()) && !item.isCompleted()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(itemView.getActivity().isDarkTheme() ? R.drawable.red_item_selector_dark : R.drawable.red_item_selector_light));
 		else if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
-		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_white));
 
 		return view;
 	}
@@ -214,10 +215,11 @@ public class ItemAdapter extends BaseAdapter {
 
 		// If there are items over due
 		if(App.getNumberOfTasksOverDue(item.getId(), itemView.getActivity().getData()) > 0) ((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_folder_due);
-		else if(App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) != 0)((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_folder_check);
+		else if(App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) > 0)((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_folder_check);
 		// Set correct color on icon (through filter)
 		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 		
+		Log.i(App.getNumberOfTasksCompleted(item.getId(), false, itemView.getActivity().getData())+ " ", App.getNumberOfTasksCompleted(item.getId(), true, itemView.getActivity().getData()) + "");
 		
 		// Set text
 		TextView text = (TextView) view.findViewById(R.id.item_text);
@@ -227,7 +229,7 @@ public class ItemAdapter extends BaseAdapter {
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
 		if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
-		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_white));
 
 		return view;
 	}
@@ -270,7 +272,7 @@ public class ItemAdapter extends BaseAdapter {
 		// Sets the background (which is dependent on its state (pressed,
 		// focused etc.))
 		if (itemView.getActivity().isDarkTheme()) view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_dark));
-		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_light));
+		else view.setBackgroundDrawable(itemView.getActivity().getResources().getDrawable(R.drawable.item_selector_white));
 
 		return view;
 	}

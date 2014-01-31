@@ -3,7 +3,6 @@ package com.todo.code3.xml.hierarchy;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.view.LayoutInflater;
@@ -13,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.todo.code3.*;
 import com.todo.code3.R;
 import com.todo.code3.misc.App;
 
@@ -24,14 +24,16 @@ public class HierarchyChild extends RelativeLayout {
 	private TextView text;
 
 	private JSONObject object;
+	private MainActivity activity;
 
 	private int level;
 
 	private boolean expanded = false;
 	private boolean selected = false;
 
-	public HierarchyChild(Context context, JSONObject object, int level, HierarchyParent parent) {
-		super(context);
+	public HierarchyChild(MainActivity activity, JSONObject object, int level, HierarchyParent parent) {
+		super(activity);
+		this.activity = activity;
 		this.object = object;
 		this.level = level;
 		this.parent = parent;
@@ -90,7 +92,14 @@ public class HierarchyChild extends RelativeLayout {
 		if (!isExpandable()) expandButton.setVisibility(View.GONE);
 		if (!isSelectable()) text.setText(text.getText() + " (" + getContext().getResources().getString(R.string.current) + ")");
 
-		((ImageView) findViewById(R.id.expandIcon)).getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
+		((ImageView) findViewById(R.id.expandIcon)).getBackground().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
+
+		setColors();
+	}
+
+	private void setColors() {
+		int colorId = activity.isDarkTheme() ? R.color.text_color_dark : R.color.text_color_checked_light;
+		text.setTextColor(activity.getResources().getColor(colorId));
 	}
 
 	public int getItemParentId() {

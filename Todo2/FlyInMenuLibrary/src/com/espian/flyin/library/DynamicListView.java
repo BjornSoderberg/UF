@@ -27,7 +27,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -134,14 +133,14 @@ public class DynamicListView extends ListView {
 	 */
 	private AdapterView.OnItemLongClickListener mOnItemLongClickListener = new AdapterView.OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id) {
-			
-			
-//			startDragging();
+			activity.getFlyInMenu().toggleOptions();
+
+			// startDragging();
 
 			return true;
 		}
 	};
-	
+
 	private void startDragging() {
 		mTotalOffset = 0;
 
@@ -266,21 +265,26 @@ public class DynamicListView extends ListView {
 	boolean isDragging = false;
 
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
+	public boolean onTouchEvent(MotionEvent e) {
+		switch (e.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
-			mDownX = (int) event.getX();
-			mDownY = (int) event.getY();
-			mActivePointerId = event.getPointerId(0);
+			mDownX = (int) e.getX();
+			mDownY = (int) e.getY();
+			mActivePointerId = e.getPointerId(0);
+
+			if (activity.getFlyInMenu().isInOptionsMode() && !isDragging()) {
+				startDragging();
+			}
+			
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (mActivePointerId == INVALID_POINTER_ID) {
 				break;
 			}
 
-			int pointerIndex = event.findPointerIndex(mActivePointerId);
+			int pointerIndex = e.findPointerIndex(mActivePointerId);
 
-			mLastEventY = (int) event.getY(pointerIndex);
+			mLastEventY = (int) e.getY(pointerIndex);
 			int deltaY = mLastEventY - mDownY;
 
 			if (mCellIsMobile) {
@@ -309,8 +313,8 @@ public class DynamicListView extends ListView {
 			 * ends and the hover cell is animated to its corresponding position
 			 * in the listview.
 			 */
-			pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-			final int pointerId = event.getPointerId(pointerIndex);
+			pointerIndex = (e.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+			final int pointerId = e.getPointerId(pointerIndex);
 			if (pointerId == mActivePointerId) {
 				touchEventsEnded();
 			}
@@ -319,7 +323,7 @@ public class DynamicListView extends ListView {
 			break;
 		}
 
-		return super.onTouchEvent(event);
+		return super.onTouchEvent(e);
 	}
 
 	/**
@@ -598,7 +602,11 @@ public class DynamicListView extends ListView {
 		}
 	};
 
+	public boolean isDragging() {
+		return mCellIsMobile || mHoverCell != null;
+	}
+
 	public boolean onInterceptTouchEvent(MotionEvent e) {
 		return false;
-	};
+	}
 }

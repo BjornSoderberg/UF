@@ -254,7 +254,7 @@ public class ItemView extends ContentView {
 		View v = getViewById(id);
 		if (v == null) return;
 
-		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_item_selector));
+		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(activity.isDarkTheme() ? R.drawable.blue_item_selector_dark : R.drawable.blue_item_selector_light));
 		else if (activity.isDarkTheme()) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_dark));
 		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_light));
 	}
@@ -264,7 +264,11 @@ public class ItemView extends ContentView {
 		if (id == App.OPTIONS_GROUP_ITEMS) groupSelectedItems();
 		if (id == App.OPTIONS_SELECT_ALL) toggleSelection();
 		if (id == App.OPTIONS_MOVE) moveSelectedItems();
-
+		
+		updateOptions();
+	}
+	
+	private void updateOptions() {
 		activity.getOptionsBar().updateSelectedCount(selectedItems.size(), selectedItems.size() == contentItems.size());
 	}
 
@@ -284,8 +288,9 @@ public class ItemView extends ContentView {
 				for (ContentItem i : selectedItems) {
 					activity.removeWithChildren(i.getId());
 				}
-
+				
 				selectedItems.clear();
+				updateOptions();
 			}
 		}, App.ANIMATION_DURATION);
 	}
@@ -314,6 +319,7 @@ public class ItemView extends ContentView {
 				new Handler().postDelayed(new Runnable() {
 					public void run() {
 						activity.groupItemsInNewFolder(name, selectedItemIds);
+						updateOptions();
 					}
 				}, App.ANIMATION_DURATION);
 			}
@@ -361,6 +367,7 @@ public class ItemView extends ContentView {
 						}
 
 						selectedItems.clear();
+						updateOptions();
 					}
 				}, App.ANIMATION_DURATION);
 			}
@@ -375,7 +382,7 @@ public class ItemView extends ContentView {
 		if (sortType == Sort.SORT_PRIORITIZED) {
 			Sort.sortPrioritized(contentItems, sortPrioritized);
 		} else if (sortType == Sort.SORT_TIMESTAMP_CREATED) {
-			Sort.sortTimestampCreated(contentItems);
+			Sort.sortTimestampCreated(contentItems, activity.getLocaleString());
 		} else if (sortType == Sort.SORT_COMPLETED) {
 			Sort.sortCompleted(contentItems);
 		} else if (sortType == Sort.SORT_ALPHABETICALLY) {

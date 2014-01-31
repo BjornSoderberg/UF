@@ -66,7 +66,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	private TextView nameTV;
 	private EditText focusDummy, nameET;
 	private OptionsBar options;
-	private Button saveButton;
 	private FrameLayout dragButton, backButton;
 	private LinearLayout titleBar;
 
@@ -120,12 +119,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		// Setting correct language (locale)
 		Configuration c = getBaseContext().getResources().getConfiguration();
-		if (getLocale() != null) {
-			Locale.setDefault(getLocale());
-			c.locale = getLocale();
-			getBaseContext().getResources().updateConfiguration(c, getResources().getDisplayMetrics());
-		}
-
+		Locale.setDefault(new Locale(getLocaleString()));
+		c.locale = new Locale(getLocaleString());
+		getBaseContext().getResources().updateConfiguration(c, getResources().getDisplayMetrics());
+		
 		initXML();
 		initBars();
 
@@ -159,6 +156,12 @@ public class MainActivity extends FlyInFragmentActivity {
 				data.put(App.NUM_IDS, 0);
 
 				addMenuItem("Inbox", App.FOLDER);
+				openMenuItem(0);
+				add("Click the + to add tasks", App.TASK);
+				add("Swipe right to see the menu", App.TASK);
+				add("Tap the title to edit it", App.TASK);
+				add("Tap a task to set due dates and reminders", App.TASK);
+				add("Check out the settings in the menu", App.TASK);
 			} else {
 				data = new JSONObject(d);
 			}
@@ -220,14 +223,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		options = (OptionsBar) findViewById(R.id.optionsBar);
 		options.setMainActivity(this);
 
-		saveButton = (Button) findViewById(R.id.saveButton);
-
-		saveButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				endEditTitle(true);
-			}
-		});
-
 		// This is the view that encapsulates the title
 		((LinearLayout) findViewById(R.id.nameTouchArea)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -252,6 +247,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		});
 
 		initMenuButtons();
+		setColors();
 	}
 
 	private void initMenuButtons() {
@@ -326,12 +322,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		int barHeight = getBarHeight();
 		int borderHeight = getBarBorderHeight();
 
-		FrameLayout[] buttons = { dragButton, backButton, (FrameLayout) findViewById(R.id.addButton) };
-
-		for (int i = 0; i < buttons.length; i++) {
-			buttons[i].getLayoutParams().height = barHeight;
-			buttons[i].getLayoutParams().width = barHeight;
-		}
+		// FrameLayout[] buttons = { dragButton, backButton, (FrameLayout)
+		// findViewById(R.id.addButton) };
+		//
+		// for (int i = 0; i < buttons.length; i++) {
+		// buttons[i].getLayoutParams().height = barHeight;
+		// buttons[i].getLayoutParams().width = barHeight;
+		// }
 
 		((LinearLayout) findViewById(R.id.barBorder)).getLayoutParams().height = borderHeight;
 		((LinearLayout) findViewById(R.id.titleBar)).getLayoutParams().height = barHeight;
@@ -386,8 +383,11 @@ public class MainActivity extends FlyInFragmentActivity {
 						}
 
 						FlyInMenuItem mi = new FlyInMenuItem();
-						int numChildren = (folder.getString(App.CHILDREN_IDS).length() == 0) ? 0 : folder.getString(App.CHILDREN_IDS).split(",").length;
-						mi.setTitle(folder.getString(App.NAME) + " - " + numChildren);
+						// int numChildren =
+						// (folder.getString(App.CHILDREN_IDS).length() == 0) ?
+						// 0 :
+						// folder.getString(App.CHILDREN_IDS).split(",").length;
+						mi.setTitle(folder.getString(App.NAME));
 						mi.setId(folder.getInt(App.ID));
 						mi.setType(folder.getString(App.TYPE));
 						if (!isInSettings()) mi.isOpen(App.isParentOf(openObjectId, folder.getInt(App.ID), data));
@@ -633,6 +633,8 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void saveTask(View v) {
 		if (contentViews.get(posInWrapper) instanceof TaskView) ((TaskView) contentViews.get(posInWrapper)).endEditDescription(true);
+		else if (contentViews.get(posInWrapper) instanceof NoteView) ((NoteView) contentViews.get(posInWrapper)).endEditDescription(true);
+		else endEditTitle(true);
 	}
 
 	private void openMenuItem(int id) {
@@ -702,7 +704,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
 
-			if (object.getString(App.TYPE).equals(App.TASK)) {
+			if (object.getString(App.TYPE).equals(App.TASK) || object.getString(App.TYPE).equals(App.NOTE)) {
 				showCheck();
 			} else {
 				hideCheck();
@@ -719,6 +721,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void openSettings() {
 		if (getFlyInMenu().isVisible()) hideMenu();
+		if (isInOptions()) hideOptions();
 		if (contentViews.get(posInWrapper) instanceof SettingsView) return;
 
 		posInWrapper = 0;
@@ -859,10 +862,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	private void startEditTitle() {
 		if (isInSettings()) return;
+		showCheck();
 
 		nameTV.setVisibility(View.GONE);
 		nameET.setVisibility(View.VISIBLE);
-		saveButton.setVisibility(View.VISIBLE);
 
 		String name = nameTV.getText().toString();
 
@@ -881,7 +884,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void endEditTitle(boolean save) {
 		nameTV.setVisibility(View.VISIBLE);
 		nameET.setVisibility(View.GONE);
-		saveButton.setVisibility(View.GONE);
+		hideCheck();
 
 		focusDummy.requestFocus();
 
@@ -891,7 +894,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 	}
 
-	private boolean isEditingTitle() {
+	public boolean isEditingTitle() {
 		return nameET.getVisibility() == View.VISIBLE;
 	}
 
@@ -943,7 +946,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (isMoving) return;
 
 		if (getFlyInMenu().isVisible()) {
-			hideMenu();
+			if (getFlyInMenu().isInOptionsMode()) getFlyInMenu().disableOptions();
+			else hideMenu();
 			return;
 		}
 
@@ -1096,7 +1100,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public boolean is24HourMode() {
 		return prefs.getBoolean(App.SETTINGS_24_HOUR_CLOCK, true);
 	}
-	
+
 	public int getSortType() {
 		return prefs.getInt(App.SETTINGS_SORT_TYPE, Sort.SORT_NOTHING);
 	}
@@ -1120,7 +1124,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public Locale getLocale() {
-		String lang = prefs.getString(App.LANGUAGE, "");
+		String lang = prefs.getString(App.LANGUAGE, "en");
 		Configuration c = getBaseContext().getResources().getConfiguration();
 		if (!lang.equals("") && !c.locale.getLanguage().equals(lang)) return new Locale(lang);
 
@@ -1128,7 +1132,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public String getLocaleString() {
-		return prefs.getString(App.LANGUAGE, "");
+		return prefs.getString(App.LANGUAGE, "en");
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -1143,7 +1147,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void changeTheme(String theme) {
 		saveSetting(App.SETTINGS_THEME, theme);
-
+		
+		setColors();
+		
 		for (ContentView i : contentViews)
 			i.setColors();
 
@@ -1155,12 +1161,27 @@ public class MainActivity extends FlyInFragmentActivity {
 			else setTheme(android.R.style.Theme_Black);
 		}
 	}
+	
+	private void setColors() {
+		titleBar.setBackgroundColor(getResources().getColor(isDarkTheme() ? R.color.background_color_dark : R.color.aqua_blue));
+		nameTV.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
+		nameET.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
+		int iconColor = getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white);
+		((ImageView) findViewById(R.id.drag_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
+		((ImageView) findViewById(R.id.back_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
+		((ImageView) findViewById(R.id.add_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
+		((ImageView) findViewById(R.id.save_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
+		
+	}
 
 	public void showCheck() {
-		if (contentViews.get(posInWrapper) instanceof TaskView) {
+		if (contentViews.get(posInWrapper) instanceof TaskView || contentViews.get(posInWrapper) instanceof NoteView) {
 			findViewById(R.id.saveTask).setVisibility(View.VISIBLE);
 			findViewById(R.id.addButton).setVisibility(View.GONE);
 			disableCheck();
+		} else if (contentViews.get(posInWrapper) instanceof ItemView) {
+			findViewById(R.id.saveTask).setVisibility(View.VISIBLE);
+			findViewById(R.id.addButton).setVisibility(View.GONE);
 		}
 	}
 
@@ -1168,13 +1189,13 @@ public class MainActivity extends FlyInFragmentActivity {
 		findViewById(R.id.saveTask).setVisibility(View.GONE);
 		findViewById(R.id.addButton).setVisibility(View.VISIBLE);
 	}
-	
+
 	public void disableCheck() {
-		((FrameLayout) findViewById(R.id.saveTask)).findViewById(R.id.icon).getBackground().setAlpha((int) (0.3 * 255));
+		((FrameLayout) findViewById(R.id.saveTask)).findViewById(R.id.save_icon).getBackground().setAlpha((int) (0.3 * 255));
 	}
-	
+
 	public void enableCheck() {
-		((FrameLayout) findViewById(R.id.saveTask)).findViewById(R.id.icon).getBackground().setAlpha(255);
+		((FrameLayout) findViewById(R.id.saveTask)).findViewById(R.id.save_icon).getBackground().setAlpha(255);
 	}
 
 	public void saveSetting(String settingName, boolean settingValue) {

@@ -74,7 +74,7 @@ public class OptionsBar extends LinearLayout {
 			});
 
 			int imgRes = 0;
-			int mult = 0xffffffff;
+			int mult = 0xffffffff; // white
 			if (id == App.OPTIONS_MOVE) imgRes = R.drawable.ic_move;
 			else if (id == App.OPTIONS_GROUP_ITEMS) imgRes = R.drawable.ic_group;
 			else if (id == App.OPTIONS_REMOVE) imgRes = R.drawable.ic_trash;
@@ -85,12 +85,11 @@ public class OptionsBar extends LinearLayout {
 			
 			// if no items are selected, the icon is semi transparent
 			if(id == App.OPTIONS_MOVE || id == App.OPTIONS_GROUP_ITEMS || id == App.OPTIONS_REMOVE) {
-				if(selectedCount <= 0) mult = 0x4cffffff;
+				if(selectedCount <= 0) mult = 0x4cffffff; // semi transparent
 			}
-			
-			Log.i("asdasd", allSelected + " " + selectedCount);
 
 			ImageView i = new ImageView(activity);
+			i.setLayoutParams(new LinearLayout.LayoutParams((int)getResources().getDimension(R.dimen.item_image_height), (int)getResources().getDimension(R.dimen.item_image_height)));
 			i.setBackgroundDrawable(activity.getResources().getDrawable(imgRes));
 			i.getBackground().setColorFilter(new PorterDuffColorFilter(mult, PorterDuff.Mode.MULTIPLY));
 			b.addView(i);

@@ -29,24 +29,31 @@ public final class R {
 		public static final int item_text_size = 0x7f070004;
 	}
 	public static final class drawable {
-		public static final int fly_item_background = 0x7f020001;
-		public static final int fly_item_background_light = 0x7f020002;
-		public static final int ic_folder = 0x7f020007;
-		public static final int ic_folder_check = 0x7f020008;
-		public static final int ic_folder_due = 0x7f020009;
+		public static final int fly_item_background = 0x7f020002;
+		public static final int fly_item_background_light = 0x7f020003;
+		public static final int ic_drag = 0x7f020006;
+		public static final int ic_folder = 0x7f020008;
+		public static final int ic_folder_check = 0x7f020009;
+		public static final int ic_folder_due = 0x7f02000a;
+		public static final int ic_trash = 0x7f02001d;
 	}
 	public static final class id {
-		public static final int fly_custom = 0x7f080019;
-		public static final int fly_listview = 0x7f080018;
-		public static final int fly_menu_holder = 0x7f080017;
+		public static final int fly_custom = 0x7f08001a;
+		public static final int fly_listview = 0x7f080019;
+		public static final int fly_menu_holder = 0x7f080018;
 		public static final int fly_searchview = 0x7f080000;
 		public static final int icon = 0x7f08000c;
-		public static final int item_icon = 0x7f080016;
+		public static final int item_icon = 0x7f080017;
+		public static final int item_move = 0x7f08001b;
+		public static final int item_remove = 0x7f08000b;
 		public static final int item_text = 0x7f08000a;
+		public static final int move_icon = 0x7f08001d;
+		public static final int remove_icon = 0x7f08001c;
 	}
 	public static final class layout {
 		public static final int fly_item = 0x7f03000b;
 		public static final int fly_menu = 0x7f03000c;
+		public static final int fly_options_item = 0x7f03000d;
 	}
 	public static final class string {
 		public static final int is_in_master_view = 0x7f090000;

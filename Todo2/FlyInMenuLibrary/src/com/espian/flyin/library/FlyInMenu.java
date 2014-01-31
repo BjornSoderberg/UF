@@ -24,6 +24,7 @@ import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -48,7 +49,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	private Adapter adapter;
 	private SimpleGestureFilter detector;
 
-	private final int EXPAND_ANIMATION_DURATION = 300;
 	private int flyInMenuItemHeight;
 	private int expandingItemId = -1;
 	private int contentOffset = 0;
@@ -227,7 +227,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 	public void showMenu() {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
-
+		disableOptions();
+		
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -258,7 +259,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 	public void hideMenu() {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
-
+		disableOptions();
+		
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
 			mCustomView.setVisibility(View.VISIBLE);
@@ -298,7 +300,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 	public void moveMenu(int dx) {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
-
+		disableOptions();
+		
 		if (contentOffset + dx < 0) dx = 0 - contentOffset;
 		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
@@ -347,7 +350,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 					}
 				};
 
-				animation.setDuration(EXPAND_ANIMATION_DURATION);
+				animation.setDuration(animationDuration);
 				view.startAnimation(animation);
 			}
 		}, 0);
@@ -474,13 +477,22 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// if (convertView == null || convertView instanceof TextView)
+			View view = null;
+			FlyInMenuItem item = menuItems.get(position);
+
+			if(!isInOptionsMode) view = getFolderView(item);
+			else view = getOptionsView(item);
+
+			view.setId(item.getId());
+
+			return view;
+		}
+
+		private View getFolderView(FlyInMenuItem item) {
 			View view = inflater.inflate(R.layout.fly_item, null);
 
 			TextView text = (TextView) view.findViewById(R.id.item_text);
-			FlyInMenuItem item = menuItems.get(position);
-
 			text.setText(item.getTitle());
-
 			if (item.getId() == getExpandingItemId()) {
 				invalidateExpandingItemId();
 				expandView(view);
@@ -489,26 +501,59 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 				else view.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
 			}
 
-			if (item.getId() == movingItemId) {
-				view.setVisibility(View.INVISIBLE);
-			}
-			
+//			if (item.getId() == movingItemId) view.setVisibility(View.INVISIBLE);
+
 			int drawableId = R.drawable.ic_folder;
-			if(App.getNumberOfTasksOverDue(item.getId(), activity.getData()) > 0) drawableId = R.drawable.ic_folder_due;
-			else if(App.getNumberOfTasksCompleted(item.getId(), false, activity.getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, activity.getData()) > 0) drawableId = R.drawable.ic_folder_check;
-			
+			if (App.getNumberOfTasksOverDue(item.getId(), activity.getData()) > 0) drawableId = R.drawable.ic_folder_due;
+			else if (App.getNumberOfTasksCompleted(item.getId(), false, activity.getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, activity.getData()) > 0) drawableId = R.drawable.ic_folder_check;
+
 			Drawable d = getContext().getResources().getDrawable(drawableId).mutate();
 			d.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
 			((ImageView) view.findViewById(R.id.icon)).setBackgroundDrawable(d);
 
 			if (item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));
 
-			view.setId(item.getId());
-
 			return view;
-
 		}
-
+		
+		private View getOptionsView(final FlyInMenuItem item) {
+			final View view = inflater.inflate(R.layout.fly_options_item, null);
+			
+			TextView text = (TextView) view.findViewById(R.id.item_text);
+			text.setText(item.getTitle());
+			text.setOnLongClickListener(new OnLongClickListener() {
+				public boolean onLongClick(View arg0) {
+					FlyInMenu.this.toggleOptions();
+					return true;
+				}
+			});
+			
+			if(item.getId() == movingItemId) view.setVisibility(View.INVISIBLE);
+			
+			
+			Drawable d = ((ImageView) view.findViewById(R.id.remove_icon)).getBackground().mutate();
+			d.setColorFilter(new PorterDuffColorFilter(getContext().getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
+			((ImageView) view.findViewById(R.id.remove_icon)).setBackgroundDrawable(d);
+			((FrameLayout) view.findViewById(R.id.item_remove)).setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					new CollapseAnimation(view, animationDuration, (int)getResources().getDimension(R.dimen.item_height)).animate();
+					
+					new Handler().postDelayed(new Runnable() {
+						public void run() {
+							view.setVisibility(View.GONE);
+							
+							activity.remove(item.getId());
+						}
+					}, animationDuration);
+				}
+			});
+			
+			Drawable dd = ((ImageView) view.findViewById(R.id.move_icon)).getBackground().mutate();
+			dd.setColorFilter(new PorterDuffColorFilter(getContext().getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
+			((ImageView) view.findViewById(R.id.move_icon)).setBackgroundDrawable(dd);
+			
+			return view;
+		}
 	}
 
 	public boolean dispatchTouchEvent(MotionEvent e) {
@@ -519,17 +564,23 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	public void onSwipe(int direction) {
 		if (!isDragging) if (direction == SimpleGestureFilter.SWIPE_LEFT) hideMenu();
 	}
-	
+
 	public void toggleOptions() {
-		if(isInOptionsMode) disableOptions();
+		if (isInOptionsMode) disableOptions();
 		else enableOptions();
 	}
-	
+
 	public void enableOptions() {
-		
+		isInOptionsMode = true;
+		setMenuItems();
+	}
+
+	public void disableOptions() {
+		isInOptionsMode = false;
+		setMenuItems();
 	}
 	
-	public void disableOptions() {
-		
+	public boolean isInOptionsMode() {
+		return isInOptionsMode;
 	}
 }
