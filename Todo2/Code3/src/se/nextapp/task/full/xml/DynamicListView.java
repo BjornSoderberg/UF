@@ -2,10 +2,10 @@ package se.nextapp.task.full.xml;
 
 import java.util.ArrayList;
 
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.adapter.ItemAdapter;
 import se.nextapp.task.full.item.ContentItem;
 import se.nextapp.task.full.view.ItemView;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -30,7 +29,6 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
-import com.todo.code3.R;
 
 public class DynamicListView extends ListView {
 

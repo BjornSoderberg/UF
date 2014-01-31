@@ -24,8 +24,8 @@
 
         <ToggleButton
             android:id="@+id/theme"
-            android:layout_width="@dimen/item_height"
-            android:layout_height="fill_parent" />
+            android:layout_width="100dp"
+            android:layout_height="@dimen/item_image_height" />
     </LinearLayout>
 
     <LinearLayout
@@ -46,8 +46,8 @@
 
         <ToggleButton
             android:id="@+id/clock"
-            android:layout_width="@dimen/item_height"
-            android:layout_height="fill_parent" />
+            android:layout_width="100dp"
+            android:layout_height="@dimen/item_image_height" />
     </LinearLayout>
 
     <LinearLayout
@@ -77,7 +77,7 @@
                 android:layout_width="@dimen/item_image_height"
                 android:layout_height="@dimen/item_image_height"
                 android:layout_gravity="center"
-                android:background="@drawable/ic_right"
+                android:background="@drawable/ic_right_alt"
                 android:scaleType="fitCenter" />
         </FrameLayout>
     </LinearLayout>
@@ -109,7 +109,7 @@
                 android:layout_width="@dimen/item_image_height"
                 android:layout_height="@dimen/item_image_height"
                 android:layout_gravity="center"
-                android:background="@drawable/ic_right"
+                android:background="@drawable/ic_right_alt"
                 android:scaleType="fitCenter" />
         </FrameLayout>
     </LinearLayout>

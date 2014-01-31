@@ -3,13 +3,11 @@ package se.nextapp.task.full.xml.multi_select_parent;
 import java.util.ArrayList;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.dialog.date_and_time.TimeDialog;
 import se.nextapp.task.full.misc.Reminder;
-
 import android.view.View;
 import android.widget.Button;
-
-import com.todo.code3.R;
 
 public class SelectDaysInWeek extends MultiSelectParent {
 

@@ -3,8 +3,8 @@ package se.nextapp.task.full.view.settings;
 import org.json.JSONObject;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.view.ContentView;
-
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -16,8 +16,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.todo.code3.R;
 
 public class SelectLanguage extends ContentView {
 

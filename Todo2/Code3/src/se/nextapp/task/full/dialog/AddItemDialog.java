@@ -1,6 +1,7 @@
 package se.nextapp.task.full.dialog;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
 import android.app.AlertDialog;
 import android.content.res.Resources;
@@ -14,8 +15,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-import com.todo.code3.R;
 
 public class AddItemDialog extends Dialog {
 

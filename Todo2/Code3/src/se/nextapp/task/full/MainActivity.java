@@ -14,6 +14,7 @@ import se.nextapp.task.full.misc.SPEditor;
 import se.nextapp.task.full.misc.Sort;
 import se.nextapp.task.full.notification.NotificationReceiver;
 import se.nextapp.task.full.view.ContentView;
+import se.nextapp.task.full.view.DownloadFullVersionView;
 import se.nextapp.task.full.view.ItemView;
 import se.nextapp.task.full.view.NoteView;
 import se.nextapp.task.full.view.TaskView;
@@ -57,7 +58,7 @@ import android.widget.TextView;
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
-import com.todo.code3.R;
+import se.nextapp.task.full.R;
 
 public class MainActivity extends FlyInFragmentActivity {
 
@@ -71,7 +72,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private FrameLayout dragButton, backButton;
 	private LinearLayout titleBar;
 
-	private JSONObject data;
+	private JSONObject data = new JSONObject();
 
 	private int openObjectId = -1;
 
@@ -87,6 +88,9 @@ public class MainActivity extends FlyInFragmentActivity {
 	private long scrollFps = 1000 / 60;
 
 	private int width, height;
+
+	private boolean freeVersion = true;
+	private boolean canRun = true;
 
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
@@ -124,18 +128,37 @@ public class MainActivity extends FlyInFragmentActivity {
 		Locale.setDefault(new Locale(getLocaleString()));
 		c.locale = new Locale(getLocaleString());
 		getBaseContext().getResources().updateConfiguration(c, getResources().getDisplayMetrics());
-		
+
 		initXML();
 		initBars();
-
 		loadFlyInMenu(getMenuWidth());
 
-		getDataFromSharedPreferences();
+		canRun = true;
+		// Sets the time created (for checking that the free version will be
+		// locked)
+		if (prefs.getLong(App.TIME_CREATED, -1) == -1) {
+			editor.put(App.TIME_CREATED, System.currentTimeMillis() / 1000);
+		} else if (prefs.getLong(App.TIME_CREATED, -1) < System.currentTimeMillis() / 1000 - 3600 * 24 * 4) {
+			canRun = false;
+			setTitle("NextTask");
+
+			posInWrapper = 0;
+			contentViews.clear();
+
+			scroller.startScroll(currentContentOffset, 0, -currentContentOffset, 0, 0);
+			scrollHandler.postDelayed(scrollRunnable, scrollFps);
+
+			contentViews.add(posInWrapper, new DownloadFullVersionView(this));
+
+			updateData();
+		} else {
+			getDataFromSharedPreferences();
+		}
 
 		if (getIntent().hasExtra(App.OPEN)) {
 			if (getIntent().getIntExtra(App.OPEN, -1) == App.SETTINGS) {
 				openSettings();
-				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_language), false);
+				if (getIntent().hasExtra(App.TYPE) && getIntent().getStringExtra(App.TYPE).equals(App.SETTINGS_APP_LANGUAGE)) openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_language), false);
 			} else openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
 		}
 
@@ -164,6 +187,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				add("Tap the title to edit it", App.TASK);
 				add("Tap a task to set due dates and reminders", App.TASK);
 				add("Check out the settings in the menu", App.TASK);
+				add("You have a 4 day demo period", App.NOTE);
 			} else {
 				data = new JSONObject(d);
 			}
@@ -192,7 +216,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				for (int i = childrenIds.length - 1; i >= 0; i--) {
 					if (data.has(childrenIds[i])) {
 						JSONObject o = new JSONObject(data.getString(childrenIds[i]));
-						if (/* o.getString(App.TYPE).equals(App.PROJECT) || */o.getString(App.TYPE).equals(App.FOLDER)) {
+						if (o.getString(App.TYPE).equals(App.FOLDER)) {
 							openMenuItem(Integer.parseInt(childrenIds[i]));
 							break;
 						}
@@ -358,7 +382,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		try {
 			data.put(App.TIMESTAMP_LAST_UPDATED, (int) (System.currentTimeMillis() / 1000));
 		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -398,7 +421,6 @@ public class MainActivity extends FlyInFragmentActivity {
 				}
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 
 		menu.setMenuItems();
@@ -419,10 +441,12 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void toggleMenu() {
+		if (!canRun()) return;
 		if (!isMoving) getFlyInMenu().toggleMenu();
 	}
 
 	public void showMenu() {
+		if (!canRun()) return;
 		if (!isMoving) getFlyInMenu().showMenu();
 
 		hideOptions();
@@ -431,11 +455,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void hideMenu() {
+		if (!canRun()) return;
 		if (!isMoving) getFlyInMenu().hideMenu();
 	}
 
 	// When clicking on the button
 	public void addDialog(View v) {
+		if (!canRun()) return;
 		if (isInSettings()) return;
 		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), null, null, getResources().getString(R.string.cancel)) {
 			public void onResult(String name, String type) {
@@ -449,6 +475,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	// When dragging to an item
 	public void addDialog(final String type) {
+		if (!canRun()) return;
 		String t = "";
 		if (type.equals(App.TASK)) t = getResources().getString(R.string.task);
 		else if (type.equals(App.NOTE)) t = getResources().getString(R.string.note);
@@ -637,9 +664,12 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (contentViews.get(posInWrapper) instanceof TaskView) ((TaskView) contentViews.get(posInWrapper)).endEditDescription(true);
 		else if (contentViews.get(posInWrapper) instanceof NoteView) ((NoteView) contentViews.get(posInWrapper)).endEditDescription(true);
 		else endEditTitle(true);
+
+		endEditTitle(true);
 	}
 
 	private void openMenuItem(int id) {
+		if (!canRun()) return;
 		if (isMoving) return;
 		hideOptions();
 		App.hideKeyboard(this, focusDummy);
@@ -863,8 +893,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void startEditTitle() {
+		if (!canRun()) return;
 		if (isInSettings()) return;
 		showCheck();
+		enableCheck();
 
 		nameTV.setVisibility(View.GONE);
 		nameET.setVisibility(View.VISIBLE);
@@ -945,6 +977,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void onBackPressed() {
+		if (!canRun()) return;
 		if (isMoving) return;
 
 		if (getFlyInMenu().isVisible()) {
@@ -1122,6 +1155,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, App.SETTINGS);
+		refresh.putExtra(App.TYPE, App.SETTINGS_APP_LANGUAGE);
 		startActivity(refresh);
 	}
 
@@ -1149,9 +1183,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void changeTheme(String theme) {
 		saveSetting(App.SETTINGS_THEME, theme);
-		
+
 		setColors();
-		
+
 		for (ContentView i : contentViews)
 			i.setColors();
 
@@ -1162,8 +1196,14 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (!isDarkTheme()) setTheme(android.R.style.Theme_Light);
 			else setTheme(android.R.style.Theme_Black);
 		}
+		
+		Intent refresh = new Intent(this, MainActivity.class);
+		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		overridePendingTransition(0, 0);
+		refresh.putExtra(App.OPEN, App.SETTINGS);
+		startActivity(refresh);
 	}
-	
+
 	private void setColors() {
 		titleBar.setBackgroundColor(getResources().getColor(isDarkTheme() ? R.color.background_color_dark : R.color.aqua_blue));
 		nameTV.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
@@ -1173,7 +1213,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		((ImageView) findViewById(R.id.back_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.add_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.save_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
-		
+
 	}
 
 	public void showCheck() {
@@ -1188,8 +1228,11 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void hideCheck() {
-		findViewById(R.id.saveTask).setVisibility(View.GONE);
-		findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+		if (contentViews.get(posInWrapper) instanceof TaskView) disableCheck();
+		else {
+			findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+			findViewById(R.id.saveTask).setVisibility(View.GONE);
+		}
 	}
 
 	public void disableCheck() {
@@ -1214,5 +1257,9 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public String getSetting(String settingName) {
 		return prefs.getString(settingName, "");
+	}
+
+	public boolean canRun() {
+		return canRun;
 	}
 }

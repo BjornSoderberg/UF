@@ -18,8 +18,7 @@
         android:layout_below="@+id/titleBar"
         android:background="#35ADCF"
         android:orientation="horizontal"
-        android:visibility="gone" >
-    </com.todo.code3.xml.OptionsBar>
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/barBorder"
@@ -53,4 +52,4 @@
         <requestFocus />
     </EditText>
 
-</com.todo.code3.xml.Wrapper>
+</se.nextapp.task.full.xml.Wrapper>

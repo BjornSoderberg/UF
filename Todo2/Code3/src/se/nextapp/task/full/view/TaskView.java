@@ -8,11 +8,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.adapter.ReminderAdapter;
 import se.nextapp.task.full.dialog.date_and_time.DateAndTimeDialog;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
-
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -25,8 +25,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.todo.code3.R;
 
 public class TaskView extends ContentView {
 

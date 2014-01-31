@@ -18,7 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.todo.code3.R;
+import se.nextapp.task.full.R;
 
 public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
@@ -184,6 +184,8 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public boolean onInterceptTouchEvent(MotionEvent e) {
+		if(!activity.canRun()) return false;
+		
 		int x = (int) e.getRawX();
 		int y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
 		if (activity.isInMasterView()) x -= activity.getMenuWidth();

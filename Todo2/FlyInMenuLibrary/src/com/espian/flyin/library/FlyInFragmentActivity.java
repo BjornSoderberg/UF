@@ -122,4 +122,8 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	public void remove(int id) {
 		
 	}
+	
+	public boolean isDarkTheme() {
+		return false;
+	}
 }

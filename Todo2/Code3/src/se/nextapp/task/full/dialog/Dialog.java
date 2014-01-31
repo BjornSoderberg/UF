@@ -3,9 +3,9 @@ package se.nextapp.task.full.dialog;
 import java.util.List;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.xml.CircularPulser;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,8 +25,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.todo.code3.R;
 
 public abstract class Dialog extends AlertDialog.Builder {
 

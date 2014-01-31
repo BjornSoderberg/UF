@@ -6,5 +6,5 @@
     <color name="transparent">#00000000</color>
     <color name="bar_border">#ff2a8eab</color>
     
-    <color name="star_color">#fffce193</color>
+    <!--  <color name="star_color">#fffce193</color>-->
 </resources>

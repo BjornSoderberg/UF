@@ -3,17 +3,16 @@ package se.nextapp.task.full.view.settings;
 import org.json.JSONObject;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Sort;
 import se.nextapp.task.full.view.ContentView;
-
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,8 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import com.todo.code3.R;
 
 public class SettingsView extends ContentView {
 
@@ -151,8 +148,8 @@ public class SettingsView extends ContentView {
 		
 		sortSpinner.setSelection(i);
 
-		theme.setBackgroundResource(activity.isDarkTheme() ? R.drawable.ic_unchecked : R.drawable.ic_checked);
-		timeMode.setBackgroundResource(activity.is24HourMode() ? R.drawable.ic_checked : R.drawable.ic_unchecked);
+		theme.setBackgroundResource(activity.isDarkTheme() ? R.drawable.theme_dark : R.drawable.theme_light);
+		timeMode.setBackgroundResource(activity.is24HourMode() ? R.drawable.time_24h : R.drawable.time_12h);
 
 		((LinearLayout) findViewById(R.id.textLang)).setBackgroundDrawable(getResources().getDrawable(dark ? R.drawable.item_selector_dark2 : R.drawable.item_selector_white));
 		((LinearLayout) findViewById(R.id.feedback)).setBackgroundDrawable(getResources().getDrawable(dark ? R.drawable.item_selector_dark2 : R.drawable.item_selector_white));

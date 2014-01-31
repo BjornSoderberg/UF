@@ -3,12 +3,12 @@ package se.nextapp.task.full.adapter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.animation.CollapseAnimation;
 import se.nextapp.task.full.dialog.date_and_time.DateAndTimeDialog;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
 import se.nextapp.task.full.view.TaskView;
-
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -31,8 +31,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-
-import com.todo.code3.R;
 
 public class ReminderAdapter extends BaseAdapter {
 

@@ -3,18 +3,13 @@ package se.nextapp.task.full.dialog;
 import java.util.ArrayList;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.widget.EditText;
-
-import com.todo.code3.R;
 
 public class TextLineDialog extends Dialog {
 

@@ -3,9 +3,9 @@ package se.nextapp.task.full.xml.hierarchy;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.nextapp.task.full.*;
+import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
-
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.view.LayoutInflater;
@@ -14,8 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.todo.code3.R;
 
 public class HierarchyChild extends RelativeLayout {
 

@@ -16,11 +16,14 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static int icon_color=0x7f050004;
-        public static int item_color_dark=0x7f050002;
-        public static int item_color_light=0x7f050003;
-        public static int item_text_color=0x7f050001;
-        public static int menu_background=0x7f050000;
+        public static int icon_color=0x7f050006;
+        public static int item_color_dark_dark=0x7f050004;
+        public static int item_color_dark_light=0x7f050001;
+        public static int item_color_light_dark=0x7f050005;
+        public static int item_color_light_light=0x7f050002;
+        public static int item_text_color=0x7f050007;
+        public static int menu_background_dark=0x7f050003;
+        public static int menu_background_light=0x7f050000;
     }
     public static final class dimen {
         public static int item_height=0x7f060006;
@@ -32,13 +35,15 @@ public final class R {
         public static int item_text_size=0x7f060004;
     }
     public static final class drawable {
-        public static int fly_item_background=0x7f020000;
-        public static int fly_item_background_light=0x7f020001;
-        public static int ic_drag=0x7f020002;
-        public static int ic_folder=0x7f020003;
-        public static int ic_folder_check=0x7f020004;
-        public static int ic_folder_due=0x7f020005;
-        public static int ic_trash=0x7f020006;
+        public static int fly_item_background_dark=0x7f020000;
+        public static int fly_item_background_dark_selected=0x7f020001;
+        public static int fly_item_background_light=0x7f020002;
+        public static int fly_item_background_light_selected=0x7f020003;
+        public static int ic_drag=0x7f020004;
+        public static int ic_folder=0x7f020005;
+        public static int ic_folder_check=0x7f020006;
+        public static int ic_folder_due=0x7f020007;
+        public static int ic_trash=0x7f020008;
     }
     public static final class id {
         public static int fly_custom=0x7f070006;

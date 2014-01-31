@@ -92,5 +92,10 @@
     <string name="oops_something_went_wrong">Oops! Something went wrong</string>
     <string name="send">Send</string>
     
+    
+    
+    
+    <string name="end_of_demo">Sorry, the demo period has ended. But your adventure has not ended quite yet! Download the full version at Google Play to continue listing your tasks and ideas.</string>
+    
     <!-- Don't forget to translate DateTimePickerLibrary strings as well -->
 </resources>

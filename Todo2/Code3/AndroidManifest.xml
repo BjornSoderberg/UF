@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.todo.code3"
+    package="se.nextapp.task.full"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -29,8 +29,7 @@
             </intent-filter>
         </activity>
 
-        <recse.nextapp.task.full.notification.NotificationReceiverNotificationReceiver" >
-        </receiver>
+        <receiver android:name=".notification.NotificationReceiver"></receiver>
 
         <!--
         <receiver

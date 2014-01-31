@@ -8,27 +8,27 @@ package com.fourmob.datetimepicker;
 
 public final class R {
 	public static final class color {
-		public static final int ampm_text_color = 0x7f060010;
-		public static final int aqua_blue = 0x7f06000a;
-		public static final int calendar_header = 0x7f06000e;
-		public static final int circle_background = 0x7f060006;
-		public static final int dark_gray = 0x7f060014;
-		public static final int darker_blue = 0x7f06000c;
-		public static final int date_picker_selector = 0x7f060030;
-		public static final int date_picker_text_normal = 0x7f06000d;
-		public static final int date_picker_view_animator = 0x7f06000f;
-		public static final int date_picker_year_selector = 0x7f060031;
-		public static final int done_text_color = 0x7f060032;
-		public static final int done_text_color_disabled = 0x7f060009;
-		public static final int done_text_color_normal = 0x7f060008;
-		public static final int gray = 0x7f060013;
-		public static final int line_background = 0x7f060007;
-		public static final int line_background_dark = 0x7f060015;
-		public static final int numbers_text_color = 0x7f060011;
-		public static final int numbers_text_color_light = 0x7f060016;
-		public static final int red = 0x7f06000b;
-		public static final int transparent_black = 0x7f060012;
-		public static final int white = 0x7f060005;
+		public static final int ampm_text_color = 0x7f060013;
+		public static final int aqua_blue = 0x7f06000d;
+		public static final int calendar_header = 0x7f060011;
+		public static final int circle_background = 0x7f060009;
+		public static final int dark_gray = 0x7f060017;
+		public static final int darker_blue = 0x7f06000f;
+		public static final int date_picker_selector = 0x7f060032;
+		public static final int date_picker_text_normal = 0x7f060010;
+		public static final int date_picker_view_animator = 0x7f060012;
+		public static final int date_picker_year_selector = 0x7f060033;
+		public static final int done_text_color = 0x7f060034;
+		public static final int done_text_color_disabled = 0x7f06000c;
+		public static final int done_text_color_normal = 0x7f06000b;
+		public static final int gray = 0x7f060016;
+		public static final int line_background = 0x7f06000a;
+		public static final int line_background_dark = 0x7f060018;
+		public static final int numbers_text_color = 0x7f060014;
+		public static final int numbers_text_color_light = 0x7f060019;
+		public static final int red = 0x7f06000e;
+		public static final int transparent_black = 0x7f060015;
+		public static final int white = 0x7f060008;
 	}
 	public static final class dimen {
 		public static final int ampm_label_size = 0x7f07001a;
@@ -99,9 +99,9 @@ public final class R {
 		public static final int date_picker_header_view = 0x7f030004;
 		public static final int date_picker_selected_date = 0x7f030005;
 		public static final int date_picker_view_animator = 0x7f030006;
-		public static final int time_header_label = 0x7f03001a;
-		public static final int time_picker_dialog = 0x7f03001b;
-		public static final int year_label_text_view = 0x7f030020;
+		public static final int time_header_label = 0x7f03001b;
+		public static final int time_picker_dialog = 0x7f03001c;
+		public static final int year_label_text_view = 0x7f030021;
 	}
 	public static final class string {
 		public static final int ampm_circle_radius_multiplier = 0x7f090004;

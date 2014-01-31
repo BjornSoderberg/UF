@@ -1,5 +1,6 @@
 package se.nextapp.task.full.adapter;
 
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.item.ContentItem;
 import se.nextapp.task.full.item.FolderItem;
 import se.nextapp.task.full.item.NoteItem;
@@ -22,8 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.todo.code3.R;
 
 public class ItemAdapter extends BaseAdapter {
 
@@ -152,7 +151,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_star);
 		else i.setImageResource(R.drawable.ic_unstar);
-		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
+//		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Checkbox and image
 		FrameLayout fl = (FrameLayout) view.findViewById(R.id.item_checkbox);
@@ -211,7 +210,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_star);
 		else i.setImageResource(R.drawable.ic_unstar);
-		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
+//		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// If there are items over due
 		if(App.getNumberOfTasksOverDue(item.getId(), itemView.getActivity().getData()) > 0) ((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.ic_folder_due);
@@ -259,7 +258,7 @@ public class ItemAdapter extends BaseAdapter {
 
 		if (item.isPrioritized()) i.setImageResource(R.drawable.ic_star);
 		else i.setImageResource(R.drawable.ic_unstar);
-		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
+//		i.getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.star_color), android.graphics.PorterDuff.Mode.MULTIPLY));
 
 		// Set correct color on icon (through filter)
 		((ImageView) view.findViewById(R.id.icon)).getDrawable().setColorFilter(new PorterDuffColorFilter(itemView.getActivity().getResources().getColor(R.color.icon_color), android.graphics.PorterDuff.Mode.MULTIPLY));

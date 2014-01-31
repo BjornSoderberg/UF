@@ -91,4 +91,7 @@
     <string name="thank_you_for_your_feedback">Tack för din feedback</string>
     <string name="oops_something_went_wrong">Oj! Något gick fel.</string>
     <string name="send">Skicka</string>
+    
+    
+    <string name="end_of_demo">Ursäkta, demoperioden har tagit slut. Fortsätt gärna använda NextTask genom att ladda ner den fulla versionen på Google Play.</string>
 </resources>

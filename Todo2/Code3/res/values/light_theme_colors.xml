@@ -10,8 +10,8 @@
     <color name="text_color_checked_light">#ff888888</color>
     
     
-    <color name="light_blue">#ffC7E7FF</color>
-    <color name="selected_light_blue">#FF96D7FF</color>
-    <color name="light_red">#ffFFC7C7</color>
-    <color name="selected_light_red">#FFFF9687</color>
+    <color name="light_blue">#ffb5eeff</color>
+    <color name="selected_light_blue">#FFcff6ff</color>
+    <color name="light_red">#ffffd2d2</color>
+    <color name="selected_light_red">#FFffe4e4</color>
 </resources>

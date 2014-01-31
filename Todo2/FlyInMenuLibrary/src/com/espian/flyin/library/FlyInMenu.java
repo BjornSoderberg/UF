@@ -64,7 +64,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	public ArrayList<FlyInMenuItem> menuItems;
 
 	public void clearMenuItems() {
-		menuItems.clear();
+		if(menuItems != null) menuItems.clear();
 	}
 
 	public void addMenuItem(FlyInMenuItem i) {
@@ -216,6 +216,12 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 			listView.setMenuItems(menuItems);
 		}
+		
+		setColors();
+	}
+	
+	private void setColors() {
+		mMenuHolder.setBackgroundColor(getResources().getColor(activity.isDarkTheme() ? R.color.menu_background_dark : R.color.menu_background_light));
 	}
 
 	/**
@@ -511,7 +517,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 			d.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
 			((ImageView) view.findViewById(R.id.icon)).setBackgroundDrawable(d);
 
-			if (item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.fly_item_background_light));
+			if (item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(activity.isDarkTheme() ? R.drawable.fly_item_background_dark_selected : R.drawable.fly_item_background_light_selected));
+			else view.setBackgroundDrawable(getContext().getResources().getDrawable(activity.isDarkTheme() ? R.drawable.fly_item_background_dark : R.drawable.fly_item_background_light));
 
 			return view;
 		}
@@ -551,6 +558,8 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 			Drawable dd = ((ImageView) view.findViewById(R.id.move_icon)).getBackground().mutate();
 			dd.setColorFilter(new PorterDuffColorFilter(getContext().getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 			((ImageView) view.findViewById(R.id.move_icon)).setBackgroundDrawable(dd);
+			
+			view.setBackgroundDrawable(getContext().getResources().getDrawable(activity.isDarkTheme() ? R.drawable.fly_item_background_dark : R.drawable.fly_item_background_light));
 			
 			return view;
 		}

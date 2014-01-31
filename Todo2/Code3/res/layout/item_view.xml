@@ -20,6 +20,6 @@
         android:divider="@color/divider_color_light"
         android:dividerHeight="@dimen/divider_height"
         android:visibility="visible" >
-    </com.todo.code3.xml.DynamicListView>
+    </se.nextapp.task.full.xml.DynamicListView>
 
 </LinearLayout>

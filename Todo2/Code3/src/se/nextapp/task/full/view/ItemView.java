@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.adapter.ItemAdapter;
 import se.nextapp.task.full.animation.CollapseAnimation;
 import se.nextapp.task.full.animation.ExpandAnimation;
@@ -18,17 +19,13 @@ import se.nextapp.task.full.item.TaskItem;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Sort;
 import se.nextapp.task.full.xml.DynamicListView;
-
 import android.content.res.Resources;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
-
-import com.todo.code3.R;
 
 public class ItemView extends ContentView {
 
@@ -257,7 +254,7 @@ public class ItemView extends ContentView {
 
 		if (isSelected(id)) v.setBackgroundDrawable(activity.getResources().getDrawable(activity.isDarkTheme() ? R.drawable.blue_item_selector_dark : R.drawable.blue_item_selector_light));
 		else if (activity.isDarkTheme()) v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_dark));
-		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_light));
+		else v.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.item_selector_white));
 	}
 
 	public void performActionOnSelectedItems(int id) {

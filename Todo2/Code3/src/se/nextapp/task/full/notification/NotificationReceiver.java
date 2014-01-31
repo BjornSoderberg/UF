@@ -3,9 +3,9 @@ package se.nextapp.task.full.notification;
 import java.util.Calendar;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -17,8 +17,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.todo.code3.R;
 
 public class NotificationReceiver extends BroadcastReceiver {
 

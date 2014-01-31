@@ -32,7 +32,7 @@
             android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:background="@drawable/ic_right" />
+            android:background="@drawable/ic_right_alt" />
     </FrameLayout>
 
 </RelativeLayout>

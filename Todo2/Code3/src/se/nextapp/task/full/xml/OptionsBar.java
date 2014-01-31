@@ -3,20 +3,17 @@ package se.nextapp.task.full.xml;
 import java.util.ArrayList;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.view.ItemView;
-
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import com.todo.code3.R;
 
 public class OptionsBar extends LinearLayout {
 
