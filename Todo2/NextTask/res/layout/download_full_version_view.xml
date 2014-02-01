@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="@dimen/content_padding" >
+
+    <TextView
+        android:id="@+id/descTV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:lineSpacingExtra="5dp"
+        android:text="@string/end_of_demo"
+        android:padding="@dimen/text_padding"
+        android:textColor="@color/text_color_light"
+        android:textSize="@dimen/text_extra_large" />
+
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="selected_light_gray">#ffe8e8e8</color>
+    <color name="selected_semi_transparent">#33000000</color>
+    
+    <color name="transparent">#00000000</color>
+    <color name="bar_border">#ff2a8eab</color>
+    
+    <!--  <color name="star_color">#fffce193</color>-->
+</resources>

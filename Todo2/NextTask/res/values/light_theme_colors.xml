@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_color_light">#ffcccccc</color>
+    <color name="divider_color_light">#ffb4b4b4</color>
+    <color name="selected_light">#ffc8c8c8</color>
+    <color name="light">#fff0f0f0</color>
+    <color name="white">#ffffffff</color>
+    
+    <color name="text_color_light">#ff333333</color>
+    <color name="text_color_checked_light">#ff888888</color>
+    
+    
+    <color name="light_blue">#ffb5eeff</color>
+    <color name="selected_light_blue">#FFcff6ff</color>
+    <color name="light_red">#ffffd2d2</color>
+    <color name="selected_light_red">#FFffe4e4</color>
+</resources>

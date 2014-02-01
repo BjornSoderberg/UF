@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty"
+        android:visibility="gone" />
+
+    <se.nextapp.task.free.xml.DynamicListView
+        android:id="@+id/listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fadingEdgeLength="0dp"
+        android:cacheColorHint="#00000000"
+        android:divider="@color/divider_color_light"
+        android:dividerHeight="@dimen/divider_height"
+        android:visibility="visible" >
+    </se.nextapp.task.free.xml.DynamicListView>
+
+</LinearLayout>

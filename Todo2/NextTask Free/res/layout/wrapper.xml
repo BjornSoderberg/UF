@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<se.nextapp.task.free.xml.Wrapper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bigWrapper"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#bbbbbb"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/titleBar"
+        android:layout_alignParentTop="true"
+        layout="@layout/title_bar" />
+
+    <se.nextapp.task.free.xml.OptionsBar
+        android:id="@+id/optionsBar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/titleBar"
+        android:background="#35ADCF"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/barBorder"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@color/bar_border"
+        android:orientation="horizontal"
+        android:layout_below="@+id/optionsBar" >
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wrapper"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/barBorder"
+        android:layout_weight="1"
+        android:background="#cccccc"
+        android:orientation="horizontal" >
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/focusDummy"
+        android:layout_width="1px"
+        android:layout_height="1px"
+        android:ems="10"
+        android:inputType="text"
+        android:visibility="gone" >
+
+        <requestFocus />
+    </EditText>
+
+</se.nextapp.task.free.xml.Wrapper>

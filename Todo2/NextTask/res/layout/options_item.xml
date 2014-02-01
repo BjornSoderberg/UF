@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_height"
+    android:background="#ffffff"
+    android:orientation="horizontal" >
+
+    <FrameLayout
+        android:id="@+id/item_icon"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/item_padding_leftright"
+        android:visibility="invisible" >
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_note" />
+    </FrameLayout>
+    
+    <TextView
+        android:id="@+id/item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/item_icon"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="@dimen/item_padding_leftright"
+        android:layout_toLeftOf="@+id/item_drag"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:text="@string/no_name"
+        android:paddingLeft="@dimen/item_text_padding_left"
+        android:singleLine="true"
+        android:textColor="#585858"
+        android:textSize="@dimen/item_text_size" />
+
+    <FrameLayout
+        android:id="@+id/item_drag"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true" >
+
+        <ImageView
+            android:id="@+id/drag"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_drag" />
+    </FrameLayout>
+
+</RelativeLayout>

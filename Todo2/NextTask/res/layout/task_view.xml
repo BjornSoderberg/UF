@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="@dimen/content_padding" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#00000000"
+        android:fadingEdgeLength="0dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tvDescriptionHeader"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/description"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="top|left"
+                    android:hint="@string/tap_to_write_a_description"
+                    android:minLines="4"
+                    android:padding="@dimen/text_padding"
+                    android:textSize="@dimen/text_normal" />
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:minLines="4"
+                    android:padding="@dimen/text_padding"
+                    android:textSize="@dimen/text_normal"
+                    android:visibility="gone" >
+                </EditText>
+
+                <TextView
+                    android:id="@+id/tvDueHeader"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:paddingTop="@dimen/text_padding"
+                    android:text="@string/due_date"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/text_normal" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/item_height" >
+
+                    <TextView
+                        android:id="@+id/tvDue"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/item_remove"
+                        android:gravity="center_vertical"
+                        android:padding="@dimen/text_padding"
+                        android:text="@string/tap_to_set_a_due_date"
+                        android:textSize="@dimen/text_normal" />
+
+                    <FrameLayout
+                        android:id="@+id/item_remove"
+                        android:layout_width="@dimen/item_height"
+                        android:layout_height="@dimen/item_height"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true" >
+
+                        <ImageView
+                            android:id="@+id/dueRemove"
+                            android:layout_width="@dimen/item_image_height"
+                            android:layout_height="@dimen/item_image_height"
+                            android:layout_gravity="center"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_trash" />
+                    </FrameLayout>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tvReminderHeader"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:paddingTop="@dimen/text_padding"
+                    android:text="@string/reminders"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/text_normal" />
+
+                <ListView
+                    android:id="@+id/lvReminder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cacheColorHint="#00000000"
+                    android:divider="@color/transparent"
+                    android:dividerHeight="0dp"
+                    android:fadingEdgeLength="0dp" >
+                </ListView>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/focusDummy"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:visibility="gone" >
+
+                <requestFocus />
+            </EditText>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
