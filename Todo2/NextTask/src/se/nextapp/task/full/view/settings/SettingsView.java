@@ -135,10 +135,10 @@ public class SettingsView extends ContentView {
 		boolean dark = activity.isDarkTheme();
 		setBackgroundColor((dark) ? r.getColor(R.color.background_color_dark) : r.getColor(R.color.white));
 
-		if (Build.VERSION.SDK_INT < 11) sortSpinner.setBackgroundColor(activity.getResources().getColor(dark ? R.color.dark : R.color.light));
+		sortSpinner.setBackgroundColor(activity.getResources().getColor(dark ? R.color.dark : R.color.light));
 
 		int layoutId = activity.isDarkTheme() ? R.layout.drop_down_item_dark : R.layout.drop_down_item_light;
-		if (Build.VERSION.SDK_INT < 11) sortAdapter = new ArrayAdapter<String>(activity, layoutId, R.id.item_text, sortPaths);
+		if (Build.VERSION.SDK_INT < 11 || true) sortAdapter = new ArrayAdapter<String>(activity, layoutId, R.id.item_text, sortPaths);
 		else sortAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, sortPaths);
 		sortSpinner.setAdapter(sortAdapter);
 		

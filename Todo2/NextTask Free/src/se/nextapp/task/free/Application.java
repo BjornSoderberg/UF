@@ -7,6 +7,6 @@ import org.acra.annotation.*;
 public class Application extends android.app.Application {
 	public void onCreate() {
 		super.onCreate();
-		ACRA.init(this);
+//		ACRA.init(this);
 	}
 }

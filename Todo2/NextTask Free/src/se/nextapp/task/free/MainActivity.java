@@ -23,7 +23,6 @@ import se.nextapp.task.free.view.settings.SettingsView;
 import se.nextapp.task.free.view.settings.feedback.FeedbackView;
 import se.nextapp.task.free.xml.OptionsBar;
 import se.nextapp.task.free.xml.Wrapper;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -46,7 +45,6 @@ import android.view.View.OnFocusChangeListener;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -58,7 +56,6 @@ import android.widget.TextView;
 import com.espian.flyin.library.FlyInFragmentActivity;
 import com.espian.flyin.library.FlyInMenu;
 import com.espian.flyin.library.FlyInMenuItem;
-import se.nextapp.task.free.R;
 
 public class MainActivity extends FlyInFragmentActivity {
 
@@ -138,7 +135,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		// locked)
 		if (prefs.getLong(App.TIME_CREATED, -1) == -1) {
 			editor.put(App.TIME_CREATED, System.currentTimeMillis() / 1000);
-		} else if (prefs.getLong(App.TIME_CREATED, -1) < System.currentTimeMillis() / 1000 - 3600 * 24 * 4) {
+			getDataFromSharedPreferences();
+		} else if (prefs.getLong(App.TIME_CREATED, -1) < System.currentTimeMillis() / 1000 - 3600 * 24 * 4 && freeVersion) {
 			canRun = false;
 			setTitle("NextTask");
 
@@ -229,6 +227,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+
+		Log.i("asdasd", data.toString());
 
 		updateData();
 	}
@@ -1157,6 +1157,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		Intent refresh = new Intent(this, MainActivity.class);
 		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//		refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, App.SETTINGS);
 		refresh.putExtra(App.TYPE, App.SETTINGS_APP_LANGUAGE);
@@ -1188,8 +1189,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void changeTheme(String theme) {
 		saveSetting(App.SETTINGS_THEME, theme);
 
-		setColors();
-
 		for (ContentView i : contentViews)
 			i.setColors();
 
@@ -1201,11 +1200,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			else setTheme(android.R.style.Theme_Black);
 		}
 
-		Intent refresh = new Intent(this, MainActivity.class);
-		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-		overridePendingTransition(0, 0);
-		refresh.putExtra(App.OPEN, App.SETTINGS);
-		startActivity(refresh);
+		setColors();
 	}
 
 	private void setColors() {
@@ -1232,7 +1227,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void hideCheck() {
-		if (contentViews.get(posInWrapper) instanceof TaskView) disableCheck();
+		if (contentViews.get(posInWrapper) instanceof TaskView || contentViews.get(posInWrapper) instanceof NoteView) disableCheck();
 		else {
 			findViewById(R.id.addButton).setVisibility(View.VISIBLE);
 			findViewById(R.id.saveTask).setVisibility(View.GONE);
@@ -1264,6 +1259,6 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public boolean canRun() {
-		return canRun;
+		return canRun || !freeVersion;
 	}
 }
