@@ -11,7 +11,7 @@
         android:text="@string/empty"
         android:visibility="gone" />
 
-    <se.nextapp.task.full.xml.DynamicListView
+    <se.nextapp.task.full.xml.dynamic.DynamicListView
         android:id="@+id/listview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -19,7 +19,6 @@
         android:cacheColorHint="#00000000"
         android:divider="@color/divider_color_light"
         android:dividerHeight="@dimen/divider_height"
-        android:visibility="visible" >
-    </se.nextapp.task.full.xml.DynamicListView>
+        android:visibility="visible" />
 
 </LinearLayout>

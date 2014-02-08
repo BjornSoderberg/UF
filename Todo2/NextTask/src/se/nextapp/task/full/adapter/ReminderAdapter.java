@@ -215,7 +215,7 @@ public class ReminderAdapter extends BaseAdapter {
 			Drawable d = ((ImageView) view.findViewById(R.id.icon)).getDrawable().mutate();
 			d.setColorFilter(new PorterDuffColorFilter(taskView.getActivity().getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 
-			((FrameLayout) view.findViewById(R.id.item_remove)).setOnClickListener(new OnClickListener() {
+			((FrameLayout) view.findViewById(R.id.remove_due)).setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					// Collapses the view when removing it
 					new CollapseAnimation(view, App.ANIMATION_DURATION, (int) taskView.getActivity().getResources().getDimension(R.dimen.item_height)).animate();

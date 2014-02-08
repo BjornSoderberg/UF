@@ -23,6 +23,7 @@ import se.nextapp.task.full.view.settings.SettingsView;
 import se.nextapp.task.full.view.settings.feedback.FeedbackView;
 import se.nextapp.task.full.xml.OptionsBar;
 import se.nextapp.task.full.xml.Wrapper;
+import se.nextapp.task.full.xml.dynamic.DynamicTextView;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -181,10 +182,13 @@ public class MainActivity extends FlyInFragmentActivity {
 				addMenuItem("Inbox", App.FOLDER);
 				openMenuItem(0);
 
-				add("After that, you will have to buy the full version", App.NOTE);
-				add("You have a 4 day demo period", App.NOTE);
+				if (freeVersion) {
+					add("After that, you will have to buy the full version", App.NOTE);
+					add("You have a 4 day demo period", App.NOTE);
+				}
 				add("Check out the settings in the menu", App.TASK);
 				add("Tap a task to set due dates and reminders", App.TASK);
+				add("Enable options by holding down items", App.TASK);
 				add("Tap the title to edit it", App.TASK);
 				add("Swipe right to see the menu", App.TASK);
 				add("Click the + to add tasks", App.TASK);
@@ -241,7 +245,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		titleBar = (LinearLayout) findViewById(R.id.titleBar);
 
-		nameTV = (TextView) findViewById(R.id.name);
+		nameTV = (DynamicTextView) findViewById(R.id.name);
 		nameET = (EditText) findViewById(R.id.nameET);
 		focusDummy = (EditText) findViewById(R.id.focusDummy);
 
@@ -1157,7 +1161,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		Intent refresh = new Intent(this, MainActivity.class);
 		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//		refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		// refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, App.SETTINGS);
 		refresh.putExtra(App.TYPE, App.SETTINGS_APP_LANGUAGE);
@@ -1212,7 +1216,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		((ImageView) findViewById(R.id.back_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.add_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.save_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
-
+		getFlyInMenu().setColors();
 	}
 
 	public void showCheck() {

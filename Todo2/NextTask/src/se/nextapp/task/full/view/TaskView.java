@@ -73,7 +73,7 @@ public class TaskView extends ContentView {
 			}
 		});
 
-		dueRemove = (FrameLayout) findViewById(R.id.item_remove);
+		dueRemove = (FrameLayout) findViewById(R.id.remove_due);
 		((ImageView)findViewById(R.id.dueRemove)).getDrawable().mutate().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 		dueRemove.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -159,6 +159,7 @@ public class TaskView extends ContentView {
 	}
 
 	public void showDateAndTimePicker(final String type) {
+		endEditDescription(true);
 		new DateAndTimeDialog(activity, task, type) {
 			public void onResult(int year, int month, int day, int hour, int minute) {
 				setDate(type, year, month, day, hour, minute);

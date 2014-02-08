@@ -12,7 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="@dimen/item_text_padding_left"
-        android:layout_toLeftOf="@+id/item_remove"
+        android:layout_toLeftOf="@+id/remove_due"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/item_text_padding_left"
@@ -22,7 +22,7 @@
         android:textSize="@dimen/item_text_size" />
 
     <FrameLayout
-        android:id="@+id/item_remove"
+        android:id="@+id/remove_due"
         android:layout_width="@dimen/item_height"
         android:layout_height="@dimen/item_height"
         android:layout_alignParentRight="true" >

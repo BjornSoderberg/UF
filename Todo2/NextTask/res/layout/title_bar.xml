@@ -14,8 +14,8 @@
             android:layout_width="@dimen/item_image_height"
             android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:background="@drawable/ic_menu" />
+            android:background="@drawable/ic_menu"
+            android:scaleType="fitCenter" />
     </FrameLayout>
 
     <FrameLayout
@@ -30,8 +30,8 @@
             android:layout_width="@dimen/item_image_height"
             android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:background="@drawable/ic_left_alt" />
+            android:background="@drawable/ic_left_alt"
+            android:scaleType="fitCenter" />
     </FrameLayout>
 
     <!-- Title -->
@@ -43,7 +43,7 @@
         android:layout_weight="1"
         android:orientation="horizontal" >
 
-        <TextView
+        <se.nextapp.task.full.xml.dynamic.DynamicTextView
             android:id="@+id/name"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -55,7 +55,7 @@
             android:textColor="#ffffff"
             android:textSize="@dimen/text_large" />
 
-        <EditText
+        <se.nextapp.task.full.xml.dynamic.DynamicEditText
             android:id="@+id/nameET"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -67,8 +67,7 @@
             android:singleLine="true"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_large"
-            android:visibility="gone" >
-        </EditText>
+            android:visibility="gone" />
     </LinearLayout>
 
     <FrameLayout
@@ -82,8 +81,8 @@
             android:layout_width="@dimen/item_image_height"
             android:layout_height="@dimen/item_image_height"
             android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:background="@drawable/ic_plus" />
+            android:background="@drawable/ic_plus"
+            android:scaleType="fitCenter" />
     </FrameLayout>
 
     <FrameLayout

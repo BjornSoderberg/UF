@@ -1,4 +1,4 @@
-package se.nextapp.task.full.xml;
+package se.nextapp.task.full.xml.dynamic;
 
 import java.util.ArrayList;
 

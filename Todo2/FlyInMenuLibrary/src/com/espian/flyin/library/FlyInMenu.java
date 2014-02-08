@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.espian.flyin.library.SimpleGestureFilter.SimpleGestureListener;
+import com.espian.flyin.library.xml.DynamicListView;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
@@ -220,7 +221,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		setColors();
 	}
 	
-	private void setColors() {
+	public void setColors() {
 		mMenuHolder.setBackgroundColor(getResources().getColor(activity.isDarkTheme() ? R.color.menu_background_dark : R.color.menu_background_light));
 	}
 

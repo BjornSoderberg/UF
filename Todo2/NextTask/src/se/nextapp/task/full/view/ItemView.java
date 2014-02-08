@@ -18,7 +18,7 @@ import se.nextapp.task.full.item.NoteItem;
 import se.nextapp.task.full.item.TaskItem;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Sort;
-import se.nextapp.task.full.xml.DynamicListView;
+import se.nextapp.task.full.xml.dynamic.DynamicListView;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.view.LayoutInflater;

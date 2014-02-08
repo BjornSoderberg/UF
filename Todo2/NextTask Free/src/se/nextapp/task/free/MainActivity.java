@@ -181,11 +181,14 @@ public class MainActivity extends FlyInFragmentActivity {
 				addMenuItem("Inbox", App.FOLDER);
 				openMenuItem(0);
 
-				add("After that, you will have to buy the full version", App.NOTE);
-				add("You have a 4 day demo period", App.NOTE);
+				if (freeVersion) {
+					add("After that, you will have to buy the full version", App.NOTE);
+					add("You have a 4 day demo period", App.NOTE);
+				}
 				add("Check out the settings in the menu", App.TASK);
 				add("Tap a task to set due dates and reminders", App.TASK);
 				add("Tap the title to edit it", App.TASK);
+				add("Enable options by holding down items", App.TASK);
 				add("Swipe right to see the menu", App.TASK);
 				add("Click the + to add tasks", App.TASK);
 			} else {
@@ -1157,7 +1160,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		Intent refresh = new Intent(this, MainActivity.class);
 		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//		refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		// refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, App.SETTINGS);
 		refresh.putExtra(App.TYPE, App.SETTINGS_APP_LANGUAGE);
@@ -1212,7 +1215,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		((ImageView) findViewById(R.id.back_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.add_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.save_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
-
+		getFlyInMenu().setColors();
 	}
 
 	public void showCheck() {

@@ -3,6 +3,9 @@ package com.espian.flyin.library;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+
 public class App {
 	public static final String TYPE = "type";
 
@@ -13,6 +16,18 @@ public class App {
 	public static final String CHILDREN_IDS = "childrenIds";
 	public static final String DUE_DATE = "dueDate";
 	public static final String COMPLETED = "completed";
+
+	public static int dpToPx(float dp, Resources r) {
+		DisplayMetrics displayMetrics = r.getDisplayMetrics();
+		int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+		return px;
+	}
+
+	public static int pxToDp(float px, Resources r) {
+		DisplayMetrics displayMetrics = r.getDisplayMetrics();
+		int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+		return dp;
+	}
 
 	public static int getNumberOfTasksOverDue(int parentId, JSONObject data) {
 		int numTasksOverDue = 0;

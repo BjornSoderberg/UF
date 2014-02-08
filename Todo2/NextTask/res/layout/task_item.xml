@@ -22,7 +22,7 @@
             android:src="@drawable/ic_unchecked" />
     </FrameLayout>
 
-    <TextView
+    <se.nextapp.task.full.xml.dynamic.DynamicTextView
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

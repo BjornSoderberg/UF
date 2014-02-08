@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.espian.flyin.library;
+package com.espian.flyin.library.xml;
 
 import java.util.ArrayList;
 
@@ -35,6 +35,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.espian.flyin.library.FlyInFragmentActivity;
+import com.espian.flyin.library.FlyInMenuItem;
+import com.espian.flyin.library.R;
+import com.espian.flyin.library.R.dimen;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.animation.ValueAnimator;

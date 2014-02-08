@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:visibility="visible" >
 
-        <com.espian.flyin.library.DynamicListView
+        <com.espian.flyin.library.xml.DynamicListView
             android:id="@+id/fly_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,8 +21,7 @@
             android:divider="#2E302F"
             android:layout_weight="1"
             android:dividerHeight="1px"
-            android:fadingEdgeLength="0dp" >
-        </com.espian.flyin.library.DynamicListView>
+            android:fadingEdgeLength="0dp" />
 
         <ViewStub
             android:id="@+id/fly_custom"
