@@ -13,18 +13,23 @@ import se.nextapp.task.full.adapter.ReminderAdapter;
 import se.nextapp.task.full.dialog.date_and_time.DateAndTimeDialog;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
+import se.nextapp.task.full.misc.Sort;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 public class TaskView extends ContentView {
 
@@ -32,6 +37,9 @@ public class TaskView extends ContentView {
 	private TextView descTV, dueTV;
 	private FrameLayout dueRemove;
 	private ListView reminderListView;
+
+	private Spinner repeatSpinner;
+	private ArrayAdapter<String> repeatAdapter;
 
 	private JSONObject task;
 
@@ -74,7 +82,7 @@ public class TaskView extends ContentView {
 		});
 
 		dueRemove = (FrameLayout) findViewById(R.id.remove_due);
-		((ImageView)findViewById(R.id.dueRemove)).getDrawable().mutate().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
+		((ImageView) findViewById(R.id.dueRemove)).getDrawable().mutate().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 		dueRemove.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				clearDueDate();
@@ -85,12 +93,59 @@ public class TaskView extends ContentView {
 		reminderListView.setAdapter(new ReminderAdapter(this));
 
 		reminderListView.getLayoutParams().height = (int) (((BaseAdapter) reminderListView.getAdapter()).getCount() * activity.getResources().getDimension(R.dimen.item_height));
-		
+
+		repeatSpinner = (Spinner) findViewById(R.id.repeatSpinner);
+		initReminderSpinner();
+
 		((TextView) findViewById(R.id.tvDescriptionHeader)).setText(((TextView) findViewById(R.id.tvDescriptionHeader)).getText().toString().toUpperCase());
 		((TextView) findViewById(R.id.tvDueHeader)).setText(((TextView) findViewById(R.id.tvDueHeader)).getText().toString().toUpperCase());
 		((TextView) findViewById(R.id.tvReminderHeader)).setText(((TextView) findViewById(R.id.tvReminderHeader)).getText().toString().toUpperCase());
-		
+		((TextView) findViewById(R.id.tvRepeatHeader)).setText(((TextView) findViewById(R.id.tvRepeatHeader)).getText().toString().toUpperCase());
+
 		setColors();
+	}
+
+	private void initReminderSpinner() {
+		String[] repeatPaths = { getResources().getString(R.string.nothing), //
+				getResources().getString(R.string.daily), //
+				getResources().getString(R.string.weekly), //
+				getResources().getString(R.string.monthly) //
+		};
+		final String[] repeatValues = { "",//
+				Reminder.REPEAT_DAILY,//
+				Reminder.REPEAT_WEEKLY,//
+				Reminder.REPEAT_MONTHLY //
+		};
+
+		int layoutId = activity.isDarkTheme() ? R.layout.drop_down_item_dark : R.layout.drop_down_item_light;
+		repeatAdapter = new ArrayAdapter<String>(activity, layoutId, R.id.item_text, repeatPaths);
+		repeatSpinner.setAdapter(repeatAdapter);
+
+		int index = 0;
+		for (int i = 0; i < repeatValues.length; i++) {
+			try {
+				if(task == null) update(activity.getData());
+				if (!task.has(App.REPEAT)) continue;
+				if (task.getString(App.REPEAT).equals(repeatValues[i])) {
+					index = i;
+					break;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		repeatSpinner.setSelection(index);
+		repeatSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				int pos = repeatSpinner.getSelectedItemPosition();
+
+				if(pos < repeatValues.length) setRepeatType(repeatValues[pos]);
+			}
+
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
 	}
 
 	public void setColors() {
@@ -102,10 +157,12 @@ public class TaskView extends ContentView {
 		descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
 		descET.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
 		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
-		
+
+		repeatSpinner.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
+
 		dueTV.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
 		dueTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
-		
+
 		dueRemove.setBackgroundColor((dark) ? r.getColor(R.color.dark) : r.getColor(R.color.light));
 	}
 
@@ -118,7 +175,7 @@ public class TaskView extends ContentView {
 				if (task.has(App.DUE_DATE) && task.getLong(App.DUE_DATE) != -1) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTimeInMillis(task.getLong(App.DUE_DATE) * 1000);
-					
+
 					dueTV.setText(App.getFormattedDateString(task.getLong(App.DUE_DATE), activity.is24HourMode(), activity.getLocaleString()));
 					dueRemove.setVisibility(View.VISIBLE);
 				} else {
@@ -188,7 +245,7 @@ public class TaskView extends ContentView {
 
 				// Sets the reminder info (to update the due date relative
 				// reminders)
-				setReminderInfo(getReminderInfo());
+				updateReminderInfo();
 			} else if (type.equals(Reminder.REMINDER_CUSTOM)) {
 				boolean old = false;
 				for (String s : getReminderInfo().split(","))
@@ -197,6 +254,16 @@ public class TaskView extends ContentView {
 				if (!old) setReminderInfo(getReminderInfo() + "," + timestamp);
 			}
 		}
+	}
+	
+	private void setRepeatType(String repeatType) {
+		activity.setProperty(App.REPEAT, repeatType, parentId);
+		
+		updateReminderInfo();
+	}
+	
+	private void updateReminderInfo() {
+		setReminderInfo(getReminderInfo());
 	}
 
 	private void setReminderInfo(String reminderInfo) {
@@ -250,6 +317,7 @@ public class TaskView extends ContentView {
 	}
 
 	public void leave() {
+		endEditDescription(true);
 		focusDummy.requestFocus();
 		App.hideKeyboard(getContext(), focusDummy);
 	}

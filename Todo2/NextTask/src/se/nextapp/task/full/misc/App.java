@@ -66,9 +66,7 @@ public class App {
 	public static final int OPTIONS_GROUP_ITEMS = 1;
 	public static final int OPTIONS_SELECT_ALL = 2;
 	public static final int OPTIONS_MOVE = 3;
-
-	// Settings
-	public static final int SETTINGS = -10; // unusual number
+	
 	public static final String SETTINGS_THEME = "settingsTheme";
 	public static final String SETTINGS_THEME_DARK = "settingsThemeDark";
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";

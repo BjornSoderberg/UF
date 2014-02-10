@@ -14,23 +14,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-
 public class Reminder {
-	public static final String REMINDER_WEEKLY = "a";
-	// public static final String REMINDER_EVERY_TWO_WEEKS = "b";
-	public static final String REMINDER_MONTHLY = "c";
-	public static final String REMINDER_INTERVAL = "d";
-	// public static final String REMINDER_SINGLE_TIMESTAMPS = "e";
-	public static final String REMINDER_RELATIVE_TO_DUE_DATE = "f";
-	public static final String REMINDER_CUSTOM = "g";
+	public static final String REMINDER_CUSTOM = "reminderCustom";
+
+	public static final String REPEAT_WEEKLY = "a";
+	public static final String REPEAT_MONTHLY = "b";
+	public static final String REPEAT_DAILY = "c";
 
 	public static final int ONE_MONTH_RELATIVE_TO_DUE = 2592000;
 	// seconds in month with 30 days (used for checking)
-
-	public static final int INTERVAL_MINUTE = 60;
-	public static final int INTERVAL_HOUR = 3600;
-	public static final int INTERVAL_DAY = 3600 * 24;
-	public static final int INTERVAL_WEEK = 3600 * 24 * 7;
 
 	public static final int MONDAY = 64;
 	public static final int TUESDAY = 32;
@@ -52,7 +44,7 @@ public class Reminder {
 	public static final String REMINDER_INFO = "reminderInfo";
 	public static final String REPEAT_INFO = "repeatInfo";
 
-	public static long getNext(String reminderInfo, long dueDate) {
+	public static long getNext(String reminderInfo, long dueDate, String repeat) {
 		Calendar c = Calendar.getInstance();
 		// Makes the reminder only go off once
 		c.set(Calendar.SECOND, 0);
@@ -150,6 +142,7 @@ public class Reminder {
 		i.putExtra(Reminder.REMINDER_INFO, reminderInfo);
 
 		long dueDate = -1;
+		String repeat = "";
 
 		try {
 			if (object != null) {
@@ -159,12 +152,18 @@ public class Reminder {
 
 					dueDate = object.getLong(App.DUE_DATE);
 				}
+
+				if (object.has(App.REPEAT) && !object.getString(App.REPEAT).equals("")) {
+					i.putExtra(App.REPEAT, object.getString(App.REPEAT));
+					
+					repeat = object.getString(App.REPEAT);
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		long next = Reminder.getNext(reminderInfo, dueDate);
+		long next = Reminder.getNext(reminderInfo, dueDate, repeat);
 		if (next == -1) return;
 		else next *= 1000;
 

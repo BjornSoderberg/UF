@@ -6,7 +6,9 @@ import se.nextapp.task.full.MainActivity;
 import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.view.ContentView;
+import se.nextapp.task.full.view.settings.SettingsView;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +23,7 @@ public class FeedbackView extends ContentView {
 	private FeedbackSender feedbackSender;
 
 	public FeedbackView(MainActivity activity) {
-		super(activity, 0);
+		super(activity, SettingsView.SEND_FEEDBACK);
 		init();
 	}
 
@@ -40,6 +42,19 @@ public class FeedbackView extends ContentView {
 		});
 
 		setColors();
+	}
+
+	public void setFeedback(String msg, String mail) {
+		if (msg != null) message.setText(msg);
+		if (mail != null) this.mail.setText(mail);
+	}
+
+	public String getMessage() {
+		return message.getText().toString();
+	}
+
+	public String getMail() {
+		return mail.getText().toString();
 	}
 
 	private void sendFeedback() {
@@ -63,18 +78,6 @@ public class FeedbackView extends ContentView {
 		} else send.setText(getResources().getString(R.string.oops_something_went_wrong));
 	}
 
-	public void leave() {
-
-	}
-
-	public void update(JSONObject data) {
-		setColors();
-	}
-
-	public void updateContentItemsOrder() {
-
-	}
-
 	public void setColors() {
 		boolean dark = activity.isDarkTheme();
 		Resources r = getResources();
@@ -91,4 +94,15 @@ public class FeedbackView extends ContentView {
 		((Button) findViewById(R.id.send)).setBackgroundDrawable((dark) ? r.getDrawable(R.drawable.item_selector_dark) : r.getDrawable(R.drawable.item_selector_light));
 	}
 
+	public void leave() {
+
+	}
+
+	public void update(JSONObject data) {
+		setColors();
+	}
+
+	public void updateContentItemsOrder() {
+
+	}
 }

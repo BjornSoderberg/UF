@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import se.nextapp.task.full.dialog.AddItemDialog;
 import se.nextapp.task.full.dialog.TextLineDialog;
+import se.nextapp.task.full.internet.Tags;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
 import se.nextapp.task.full.misc.SPEditor;
@@ -155,9 +156,12 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 
 		if (getIntent().hasExtra(App.OPEN)) {
-			if (getIntent().getIntExtra(App.OPEN, -1) == App.SETTINGS) {
+			if (getIntent().getIntExtra(App.OPEN, -1) == SettingsView.SETTINGS) {
 				openSettings();
-				if (getIntent().hasExtra(App.TYPE) && getIntent().getStringExtra(App.TYPE).equals(App.SETTINGS_APP_LANGUAGE)) openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_language), false);
+
+				if (getIntent().hasExtra(App.TYPE) && getIntent().getStringExtra(App.TYPE).equals(App.SETTINGS_APP_LANGUAGE)) //
+				openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_language), false);
+
 			} else openFromIntent(getIntent().getIntExtra(App.OPEN, -1));
 		}
 
@@ -169,6 +173,8 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (!isDarkTheme()) setTheme(android.R.style.Theme_Light);
 			else setTheme(android.R.style.Theme_Black);
 		}
+		
+		
 	}
 
 	private void getDataFromSharedPreferences() {
@@ -792,7 +798,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (id == SettingsView.SELECT_APP_LANGUAGE) contentViews.add(posInWrapper, new SelectLanguage(this));
 		else if (id == SettingsView.SEND_FEEDBACK) contentViews.add(posInWrapper, new FeedbackView(this));
 
-		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, (animate) ? App.ANIMATION_DURATION : 0);
+		scroller.startScroll(currentContentOffset, 0, -getContentWidth(), 0, animate ? App.ANIMATION_DURATION : 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 		backButton.setVisibility(View.VISIBLE);
@@ -803,15 +809,18 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void openContentViewsFromParentIds(int[] parentIds) {
 		// Opens the first item as a menu item (since the first item among the
 		// content items should be a menu item)
-		openMenuItem(parentIds[0]);
+		if (parentIds[0] == SettingsView.SETTINGS) openSettings();
+		else openMenuItem(parentIds[0]);
 
 		// Opens all the items without animating
 		for (int i = 1; i < parentIds.length; i++) {
-			open(parentIds[i], false);
+			if (parentIds[i] == SettingsView.SELECT_APP_LANGUAGE) openSettingsItem(SettingsView.SELECT_APP_LANGUAGE, getResources().getString(R.string.set_language), false);
+			if (parentIds[i] == SettingsView.SEND_FEEDBACK) openSettingsItem(SettingsView.SEND_FEEDBACK, getResources().getString(R.string.send_feedback), false);
+			else open(parentIds[i], false);
 		}
 
 		// Scrolls to the content view which should be visible
-		scroller.startScroll(currentContentOffset, 0, -posInWrapper * getContentWidth(), 0);
+		scroller.startScroll(currentContentOffset, 0, -posInWrapper * getContentWidth(), 0, 0);
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 	}
 
@@ -1108,7 +1117,14 @@ public class MainActivity extends FlyInFragmentActivity {
 		int[] parentIds = new int[posInWrapper + 1];
 		for (int i = 0; i < parentIds.length; i++) {
 			if (contentViews.size() > i) {
-				if (contentViews.get(i) != null) parentIds[i] = contentViews.get(i).getParentId();
+				if (contentViews.get(i) != null) {
+					parentIds[i] = contentViews.get(i).getParentId();
+
+					if (contentViews.get(i).getParentId() == SettingsView.SEND_FEEDBACK && contentViews.get(i) instanceof FeedbackView) {
+						savedInstanceState.putString(Tags.MESSAGE, ((FeedbackView) contentViews.get(i)).getMessage());
+						savedInstanceState.putString(Tags.MAIL, ((FeedbackView) contentViews.get(i)).getMail());
+					}
+				}
 			}
 		}
 
@@ -1121,6 +1137,14 @@ public class MainActivity extends FlyInFragmentActivity {
 		int parentIds[] = savedInstanceState.getIntArray("contentViewsOpen");
 
 		openContentViewsFromParentIds(parentIds);
+
+		for (int i = 0; i <= posInWrapper; i++) {
+			if (contentViews.get(i) instanceof FeedbackView) {
+				((FeedbackView) contentViews.get(i)).setFeedback(//
+						savedInstanceState.getString(Tags.MESSAGE), //
+						savedInstanceState.getString(Tags.MAIL));
+			}
+		}
 	}
 
 	public boolean isInSettings() {
@@ -1163,9 +1187,17 @@ public class MainActivity extends FlyInFragmentActivity {
 		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 		// refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		overridePendingTransition(0, 0);
-		refresh.putExtra(App.OPEN, App.SETTINGS);
+		refresh.putExtra(App.OPEN, SettingsView.SETTINGS);
 		refresh.putExtra(App.TYPE, App.SETTINGS_APP_LANGUAGE);
 		startActivity(refresh);
+
+		// Makes no animation and makes it impossible to go back (and thus
+		// change language) by pressing the back button
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				finish();
+			}
+		}, 100);
 	}
 
 	public Locale getLocale() {
@@ -1193,18 +1225,20 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void changeTheme(String theme) {
 		saveSetting(App.SETTINGS_THEME, theme);
 
-		for (ContentView i : contentViews)
-			i.setColors();
+		Intent refresh = new Intent(this, MainActivity.class);
+		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		// refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		overridePendingTransition(0, 0);
+		refresh.putExtra(App.OPEN, SettingsView.SETTINGS);
+		startActivity(refresh);
 
-		if (Build.VERSION.SDK_INT >= 11) {
-			if (!isDarkTheme()) setTheme(android.R.style.Theme_Holo_Light);
-			else setTheme(android.R.style.Theme_Holo_Panel);
-		} else {
-			if (!isDarkTheme()) setTheme(android.R.style.Theme_Light);
-			else setTheme(android.R.style.Theme_Black);
-		}
-
-		setColors();
+		// Makes no animation and makes it impossible to go back (and thus
+		// change theme) by pressing the back button
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				finish();
+			}
+		}, 100);
 	}
 
 	private void setColors() {

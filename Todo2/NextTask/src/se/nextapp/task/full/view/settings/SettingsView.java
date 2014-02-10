@@ -12,7 +12,7 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,9 +26,9 @@ import android.widget.ToggleButton;
 
 public class SettingsView extends ContentView {
 
-	public static final int SELECT_VOICE_RECOGNITION = 0;
-	public static final int SELECT_APP_LANGUAGE = 1;
-	public static final int SEND_FEEDBACK = 2;
+	public static final int SETTINGS = -10;
+	public static final int SELECT_APP_LANGUAGE = -11;
+	public static final int SEND_FEEDBACK = -12;
 
 	private ToggleButton theme;
 	private ToggleButton timeMode;
@@ -52,7 +52,7 @@ public class SettingsView extends ContentView {
 	};
 
 	public SettingsView(MainActivity activity) {
-		super(activity, 0);
+		super(activity, SETTINGS);
 		init();
 	}
 
@@ -137,28 +137,17 @@ public class SettingsView extends ContentView {
 
 		sortSpinner.setBackgroundColor(activity.getResources().getColor(dark ? R.color.dark : R.color.light));
 
-		int layoutId = activity.isDarkTheme() ? R.layout.drop_down_item_dark : R.layout.drop_down_item_light;
-		if (Build.VERSION.SDK_INT < 11 || true) sortAdapter = new ArrayAdapter<String>(activity, layoutId, R.id.item_text, sortPaths);
-		else sortAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, sortPaths);
-		sortSpinner.setAdapter(sortAdapter);
-		
-		int i = 0;
-		for (int j = 0; j < sortValues.length; j++)
-			if (sortValues[j] == activity.getSortType()) i = j;
-		
-		sortSpinner.setSelection(i);
-
 		theme.setBackgroundResource(activity.isDarkTheme() ? R.drawable.theme_dark : R.drawable.theme_light);
 		timeMode.setBackgroundResource(activity.is24HourMode() ? R.drawable.time_24h : R.drawable.time_12h);
 
 		((LinearLayout) findViewById(R.id.textLang)).setBackgroundDrawable(getResources().getDrawable(dark ? R.drawable.item_selector_dark2 : R.drawable.item_selector_white));
 		((LinearLayout) findViewById(R.id.feedback)).setBackgroundDrawable(getResources().getDrawable(dark ? R.drawable.item_selector_dark2 : R.drawable.item_selector_white));
 	
-		((TextView) findViewById(R.id.tv1)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_checked_light));
-		((TextView) findViewById(R.id.tv2)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_checked_light));
-		((TextView) findViewById(R.id.tv3)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_checked_light));
-		((TextView) findViewById(R.id.tv4)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_checked_light));
-		((TextView) findViewById(R.id.tv5)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_checked_light));
+		((TextView) findViewById(R.id.tv1)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
+		((TextView) findViewById(R.id.tv2)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
+		((TextView) findViewById(R.id.tv3)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
+		((TextView) findViewById(R.id.tv4)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
+		((TextView) findViewById(R.id.tv5)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
 	}
 
 	public void leave() {

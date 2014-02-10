@@ -1,6 +1,7 @@
 package se.nextapp.task.full.xml;
 
 import se.nextapp.task.full.MainActivity;
+import se.nextapp.task.full.R;
 import se.nextapp.task.full.gesture.SimpleGestureFilter;
 import se.nextapp.task.full.gesture.SimpleGestureFilter.SimpleGestureListener;
 import se.nextapp.task.full.misc.App;
@@ -9,6 +10,7 @@ import se.nextapp.task.full.view.TaskView;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -17,8 +19,6 @@ import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-import se.nextapp.task.full.R;
 
 public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
@@ -77,6 +77,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 	public boolean onTouchEvent(MotionEvent e) {
 		if (activity == null) return true;
+		if(!activity.canRun()) return false;
 
 		if (addTouch) return onAddTouchEvent(e);
 

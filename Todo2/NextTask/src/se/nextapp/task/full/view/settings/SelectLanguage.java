@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import se.nextapp.task.full.MainActivity;
 import se.nextapp.task.full.R;
+import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.view.ContentView;
 import android.content.res.Resources;
 import android.os.Build;
@@ -26,7 +27,7 @@ public class SelectLanguage extends ContentView {
 	private String[] values;
 
 	public SelectLanguage(MainActivity activity) {
-		super(activity, 0);
+		super(activity, SettingsView.SELECT_APP_LANGUAGE);
 		init();
 	}
 

@@ -122,41 +122,14 @@
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
                     android:paddingTop="@dimen/text_padding"
-                    android:text="@string/reminders"
+                    android:text="@string/repeat"
                     android:textAllCaps="true"
                     android:textSize="@dimen/text_normal" />
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/item_height" >
-
-                    <TextView
-                        android:id="@+id/tvRepeat"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_alignParentLeft="true"
-                        android:layout_toLeftOf="@+id/remove_due"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/text_padding"
-                        android:text="@string/tap_to_set_a_due_date"
-                        android:textSize="@dimen/text_normal" />
-
-                    <FrameLayout
-                        android:id="@+id/remove_repeat"
-                        android:layout_width="@dimen/item_height"
-                        android:layout_height="@dimen/item_height"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true" >
-
-                        <ImageView
-                            android:id="@+id/repeatRemove"
-                            android:layout_width="@dimen/item_image_height"
-                            android:layout_height="@dimen/item_image_height"
-                            android:layout_gravity="center"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/ic_trash" />
-                    </FrameLayout>
-                </RelativeLayout>
+                <Spinner
+                    android:id="@+id/repeatSpinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/item_height" />
             </LinearLayout>
 
             <EditText
