@@ -74,7 +74,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private TextView nameTV;
 	private EditText focusDummy, nameET;
 	private OptionsBar options;
-	private FrameLayout dragButton, backButton;
+	private FrameLayout menuButton, backButton;
 	private LinearLayout titleBar;
 
 	private JSONObject data = new JSONObject();
@@ -265,7 +265,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		nameET = (EditText) findViewById(R.id.nameET);
 		focusDummy = (EditText) findViewById(R.id.focusDummy);
 
-		dragButton = (FrameLayout) findViewById(R.id.dragButton);
+		menuButton = (FrameLayout) findViewById(R.id.dragButton);
 		backButton = (FrameLayout) findViewById(R.id.backButton);
 
 		options = (OptionsBar) findViewById(R.id.optionsBar);
@@ -370,7 +370,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		int barHeight = getBarHeight();
 		int borderHeight = getBarBorderHeight();
 
-		// FrameLayout[] buttons = { dragButton, backButton, (FrameLayout)
+		// FrameLayout[] buttons = { menuButton, backButton, (FrameLayout)
 		// findViewById(R.id.addButton) };
 		//
 		// for (int i = 0; i < buttons.length; i++) {
@@ -799,7 +799,7 @@ public class MainActivity extends FlyInFragmentActivity {
 			}
 
 			backButton.setVisibility(View.VISIBLE);
-			dragButton.setVisibility(View.GONE);
+			menuButton.setVisibility(View.GONE);
 			updateData();
 
 		} catch (JSONException e) {
@@ -808,7 +808,11 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void openSettings() {
-		if (contentViews.get(posInWrapper) instanceof SettingsView) return;
+		if(!canRun()) return;
+		if (contentViews.get(posInWrapper) instanceof SettingsView) {
+			if(!isInMasterView()) hideMenu();
+			return;
+		}
 		if (tutorial != TutorialState.END && tutorial != TutorialState.OPEN_SETTINGS && tutorial != TutorialState.CHANGE_THEME && tutorial != TutorialState.OUTRO) return;
 		if (getFlyInMenu().isVisible()) hideMenu();
 		if (isInOptions()) disableOptions();
@@ -847,7 +851,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		scrollHandler.postDelayed(scrollRunnable, scrollFps);
 
 		backButton.setVisibility(View.VISIBLE);
-		dragButton.setVisibility(View.GONE);
+		menuButton.setVisibility(View.GONE);
 		updateData();
 	}
 
@@ -914,7 +918,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				if (!o.has(App.PARENT_ID) || o.getInt(App.PARENT_ID) == -1) {
 					backButton.setVisibility(View.GONE);
 
-					if (!isInMasterView()) dragButton.setVisibility(View.VISIBLE);
+					if (!isInMasterView()) menuButton.setVisibility(View.VISIBLE);
 				}
 			}
 
@@ -1117,8 +1121,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		return posInWrapper;
 	}
 
-	public FrameLayout getDragButton() {
-		return dragButton;
+	public FrameLayout getMenuButton() {
+		return menuButton;
 	}
 
 	public FrameLayout getBackButton() {
@@ -1325,7 +1329,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		((ImageView) findViewById(R.id.save_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		getFlyInMenu().setColors();
 
-		dragButton.setBackgroundColor(0);
+		menuButton.setBackgroundColor(0);
 		backButton.setBackgroundColor(0);
 	}
 

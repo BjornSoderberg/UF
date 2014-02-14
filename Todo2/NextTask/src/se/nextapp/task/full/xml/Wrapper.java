@@ -31,6 +31,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	private static final int MENU_CLOSED = 0;
 	private static final int MENU_OPEN = 1;
 
+	private boolean canDrag = false; // solves the swipe bug
 	private boolean isDragging = false;
 	private boolean hasStarted = false;
 
@@ -76,8 +77,10 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public boolean onTouchEvent(MotionEvent e) {
-		if (activity == null) return true;
-		if(!activity.canRun()) return false;
+		if (activity == null) return false;
+		if (!activity.canRun()) return false;
+		
+		if(!canDrag) return false;
 
 		if (addTouch) return onAddTouchEvent(e);
 
@@ -127,7 +130,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 					else activity.hideMenu();
 				}
 			} else {
-				FrameLayout b = activity.getDragButton();
+				FrameLayout b = activity.getMenuButton();
 
 				if (dragStartLocation == MENU_OPEN) activity.hideMenu();
 				else if (b.getLeft() < startX && startX < b.getRight() //
@@ -135,7 +138,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 			}
 
-			isDragging = hasStarted = false;
+			isDragging = hasStarted = canDrag = false;
 			dragStartLocation = -1;
 		}
 
@@ -185,8 +188,9 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	}
 
 	public boolean onInterceptTouchEvent(MotionEvent e) {
-		if(!activity.canRun()) return false;
-		
+		if (!activity.canRun()) return false;
+		canDrag = false;
+
 		int x = (int) e.getRawX();
 		int y = (int) e.getRawY() - App.getStatusBarHeight(activity.getResources());
 		if (activity.isInMasterView()) x -= activity.getMenuWidth();
@@ -194,31 +198,38 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		// If the menu is visible, the user is able to drag,
 		// as long as he does not drag on the menu
 		if (!isDragging && activity.getFlyInMenu().isVisible()) {
+			canDrag = true;
 			return true;
 		}
 
-		FrameLayout b = activity.getDragButton();
+		FrameLayout b = activity.getMenuButton();
 		// if the back button is visible and the user touches
 		// the button, the menu should not open
 		if (x < b.getRight() && y < b.getBottom()) {
 			if (activity.getPosInWrapper() != 0 || activity.isInOptions()) return false;
 			else {
+				canDrag = true;
 				return true;
 			}
 		}
 
 		// If the touch is inside the touch area for the drag, the user should
 		// be able to drag
-		if (x <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) return true;
+		if (x <= App.dpToPx(App.BEZEL_AREA_DP, getContext().getResources())) {
+			canDrag = true;
+			return true;
+		}
 
 		FrameLayout add = activity.getAddButton();
 		if (add.getLeft() < x && x < add.getRight()) {
 			if (add.getTop() < y && y < add.getBottom()) {
 				if (e.getAction() == MotionEvent.ACTION_DOWN) {
 					if (!activity.isInSettings() && !activity.isInOptions() && //
-							!(activity.getOpenContentView() instanceof TaskView || activity.getOpenContentView() instanceof NoteView)//
+							!(activity.getOpenContentView() instanceof TaskView || //
+							activity.getOpenContentView() instanceof NoteView)//
 							&& !activity.isEditingTitle()) {
 						addTouch = true;
+						canDrag = true;
 						return true;
 					}
 				}

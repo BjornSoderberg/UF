@@ -45,7 +45,7 @@ public class ShakeListener implements SensorListener {
 				lastY = y;
 				lastZ = z;
 
-				if (speed > SHAKE_THRESHOLD) {
+				if (speed > SHAKE_THRESHOLD && activity.canRun()) {
 					Resources r = activity.getResources();
 					if (!ConfirmDialog.isVisible && activity.getTutorialState() == TutorialState.END) {
 						ConfirmDialog cd = new ConfirmDialog(activity, r.getString(R.string.start_tutorial), r.getString(R.string.do_you_want_to_start_the_tutorial), r.getString(R.string.yes), r.getString(R.string.no)){
