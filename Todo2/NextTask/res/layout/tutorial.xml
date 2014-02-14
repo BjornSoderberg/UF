@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#78000000"
+    android:visibility="gone" >
+
+    <FrameLayout
+        android:id="@+id/tutorial_quit"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <ImageView
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_trash"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/tutorial_next"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" >
+
+        <ImageView
+            android:id="@+id/tutorial_next_icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_right_alt"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/tutorial_prev"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/tutorial_next" >
+
+        <ImageView
+            android:id="@+id/tutorial_prev_icon"
+            android:layout_width="@dimen/item_image_height"
+            android:layout_height="@dimen/item_image_height"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_left_alt"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+</RelativeLayout>

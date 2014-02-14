@@ -1,5 +1,8 @@
 package se.nextapp.task.full.misc;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -58,7 +61,7 @@ public class App {
 
 	public static final int BEZEL_AREA_DP = 16;
 	public static final int ANIMATION_DURATION = 300;
-	
+
 	public static final String TIME_CREATED = "timeCreated";
 
 	// Ids for the options menu
@@ -66,7 +69,7 @@ public class App {
 	public static final int OPTIONS_GROUP_ITEMS = 1;
 	public static final int OPTIONS_SELECT_ALL = 2;
 	public static final int OPTIONS_MOVE = 3;
-	
+
 	public static final String SETTINGS_THEME = "settingsTheme";
 	public static final String SETTINGS_THEME_DARK = "settingsThemeDark";
 	public static final String SETTINGS_THEME_LIGHT = "settingsThemeLight";
@@ -81,6 +84,9 @@ public class App {
 	public static final int MIN_API_FOR_VOICE_RECOGNITION = 8;
 
 	public static final String LANGUAGE = "language";
+
+	public static final int TUTORIAL_IMAGE_VIEW = 123; // random number
+	public static final int TUTORIAL_TEXT_VIEW = 124;
 
 	// converting dp to pixels and vice versa
 	public static int dpToPx(float dp, Resources r) {
@@ -365,6 +371,23 @@ public class App {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo ni = cm.getActiveNetworkInfo();
 		return ni != null && ni.isConnected();
+	}
+
+	public static boolean hasInternetAccess(Context context) {
+		if (isNetworkAvailable(context)) {
+			try {
+				HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+				urlc.setRequestProperty("User-Agent", "Test");
+				urlc.setRequestProperty("Connection", "close");
+				urlc.setConnectTimeout(1500);
+				urlc.connect();
+				return (urlc.getResponseCode() == 200);
+			} catch (IOException e) {
+			}
+		} else {
+		}
+		return false;
+
 	}
 
 	public static String capitalizeFirstWordInSentences(String phrase) {

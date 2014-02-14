@@ -63,7 +63,7 @@ public class NoteView extends ContentView {
 		descTV.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark) : r.getColor(R.color.light));
 		descTV.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
 		descET.setBackgroundColor((dark) ? r.getColor(R.color.selected_dark) : r.getColor(R.color.light));
-		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.light));
+		descET.setTextColor((dark) ? r.getColor(R.color.text_color_dark) : r.getColor(R.color.text_color_light));
 	}
 
 	public void update(JSONObject data) {

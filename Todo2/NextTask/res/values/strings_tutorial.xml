@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="need_help">Need help?\nClick here to view the tutorial.</string>
+    <string name="start_tutorial">Start tutorial</string>
+    <string name="do_you_want_to_start_the_tutorial">Do you want to start the tutorial?</string>
+    <string name="tutorial_intro">Hey!
+        \nThis is a short tutorial on how to get started with NextTask.
+        \nPress the \">\" in the bottom right corner to continue or press the 
+        \"X\" in the bottom left corner to quit. If you want to see the 
+        tutorial again, just shake your device!	</string>
+    <string name="tutorial_add_task">Nice, let\'s get started! Press the \"+\" in the upper 
+        right corner and add your first task.\n\n	</string>
+    <string name="tutorial_enter_task">Good job!
+        \nNow, what can you do with tasks? Try pressing it to find out.	</string>
+    <string name="tutorial_introduce_task">Tasks are things you have to do. 
+        This is the detailed overview of a tasks. You can write descriptions, 
+        set a due date and add reminders. When a task is overdue, it will appear 
+        red in the list of tasks. Also, all its parent folders will have a small \"!\" 
+        on them, so that you easily can find overdue tasks.</string>
+    <string name="tutorial_set_due_date">Now try setting a due date. Press the marked element and select a date.</string>
+    <string name="tutorial_set_reminder">Great! Next, try adding a reminder. There are custom reminders 
+        and reminders relative to the due date. You can set as many reminders as you wish.</string>
+    <string name="tutorial_change_name">Nice, you are starting to get a hang of this.
+        See the title at the top of the screen? Try tapping it to change the name of this task. 
+        Then, press the check mark to save the new name.</string>
+    <string name="tutorial_go_back">Well, now you know how tasks work. Go back to learn about 
+        more of NextTask\'s awesome features. You can either swipe right or press the back button 
+        in the upper left corner.</string>
+    <string name="tutorial_check_task">Okay, now we\'re back at the overview. Tap the circle to the left of a task. </string>
+    <string name="tutorial_prioritize_task">Nice, that\'s how you check a task. It means that you have completed it. 
+        If you press it again, it gets unchecked. Tap the star to the right of a task. The star symbolizes that the 
+        item is prioritized.</string>
+    <string name="tutorial_add_folder">Awesome, you have now mastered tasks. But just listing tasks will get messy 
+        pretty fast. We need something to group them in. What about folders? Yeah, they seem like a good idea. 
+        Instead of pressing the \"+\", hold your finger on it, and drag it down. That\'s a faster way to add folders.</string>
+    <string name="tutorial_enter_folder">Cool, adding items that way was much faster. Now, press on the folder to see its content.</string>
+    <string name="tutorial_introduce_folder">Okay, this is an empty folder. In folders, you group items. You can have as many nested folders as you like.</string>
+    <string name="tutorial_add_note">Well, an empty folder is kinda boring, don\'t you think? 
+        Try adding a note to it. Hold your finger over the \"+\" again, but this time, drag to the middle, over the pen icon.</string>
+    <string name="tutorial_enter_note">Good job! That\'s how a note is added. If you want, you can of course add all
+        the items by tapping the \"+\" and selecting what type you want to add. Now press the note you just created!</string>
+    <string name="tutorial_introduce_note">Alright, so this is a note. A note is basically just an empty writing space. 
+        You can write down anything you\'d like; ideas, cool quotes you\'ve heard or whatever you want.</string>
+    <string name="tutorial_change_description">Speaking of writing down stuff, try it for yourself! Just tap the gray
+        area and write something. When you are done, press the checkmark in the upper right corner to save your changes.</string>
+    <string name="tutorial_go_back2">Amazing! Now you also know how notes and folders work. Go back to the folder where 
+        the task was and I\'ll show you some more features.</string>
+    <string name="tutorial_enable_options">To remove, move and group items, there is a set of powerful tools. 
+        To be able to use them, hold a finger down on any item in the list.</string>
+    <string name="tutorial_change_order">That wasn\'t hard, was it? Now you are in the options mode. By tapping items, 
+        you can toggle and untoggle them. If you perform a bulk action, all the selected items will be affected. 
+        You can also reorder individual items by dragging them around. Just grab them in those three 
+        lines on their right side. Try it out!</string>
+    <string name="tutorial_remove_items">Cool, that went great! Now, to remove an item, you select it and press the trash can.
+        Press the \">\" to learn about the next action.</string>
+    <string name="tutorial_group_items">Okay, the next action is a bit more complicated. If you press it, you group the 
+        selected items in a new folder. All you have to do is naming the new folder. This comes in handy when you 
+        have to organize lots of tasks.</string>
+    <string name="tutorial_select_all">Alright, the next button selects and unselects all the items in the list.</string>
+    <string name="tutorial_move_items">What if you want to move something? Well, that\'s what the next action is for. 
+        You simply choose what folder you want to move your items to. You can also move folders to the menu, which
+        we\'ll get to in a minute.</string>
+    <string name="tutorial_disable_options">Alright, you should know everything about the actions in the option mode now. 
+        Hold your finger over an item again to disable return to the normal view. You can also use the back button on 
+        your device to do this.</string>
+    <string name="tutorial_show_menu">We\'re almost done. Do you remember the menu i mentioned 
+        earlier? Well, that\'s what you will learn to use now. Simply swipe right or press the menu button in the upper left 
+        corner to see it!</string>
+    <string name="tutorial_enable_menu_options">Ohh, it\'s so beautiful, isn\'t it? This is the menu, the top of the hierarchy. 
+        At the bottom there are two buttons, one for adding folders in the menu, and the other one for viewing the settings. 
+        In the folder list, you can also enable options, just as you did with the other ones. Remember? Just hold your finger 
+        over an item.</string>
+    <string name="tutorial_open_settings">Good job! Now to the final part of this tutorial, the settings! Press the settings 
+        button at the bottom of the menu. It\'s the button with a gear icon.</string>
+    <string name="tutorial_change_theme">In the settings you can to lots of different things; change theme, language, how to 
+        sort your items and much more. Try changing the theme.</string>
+    <string name="tutorial_outro">Ohh, this new theme looks so sexy. The colors match great, don\'t you think?
+        \n\nWell, this was it for this tutorial. I hoped you learned alot about NextTask and will use it to organize 
+        your life. If you have any questions, please contact us through the feedback form here in the settings.
+        \n\nGood luck!</string>
+
+</resources>

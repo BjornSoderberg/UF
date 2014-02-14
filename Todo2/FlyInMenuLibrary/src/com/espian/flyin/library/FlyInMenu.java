@@ -582,11 +582,13 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 	public void enableOptions() {
 		isInOptionsMode = true;
+		activity.enabledMenuOptions();
 		setMenuItems();
 	}
 
 	public void disableOptions() {
 		isInOptionsMode = false;
+		activity.disabledMenuOptions();
 		setMenuItems();
 	}
 	

@@ -82,6 +82,7 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	}
 
 	public abstract void updateContentItemsOrder();
+
 	public abstract int getContentWidth();
 
 	@Override
@@ -114,16 +115,24 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 	public boolean onFlyInItemClick(FlyInMenuItem flyInMenuItem, int position) {
 		return true;
 	}
-	
+
 	public JSONObject getData() {
 		return null;
 	}
-	
+
 	public void remove(int id) {
-		
+
 	}
-	
+
 	public boolean isDarkTheme() {
 		return false;
+	}
+
+	public void enabledMenuOptions() {
+
+	}
+
+	public void disabledMenuOptions() {
+
 	}
 }

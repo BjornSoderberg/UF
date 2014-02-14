@@ -9,7 +9,7 @@ import android.view.View.MeasureSpec;
 import android.widget.TextView;
 
 public class DynamicTextView extends TextView {
-	
+
 	private float startTextSize;
 	private float minTextSize;
 
@@ -26,7 +26,7 @@ public class DynamicTextView extends TextView {
 	private void init() {
 		startTextSize = getTextSize();
 		minTextSize = App.dpToPx(10, getResources());
-		
+
 		mTestPaint = new Paint();
 		mTestPaint.set(this.getPaint());
 		// max size defaults to the initially specified text size unless it is
@@ -48,13 +48,13 @@ public class DynamicTextView extends TextView {
 
 		while ((hi - lo) > threshold) {
 			float size = (hi + lo) / 2;
-			if(size < minTextSize) {
+			if (size < minTextSize) {
 				lo = minTextSize;
 				break;
 			}
 			mTestPaint.setTextSize(size);
 			// to big:
-			if (mTestPaint.measureText(text) >= targetWidth) hi = size; 
+			if (mTestPaint.measureText(text) >= targetWidth) hi = size;
 			else lo = size; // too small
 		}
 		// Use lo so that we undershoot rather than overshoot

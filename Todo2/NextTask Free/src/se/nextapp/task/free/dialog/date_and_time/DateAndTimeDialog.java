@@ -119,14 +119,13 @@ public class DateAndTimeDialog {
 		showMinute = calendar.get(Calendar.MINUTE);
 	}
 
-	private void showDatePicker() {
+	private void showDatePicker() {		
 		DatePickerDialog d = null;
 
 		try {
 			int due[] = App.getDueDate(object.getLong(App.DUE_DATE));
 			d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, due[0], due[1], due[2], activity.isDarkTheme());
 		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 
 		if (d == null) d = DatePickerDialog.newInstance(dsl, showYear, showMonth, showDay, activity.isDarkTheme());

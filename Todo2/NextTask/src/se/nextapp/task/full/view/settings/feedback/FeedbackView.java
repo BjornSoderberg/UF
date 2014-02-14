@@ -8,7 +8,8 @@ import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.view.ContentView;
 import se.nextapp.task.full.view.settings.SettingsView;
 import android.content.res.Resources;
-import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -58,8 +59,8 @@ public class FeedbackView extends ContentView {
 	}
 
 	private void sendFeedback() {
-		if (!App.isNetworkAvailable(activity)) {
-			Toast.makeText(activity, "No Internet connection", Toast.LENGTH_LONG).show();
+		if (!App.isNetworkAvailable(activity) || !App.hasInternetAccess(activity)) {
+			Toast.makeText(activity, "No Internet connectio+++n", Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -68,6 +69,13 @@ public class FeedbackView extends ContentView {
 		if (msg.length() == 0) return;
 
 		feedbackSender = new FeedbackSender(activity, this, msg, mail);
+		
+		new Handler().postDelayed(new Runnable() {
+			public void run() {
+				feedbackSender.cancel(false);
+				feedbackSent(false);
+			}
+		}, 15000);
 	}
 
 	public void feedbackSent(boolean success) {

@@ -8,4 +8,5 @@ public class Tags {
 	public static final String API_LEVEL = "apiLevel";
 	public static final String DEVICE = "device";
 	public static final String MAIL = "mail";
+	public static final String IP = "ip";
 }

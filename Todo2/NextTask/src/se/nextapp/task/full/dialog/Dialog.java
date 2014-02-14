@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -31,6 +32,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 	protected String title, message;
 	protected boolean hasVoiceRecognition;
 	protected boolean isListening = false;
+	protected boolean cancelable = true;
 
 	protected LinearLayout content;
 	protected MainActivity activity;
@@ -68,7 +70,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 		if (title != null) {
 			TextView t = new TextView(activity);
 			t.setText(title);
-			t.setPadding(30, 30, 0, 30);
+			t.setPadding(20, 20, 20, 20);
 			t.setBackgroundColor(activity.getResources().getColor(R.color.aqua_blue));
 			t.setTextSize(App.pxToDp(activity.getResources().getDimension(R.dimen.text_extra_large), activity.getResources()));
 			t.setTextColor(activity.getResources().getColor(R.color.white));
@@ -82,8 +84,10 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 		setView(content);
 
-		if (posButtonString != null) setPositiveButton();
-		if (negButtonString != null) setNegativeButton();
+		if(posButtonString == null) posButtonString = activity.getResources().getString(R.string.done_label);
+		if(negButtonString == null) negButtonString = activity.getResources().getString(R.string.cancel_label);
+		setPositiveButton();
+		setNegativeButton();
 	}
 
 	@SuppressLint("NewApi")
@@ -95,8 +99,8 @@ public abstract class Dialog extends AlertDialog.Builder {
 
 		voiceRecognitionButton = (Button) view.findViewById(R.id.button1);
 		voiceRecognitionButton.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.ic_mic_big));
-		voiceRecognitionButton.getLayoutParams().height = App.dpToPx(80, activity.getResources());
-		voiceRecognitionButton.getLayoutParams().width = App.dpToPx(80, activity.getResources());
+		voiceRecognitionButton.getLayoutParams().height = App.dpToPx(55, activity.getResources());
+		voiceRecognitionButton.getLayoutParams().width = App.dpToPx(55, activity.getResources());
 
 		PackageManager pm = activity.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
@@ -113,7 +117,7 @@ public abstract class Dialog extends AlertDialog.Builder {
 			});
 
 			cp = (CircularPulser) view.findViewById(R.id.circularPulsar1);
-			cp.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, App.dpToPx(150, activity.getResources())));
+			cp.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, App.dpToPx(120, activity.getResources())));
 			content.addView(view);
 		}
 	}
@@ -200,6 +204,16 @@ public abstract class Dialog extends AlertDialog.Builder {
 				onCancel();
 			}
 		});
+	}
+
+	public AlertDialog.Builder setCancelable(boolean cancelable) {
+		super.setCancelable(cancelable);
+		this.cancelable = cancelable;
+		return this;
+	}
+
+	protected boolean isCancelable() {
+		return cancelable;
 	}
 
 	protected void onResult(Object result) {

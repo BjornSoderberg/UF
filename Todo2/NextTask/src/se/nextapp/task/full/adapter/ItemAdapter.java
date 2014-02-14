@@ -6,6 +6,8 @@ import se.nextapp.task.full.item.FolderItem;
 import se.nextapp.task.full.item.NoteItem;
 import se.nextapp.task.full.item.TaskItem;
 import se.nextapp.task.full.misc.App;
+import se.nextapp.task.full.tutorial.Tutorial;
+import se.nextapp.task.full.tutorial.TutorialState;
 import se.nextapp.task.full.view.ItemView;
 import android.content.Context;
 import android.graphics.Paint;
@@ -76,6 +78,8 @@ public class ItemAdapter extends BaseAdapter {
 		}
 
 		view.setId(item.getId());
+		
+		if(item.getId() == Tutorial.itemToBeClicked && itemView.getActivity().getTutorialState() == TutorialState.ENTER_TASK) view.setBackgroundColor(0xff883399);
 
 		return view;
 	}

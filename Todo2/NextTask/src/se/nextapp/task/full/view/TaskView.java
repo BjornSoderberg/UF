@@ -13,7 +13,7 @@ import se.nextapp.task.full.adapter.ReminderAdapter;
 import se.nextapp.task.full.dialog.date_and_time.DateAndTimeDialog;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
-import se.nextapp.task.full.misc.Sort;
+import se.nextapp.task.full.tutorial.TutorialState;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -29,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 public class TaskView extends ContentView {
 
@@ -124,7 +124,7 @@ public class TaskView extends ContentView {
 		int index = 0;
 		for (int i = 0; i < repeatValues.length; i++) {
 			try {
-				if(task == null) update(activity.getData());
+				if (task == null) update(activity.getData());
 				if (!task.has(App.REPEAT)) continue;
 				if (task.getString(App.REPEAT).equals(repeatValues[i])) {
 					index = i;
@@ -140,7 +140,7 @@ public class TaskView extends ContentView {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				int pos = repeatSpinner.getSelectedItemPosition();
 
-				if(pos < repeatValues.length) setRepeatType(repeatValues[pos]);
+				if (pos < repeatValues.length) setRepeatType(repeatValues[pos]);
 			}
 
 			public void onNothingSelected(AdapterView<?> arg0) {
@@ -219,6 +219,9 @@ public class TaskView extends ContentView {
 		endEditDescription(true);
 		new DateAndTimeDialog(activity, task, type) {
 			public void onResult(int year, int month, int day, int hour, int minute) {
+				if (activity.getTutorialState() == TutorialState.SET_DUE_DATE && type.equals(App.DUE_DATE)) //
+				activity.showTutorial(activity.getNextTutorial(true));
+				
 				setDate(type, year, month, day, hour, minute);
 			}
 		};
@@ -255,13 +258,13 @@ public class TaskView extends ContentView {
 			}
 		}
 	}
-	
+
 	private void setRepeatType(String repeatType) {
 		activity.setProperty(App.REPEAT, repeatType, parentId);
-		
+
 		updateReminderInfo();
 	}
-	
+
 	private void updateReminderInfo() {
 		setReminderInfo(getReminderInfo());
 	}
@@ -311,11 +314,6 @@ public class TaskView extends ContentView {
 		activity.cancelNotification(parentId);
 	}
 
-	private void clearReminderInfo() {
-		activity.removeProperty(Reminder.REMINDER_INFO, parentId);
-		activity.cancelNotification(parentId);
-	}
-
 	public void leave() {
 		endEditDescription(true);
 		focusDummy.requestFocus();
@@ -350,6 +348,9 @@ public class TaskView extends ContentView {
 	}
 
 	public void updateReminder(ArrayList<Long> list) {
+		if (activity.getTutorialState() == TutorialState.SET_REMINDER) //
+		activity.showTutorial(activity.getNextTutorial(true));
+		
 		String info = "";
 
 		// Removes items that are the same
@@ -371,5 +372,9 @@ public class TaskView extends ContentView {
 		if (info.length() > 0 && info.charAt(info.length() - 1) == ',') info = info.substring(0, info.length() - 1);
 
 		setReminderInfo(info);
+	}
+
+	public View getDueDateView() {
+		return dueTV;
 	}
 }

@@ -18,7 +18,7 @@ public class CircularPulser extends View {
 
 	private float currDb = 0, lastDb = 0, drawDb = 0;
 	private Paint paint;
-	private int minSizeInDp = 40;
+	private int minSizeInDp = 35;
 
 	private int alpha = (int) (255 * 0.3);
 
@@ -70,7 +70,6 @@ public class CircularPulser extends View {
 	}
 
 	public void update(float db) {
-		Log.i("asdsa", updateable + "");
 		if (!updateable) return;
 
 		lastDb = this.currDb;

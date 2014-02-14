@@ -36,11 +36,11 @@ public final class R {
 		public static final int fly_item_background_dark_selected = 0x7f020003;
 		public static final int fly_item_background_light = 0x7f020004;
 		public static final int fly_item_background_light_selected = 0x7f020005;
-		public static final int ic_drag = 0x7f020008;
-		public static final int ic_folder = 0x7f02000a;
-		public static final int ic_folder_check = 0x7f02000c;
-		public static final int ic_folder_due = 0x7f02000d;
-		public static final int ic_trash = 0x7f020024;
+		public static final int ic_drag = 0x7f02000a;
+		public static final int ic_folder = 0x7f02000c;
+		public static final int ic_folder_check = 0x7f02000e;
+		public static final int ic_folder_due = 0x7f02000f;
+		public static final int ic_trash = 0x7f020026;
 	}
 	public static final class id {
 		public static final int fly_custom = 0x7f08001d;

@@ -16,11 +16,11 @@
         android:background="@drawable/ic_task_big" />
     </FrameLayout>
 
-    <TextView
+    <se.nextapp.task.full.xml.dynamic.DynamicTextView
         android:id="@+id/item_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_normal"
+        android:textSize="@dimen/text_small"
         android:textColor="@color/aqua_blue"
         android:gravity="center"
         android:text="@string/no_name" />

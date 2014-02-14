@@ -11,11 +11,11 @@ import org.json.JSONObject;
 import se.nextapp.task.full.internet.JSONParser;
 import se.nextapp.task.full.internet.Tags;
 import se.nextapp.task.full.internet.URL;
-
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 
 
@@ -64,12 +64,15 @@ public class FeedbackSender extends AsyncTask<Void, Void, Void> {
 			params.add(new BasicNameValuePair(Tags.DEVICE, Build.MODEL));
 			if(mail != null) params.add(new BasicNameValuePair(Tags.MAIL, mail));
 			
-			Log.i("SENDING FEEDBACK", msg);
-
+			Log.i("Sending feedback", msg);
+			
 			result = parser.makeHttpRequest(URL.FEEDBACK_URL, "POST", params);
-			success = result.getInt(Tags.SUCCESS) == 1;
+			Log.i("result json", result.toString());
+			success = result.has(Tags.SUCCESS) && result.getInt(Tags.SUCCESS) == 1;
+			
+			Log.i("Result from feedback: ", result.getString(Tags.MESSAGE));
 		} catch (JSONException e) {
-			e.printStackTrace();
+			success = false;
 		}
 		return null;
 	}
@@ -79,5 +82,4 @@ public class FeedbackSender extends AsyncTask<Void, Void, Void> {
 
 		feedbackView.feedbackSent(success);
 	}
-
 }

@@ -98,8 +98,11 @@
     <string name="monthly">Monthly</string>
     <string name="daily">Daily</string>
     
-    
     <string name="end_of_demo">Sorry, the demo period has ended. But your adventure has not ended quite yet! Download the full version at Google Play to continue listing your tasks and ideas.</string>
+    
+    
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     
     <!-- Don't forget to translate DateTimePickerLibrary strings as well -->
 </resources>

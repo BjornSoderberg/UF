@@ -52,7 +52,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:singleLine="true"
-            android:text="Title"
+            android:hint="@string/no_name"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_large" />
 

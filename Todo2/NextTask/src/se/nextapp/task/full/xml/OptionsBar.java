@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import se.nextapp.task.full.MainActivity;
 import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
+import se.nextapp.task.full.tutorial.Tutorial;
 import se.nextapp.task.full.view.ItemView;
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -47,7 +48,7 @@ public class OptionsBar extends LinearLayout {
 		activity = a;
 	}
 
-	private void updateItems() {
+	public void updateItems() {
 		removeAllViews();
 		if (items.size() == 0) return;
 
@@ -101,6 +102,8 @@ public class OptionsBar extends LinearLayout {
 				l.setBackgroundColor(0xff730592);
 				// addView(l);
 			}
+			
+			if(id == Tutorial.selectedOptionsItem) b.setBackgroundColor(0xff883399);
 		}
 	}
 

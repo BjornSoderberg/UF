@@ -12,8 +12,12 @@ import se.nextapp.task.full.internet.Tags;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
 import se.nextapp.task.full.misc.SPEditor;
+import se.nextapp.task.full.misc.ShakeListener;
 import se.nextapp.task.full.misc.Sort;
 import se.nextapp.task.full.notification.NotificationReceiver;
+import se.nextapp.task.full.tutorial.Tutorial;
+import se.nextapp.task.full.tutorial.TutorialItem;
+import se.nextapp.task.full.tutorial.TutorialState;
 import se.nextapp.task.full.view.ContentView;
 import se.nextapp.task.full.view.DownloadFullVersionView;
 import se.nextapp.task.full.view.ItemView;
@@ -35,6 +39,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,6 +57,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 
@@ -74,6 +80,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	private JSONObject data = new JSONObject();
 
 	private int openObjectId = -1;
+	private int lastOpenObjectId = -1;
 
 	public ArrayList<ContentView> contentViews;
 
@@ -91,12 +98,18 @@ public class MainActivity extends FlyInFragmentActivity {
 	private boolean freeVersion = false;
 	private boolean canRun = true;
 
+	// For tutorial (obviously)
+	private TutorialState tutorial = TutorialState.END;
+
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.wrapper);
+
+		SensorManager sm = (SensorManager) getSystemService(SENSOR_SERVICE);
+		sm.registerListener(new ShakeListener(this), SensorManager.SENSOR_ACCELEROMETER, SensorManager.SENSOR_DELAY_GAME);
 
 		scroller = new Scroller(this, AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
 		scrollRunnable = new AnimationRunnable();
@@ -138,6 +151,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (prefs.getLong(App.TIME_CREATED, -1) == -1) {
 			editor.put(App.TIME_CREATED, System.currentTimeMillis() / 1000);
 			getDataFromSharedPreferences();
+			startTutorial();
 		} else if (prefs.getLong(App.TIME_CREATED, -1) < System.currentTimeMillis() / 1000 - 3600 * 24 * 4 && freeVersion) {
 			canRun = false;
 			setTitle("NextTask");
@@ -173,8 +187,6 @@ public class MainActivity extends FlyInFragmentActivity {
 			if (!isDarkTheme()) setTheme(android.R.style.Theme_Light);
 			else setTheme(android.R.style.Theme_Black);
 		}
-		
-		
 	}
 
 	private void getDataFromSharedPreferences() {
@@ -237,8 +249,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
-		Log.i("asdasd", data.toString());
 
 		updateData();
 	}
@@ -374,7 +384,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		options.getLayoutParams().height = barHeight;
 	}
 
-	private void updateData() {
+	public void updateData() {
 		// Log.i("Updating data...", data.toString());
 
 		// removes the view that are not next
@@ -461,7 +471,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (!canRun()) return;
 		if (!isMoving) getFlyInMenu().showMenu();
 
-		hideOptions();
+		disableOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
 	}
@@ -473,10 +483,14 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	// When clicking on the button
 	public void addDialog(View v) {
+		String highlight = "";
+		if (tutorial == TutorialState.ADD_TASK) highlight = App.TASK;
+		if (tutorial == TutorialState.ADD_FOLDER || tutorial == TutorialState.ADD_NOTE) return;
+
 		if (!canRun()) return;
 		if (isInSettings()) return;
-		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), null, null, getResources().getString(R.string.cancel)) {
-			public void onResult(String name, String type) {
+		AddItemDialog i = new AddItemDialog(this, getResources().getString(R.string.add_new), null, null, getResources().getString(R.string.cancel), highlight) {
+			protected void onResult(String name, String type) {
 				super.onResult(name, type);
 				add(name, type);
 			}
@@ -488,12 +502,19 @@ public class MainActivity extends FlyInFragmentActivity {
 	// When dragging to an item
 	public void addDialog(final String type) {
 		if (!canRun()) return;
+		// For the tutorial
+		if (tutorial == TutorialState.ADD_TASK && !type.equals(App.TASK)) return;
+		if (tutorial == TutorialState.ADD_FOLDER && !type.equals(App.FOLDER)) return;
+		if (tutorial == TutorialState.ADD_NOTE && !type.equals(App.NOTE)) return;
+
 		String t = "";
 		if (type.equals(App.TASK)) t = getResources().getString(R.string.task);
 		else if (type.equals(App.NOTE)) t = getResources().getString(R.string.note);
 		else if (type.equals(App.FOLDER)) t = getResources().getString(R.string.folder);
 
-		TextLineDialog i = new TextLineDialog(this, getResources().getString(R.string.add_new) + " " + t, null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel)) {
+		boolean cancelable = tutorial != TutorialState.ADD_TASK;
+
+		TextLineDialog i = new TextLineDialog(this, getResources().getString(R.string.add_new) + " " + t, null, true, getResources().getString(R.string.add), getResources().getString(R.string.cancel), cancelable) {
 			public void onResult(Object result) {
 				super.onResult(result);
 
@@ -505,6 +526,9 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void add(String name, String type) {
+		if (tutorial == TutorialState.ADD_FOLDER && type.equals(App.FOLDER)) showTutorial(getNextTutorial(true));
+		if (tutorial == TutorialState.ADD_NOTE && type.equals(App.NOTE)) showTutorial(getNextTutorial(true));
+
 		int parent = -1;
 		try {
 			JSONObject o = new JSONObject(data.getString(openObjectId + ""));
@@ -533,6 +557,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 
 		updateData();
+
+		if (tutorial == TutorialState.ADD_TASK) showTutorial(getNextTutorial(true));
 	}
 
 	public void addMenuItem(String name, String type) {
@@ -646,6 +672,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void checkTask(int taskId, boolean isChecked) {
 		data = App.checkTask(taskId, isChecked, data);
 
+		if (tutorial == TutorialState.CHECK_TASK && isChecked) showTutorial(getNextTutorial(true));
+
 		if (isChecked) cancelNotification(taskId);
 		else {
 			try {
@@ -661,6 +689,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void setProperty(String key, Object value, int id) {
+		if (key.equals(App.PRIORITIZED) && value instanceof Boolean && ((Boolean) value)) {
+			if (tutorial == TutorialState.PRIORITIZE_TASK) showTutorial(getNextTutorial(true));
+		}
+		if (key.equals(App.DESCRIPTION)) {
+			if (tutorial == TutorialState.CHANGE_DESCRIPTION) showTutorial(getNextTutorial(true));
+		}
+
 		data = App.setProperty(key, value, id, data);
 		editor.put(App.DATA, data.toString());
 		updateData();
@@ -683,12 +718,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	private void openMenuItem(int id) {
 		if (!canRun()) return;
 		if (isMoving) return;
-		hideOptions();
+		disableOptions();
 		App.hideKeyboard(this, focusDummy);
 
 		try {
 			if (openObjectId == id && !isInSettings()) return;
 
+			lastOpenObjectId = openObjectId;
 			openObjectId = id;
 
 			JSONObject object = new JSONObject(data.getString(id + ""));
@@ -726,11 +762,15 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void open(int id, boolean animate) {
 		if (isMoving && animate) return;
-		hideOptions();
+		disableOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
 
+		if (id == Tutorial.itemToBeClicked && tutorial == TutorialState.ENTER_TASK) showTutorial(getNextTutorial(true));
+		Tutorial.wentBackOnce = false;
+
 		try {
+			lastOpenObjectId = openObjectId;
 			openObjectId = id;
 
 			JSONObject object = new JSONObject(data.getString(id + ""));
@@ -748,6 +788,10 @@ public class MainActivity extends FlyInFragmentActivity {
 			else if (object.getString(App.TYPE).equals(App.FOLDER)) contentViews.add(posInWrapper, new ItemView(this, openObjectId));
 			else if (object.getString(App.TYPE).equals(App.NOTE)) contentViews.add(posInWrapper, new NoteView(this, openObjectId));
 
+			// for the tutorial
+			if (tutorial == TutorialState.ENTER_FOLDER && object.getString(App.TYPE).equals(App.FOLDER)) showTutorial(getNextTutorial(true));
+			if (tutorial == TutorialState.ENTER_NOTE && object.getString(App.TYPE).equals(App.NOTE)) showTutorial(getNextTutorial(true));
+
 			if (object.getString(App.TYPE).equals(App.TASK) || object.getString(App.TYPE).equals(App.NOTE)) {
 				showCheck();
 			} else {
@@ -764,9 +808,10 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void openSettings() {
-		if (getFlyInMenu().isVisible()) hideMenu();
-		if (isInOptions()) hideOptions();
 		if (contentViews.get(posInWrapper) instanceof SettingsView) return;
+		if (tutorial != TutorialState.END && tutorial != TutorialState.OPEN_SETTINGS && tutorial != TutorialState.CHANGE_THEME && tutorial != TutorialState.OUTRO) return;
+		if (getFlyInMenu().isVisible()) hideMenu();
+		if (isInOptions()) disableOptions();
 
 		posInWrapper = 0;
 		contentViews.clear();
@@ -787,7 +832,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public void openSettingsItem(int id, String title, boolean animate) {
 		if (isMoving) return;
-		hideOptions();
+		disableOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
 
@@ -831,7 +876,15 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void goBack() {
 		if (isMoving) return;
 
-		hideOptions();
+		if (tutorial == TutorialState.SET_REMINDER || tutorial == TutorialState.CHANGE_NAME) return;
+		if (tutorial == TutorialState.SET_DUE_DATE) showTutorial(getPrevTutorial());
+		if (tutorial == TutorialState.GO_BACK) showTutorial(getNextTutorial(true));
+		if (tutorial == TutorialState.GO_BACK2) {
+			if (Tutorial.wentBackOnce) showTutorial(getNextTutorial(true));
+			else Tutorial.wentBackOnce = true;
+		}
+
+		disableOptions();
 		if (isEditingTitle()) endEditTitle(false);
 		App.hideKeyboard(this, focusDummy);
 
@@ -851,6 +904,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 			if (object.has(App.PARENT_ID + "") && data.has(object.getInt(App.PARENT_ID) + "")) setTitle(new JSONObject(data.getString(object.getInt(App.PARENT_ID) + "")).getString(App.NAME));
 
+			lastOpenObjectId = openObjectId;
 			openObjectId = object.getInt(App.PARENT_ID);
 
 			object = new JSONObject(data.getString(openObjectId + ""));
@@ -931,6 +985,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	private void endEditTitle(boolean save) {
+		if (tutorial == TutorialState.CHANGE_NAME && getOpenContentView() instanceof TaskView) showTutorial(getNextTutorial(true));
+
 		nameTV.setVisibility(View.VISIBLE);
 		nameET.setVisibility(View.GONE);
 		hideCheck();
@@ -948,12 +1004,13 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void toggleOptions() {
-		if (options.getVisibility() == View.GONE) showOptions();
-		else hideOptions();
+		if (options.getVisibility() == View.GONE) enableOptions();
+		else disableOptions();
 	}
 
-	public void showOptions() {
+	public void enableOptions() {
 		if (isEditingTitle()) endEditTitle(false);
+		if (tutorial == TutorialState.ENABLE_OPTIONS) showTutorial(getNextTutorial(true));
 
 		options.setVisibility(View.VISIBLE);
 		titleBar.setVisibility(View.GONE);
@@ -969,7 +1026,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		updateData();
 	}
 
-	public void hideOptions() {
+	public void disableOptions() {
+		if (tutorial == TutorialState.REMOVE_ITEMS || tutorial == TutorialState.GROUP_ITEMS || tutorial == TutorialState.SELECT_ALL || tutorial == TutorialState.MOVE_ITEMS) return;
+		if (tutorial == TutorialState.DISABLE_OPTIONS) showTutorial(getNextTutorial(true));
+
 		if (0 <= posInWrapper && posInWrapper < contentViews.size()) //
 		if (contentViews.get(posInWrapper) instanceof ItemView) ((ItemView) contentViews.get(posInWrapper)).exitOptionsMode();
 
@@ -985,6 +1045,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void updateChildrenOrder(String children, int parentId) {
+		if (tutorial == TutorialState.CHANGE_ORDER) showTutorial(getNextTutorial(true));
+
 		data = App.updateChildrenOrder(children, parentId, data);
 
 		editor.put(App.DATA, data.toString());
@@ -1008,7 +1070,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		if (posInWrapper < contentViews.size()) if (contentViews.get(posInWrapper) instanceof ItemView) {
 			if (((ItemView) contentViews.get(posInWrapper)).isInOptionsMode()) {
-				hideOptions();
+				disableOptions();
 				return;
 			}
 		}
@@ -1057,6 +1119,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public FrameLayout getDragButton() {
 		return dragButton;
+	}
+
+	public FrameLayout getBackButton() {
+		return backButton;
 	}
 
 	public FrameLayout getAddButton() {
@@ -1129,6 +1195,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		}
 
 		savedInstanceState.putIntArray("contentViewsOpen", parentIds);
+		savedInstanceState.putString("tutorialState", Tutorial.getStringFromTutorialState(tutorial));
 	}
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -1145,6 +1212,11 @@ public class MainActivity extends FlyInFragmentActivity {
 						savedInstanceState.getString(Tags.MAIL));
 			}
 		}
+
+		String tutorialString = savedInstanceState.getString("tutorialState");
+		if (tutorialString != null) tutorial = Tutorial.getTutorialStateFromString(tutorialString);
+
+		startTutorial(tutorial);
 	}
 
 	public boolean isInSettings() {
@@ -1241,9 +1313,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		}, 100);
 	}
 
-	private void setColors() {
+	public void setColors() {
 		titleBar.setBackgroundColor(getResources().getColor(isDarkTheme() ? R.color.background_color_dark : R.color.aqua_blue));
 		nameTV.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
+		nameTV.setBackgroundColor(0);
 		nameET.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
 		int iconColor = getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white);
 		((ImageView) findViewById(R.id.drag_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
@@ -1251,6 +1324,9 @@ public class MainActivity extends FlyInFragmentActivity {
 		((ImageView) findViewById(R.id.add_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		((ImageView) findViewById(R.id.save_icon)).getBackground().setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
 		getFlyInMenu().setColors();
+
+		dragButton.setBackgroundColor(0);
+		backButton.setBackgroundColor(0);
 	}
 
 	public void showCheck() {
@@ -1296,7 +1372,130 @@ public class MainActivity extends FlyInFragmentActivity {
 		return prefs.getString(settingName, "");
 	}
 
+	public View getNameTV() {
+		return nameTV;
+	}
+
 	public boolean canRun() {
 		return canRun || !freeVersion;
+	}
+	
+	public void startTutorial() {
+		startTutorial(TutorialState.INTRO);
+	}
+
+	public void startTutorial(TutorialState startState) {
+		getDataFromSharedPreferences();
+		RelativeLayout r = (RelativeLayout) findViewById(R.id.overlay);
+		r.setVisibility(View.VISIBLE);
+
+		tutorial = startState;
+		showTutorial(startState);
+
+		((FrameLayout) findViewById(R.id.tutorial_quit)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				endTutorial();
+			}
+		});
+		((FrameLayout) findViewById(R.id.tutorial_next)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				showTutorial(getNextTutorial());
+			}
+		});
+		((FrameLayout) findViewById(R.id.tutorial_prev)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				showTutorial(getPrevTutorial(true));
+			}
+		});
+
+		if (isInMasterView()) ((RelativeLayout.LayoutParams) findViewById(R.id.tutorial_quit).getLayoutParams()).setMargins(getMenuWidth(), 0, 0, 0);
+
+	}
+
+	public void showTutorial(TutorialState tut) {
+		if (tutorial == tut) return;
+
+		tutorial = tut;
+		if (tutorial == TutorialState.END) {
+			endTutorial();
+			return;
+		}
+
+		int imgRes = R.drawable.gif;
+		int textRes = R.string.oops_something_went_wrong;
+
+		RelativeLayout r = (RelativeLayout) findViewById(R.id.overlay);
+		for (int i = 0; i < r.getChildCount(); i++) {
+			if (r.getChildAt(i).getId() == App.TUTORIAL_IMAGE_VIEW) r.removeViewAt(i);
+			if (r.getChildAt(i).getId() == App.TUTORIAL_TEXT_VIEW) r.removeViewAt(i);
+		}
+
+		textRes = TutorialItem.getTutorialItem(tutorial).getStringResourceId();
+		imgRes = TutorialItem.getTutorialItem(tutorial).getDrawableResourceId();
+
+		ImageView img = new ImageView(this);
+		img.setBackgroundResource(imgRes);
+		img.setLayoutParams(new RelativeLayout.LayoutParams(App.dpToPx(200, getResources()), App.dpToPx(200, getResources())));
+		img.setId(App.TUTORIAL_IMAGE_VIEW);
+
+		TextView text = new TextView(this);
+		text.setId(App.TUTORIAL_TEXT_VIEW);
+		text.setPadding(15, 15, 15, 15);
+		text.setTextSize(App.pxToDp(getResources().getDimension(R.dimen.text_normal), getResources()));
+		text.setText(getResources().getString(textRes));
+		text.setBackgroundColor(0xffffffff);
+		text.setLayoutParams(new RelativeLayout.LayoutParams(getMenuWidth(), LayoutParams.WRAP_CONTENT));
+		((RelativeLayout.LayoutParams) text.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		((RelativeLayout.LayoutParams) text.getLayoutParams()).addRule(RelativeLayout.CENTER_VERTICAL);
+
+		r.addView(img);
+		r.addView(text);
+
+		Tutorial.positionItems(text, img, tutorial, this);
+
+		// Makes the buttons toggle their visibility
+		if (tutorial == getNextTutorial()) ((ImageView) findViewById(R.id.tutorial_next_icon)).getBackground().setAlpha((int) (0.3 * 255));
+		else ((ImageView) findViewById(R.id.tutorial_next_icon)).getBackground().setAlpha(255);
+		if (tutorial == getPrevTutorial()) ((ImageView) findViewById(R.id.tutorial_prev_icon)).getBackground().setAlpha((int) (0.3 * 255));
+		else ((ImageView) findViewById(R.id.tutorial_prev_icon)).getBackground().setAlpha(255);
+
+		updateData();
+	}
+
+	public TutorialState getNextTutorial() {
+		return getNextTutorial(false);
+	}
+
+	public TutorialState getNextTutorial(boolean madeAction) {
+		return Tutorial.getNextTutorial(madeAction, tutorial, this);
+	}
+
+	public TutorialState getPrevTutorial() {
+		return getPrevTutorial(false);
+	}
+
+	public TutorialState getPrevTutorial(boolean madeAction) {
+		return Tutorial.getPrevTutorial(madeAction, tutorial, this);
+	}
+
+	public void endTutorial() {
+		RelativeLayout r = (RelativeLayout) findViewById(R.id.overlay);
+		r.setVisibility(View.GONE);
+
+		tutorial = TutorialState.END;
+
+		updateData();
+	}
+
+	public TutorialState getTutorialState() {
+		return tutorial;
+	}
+
+	public int getLastOpenObjectId() {
+		return lastOpenObjectId;
+	}
+
+	public void enabledMenuOptions() {
+		if (tutorial == TutorialState.ENABLE_MENU_OPTIONS) showTutorial(getNextTutorial(true));
 	}
 }

@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,8 +29,7 @@ public class SettingsView extends ContentView {
 	public static final int SELECT_APP_LANGUAGE = -11;
 	public static final int SEND_FEEDBACK = -12;
 
-	private ToggleButton theme;
-	private ToggleButton timeMode;
+	private ToggleButton theme, timeMode;
 
 	private Spinner sortSpinner;
 	private ArrayAdapter<String> sortAdapter;
@@ -121,6 +119,12 @@ public class SettingsView extends ContentView {
 			}
 		});
 		
+		((TextView) findViewById(R.id.help)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				activity.startTutorial();
+			}
+		});
+		
 		Drawable d = getResources().getDrawable(R.drawable.ic_right_alt).mutate();
 		d.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 		((ImageView)findViewById(R.id.icon_expand1)).setBackgroundDrawable(d);
@@ -148,6 +152,9 @@ public class SettingsView extends ContentView {
 		((TextView) findViewById(R.id.tv3)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
 		((TextView) findViewById(R.id.tv4)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
 		((TextView) findViewById(R.id.tv5)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
+		
+		((TextView) findViewById(R.id.help)).setTextColor(getResources().getColor(dark ? R.color.text_color_dark : R.color.text_color_light));
+		((TextView) findViewById(R.id.help)).setBackgroundDrawable(getResources().getDrawable(dark ? R.drawable.item_selector_dark2 : R.drawable.item_selector_white));
 	}
 
 	public void leave() {

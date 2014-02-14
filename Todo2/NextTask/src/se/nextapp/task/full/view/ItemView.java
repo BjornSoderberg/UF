@@ -18,6 +18,8 @@ import se.nextapp.task.full.item.NoteItem;
 import se.nextapp.task.full.item.TaskItem;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Sort;
+import se.nextapp.task.full.tutorial.Tutorial;
+import se.nextapp.task.full.tutorial.TutorialState;
 import se.nextapp.task.full.xml.dynamic.DynamicListView;
 import android.content.res.Resources;
 import android.os.Handler;
@@ -66,6 +68,7 @@ public class ItemView extends ContentView {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (activity.isMoving()) return;
 				if (isInOptionsMode()) return;
+				if(activity.getTutorialState() == TutorialState.ENTER_TASK) if(Tutorial.itemToBeClicked != view.getId()) return;
 
 				try {
 					JSONObject object = new JSONObject(activity.getData().getString(view.getId() + ""));
@@ -107,7 +110,7 @@ public class ItemView extends ContentView {
 			// } else
 			getItemsFromThisFolder(data);
 
-			if (!isInOptionsMode()) sortItems();
+			if (!isInOptionsMode() && activity.getTutorialState() == TutorialState.END) sortItems();
 			
 			adapter.notifyDataSetChanged();
 
@@ -390,7 +393,7 @@ public class ItemView extends ContentView {
 		}
 	}
 
-	private View getViewById(int id) {
+	public View getViewById(int id) {
 		for (int i = 0; i < listView.getChildCount(); i++) {
 			View v = listView.getChildAt(i);
 			if (v.getId() == id) return v;
@@ -446,5 +449,9 @@ public class ItemView extends ContentView {
 
 	public DynamicListView getListView() {
 		return listView;
+	}
+	
+	public int getNumberOfItems() {
+		return contentItems.size();
 	}
 }
