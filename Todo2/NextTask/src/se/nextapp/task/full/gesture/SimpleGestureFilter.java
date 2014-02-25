@@ -37,7 +37,6 @@ public class SimpleGestureFilter extends SimpleOnGestureListener {
 
 		if (dx > MAX_SWIPE_DISTANCE || dy > MAX_SWIPE_DISTANCE) return false;
 		
-
 		vx = Math.abs(vx);
 		vy = Math.abs(vy);
 

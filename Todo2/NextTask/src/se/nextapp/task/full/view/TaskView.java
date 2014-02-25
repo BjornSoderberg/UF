@@ -49,6 +49,8 @@ public class TaskView extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+
 		LayoutInflater.from(activity).inflate(R.layout.task_view, this, true);
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
@@ -192,6 +194,8 @@ public class TaskView extends ContentView {
 	}
 
 	private void startEditDescription() {
+		if (activity.getTutorialState() != TutorialState.END) return;
+
 		descTV.setVisibility(View.GONE);
 		descET.setVisibility(View.VISIBLE);
 		// saveButton.setVisibility(View.VISIBLE);
@@ -216,12 +220,16 @@ public class TaskView extends ContentView {
 	}
 
 	public void showDateAndTimePicker(final String type) {
+		if (type.equals(App.DUE_DATE)) {
+			if (activity.getTutorialState() != TutorialState.SET_DUE_DATE && activity.getTutorialState() != TutorialState.END) return;
+		}
+
 		endEditDescription(true);
 		new DateAndTimeDialog(activity, task, type) {
 			public void onResult(int year, int month, int day, int hour, int minute) {
 				if (activity.getTutorialState() == TutorialState.SET_DUE_DATE && type.equals(App.DUE_DATE)) //
 				activity.showTutorial(activity.getNextTutorial(true));
-				
+
 				setDate(type, year, month, day, hour, minute);
 			}
 		};
@@ -350,7 +358,7 @@ public class TaskView extends ContentView {
 	public void updateReminder(ArrayList<Long> list) {
 		if (activity.getTutorialState() == TutorialState.SET_REMINDER) //
 		activity.showTutorial(activity.getNextTutorial(true));
-		
+
 		String info = "";
 
 		// Removes items that are the same

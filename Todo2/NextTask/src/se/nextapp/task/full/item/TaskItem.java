@@ -2,14 +2,9 @@ package se.nextapp.task.full.item;
 
 public class TaskItem extends ContentItem {
 
-	protected boolean isChecklistChild;
 	protected boolean isCompleted = false;
 	protected long timestampChecked = -1;
 	protected long dueDate = -1;
-	
-	public boolean isChecklistChild() {
-		return isChecklistChild;
-	}
 	
 	public boolean isCompleted() {
 		return isCompleted;
@@ -21,11 +16,6 @@ public class TaskItem extends ContentItem {
 	
 	public long getDueDate() {
 		return dueDate;
-	}
-	
-	public TaskItem isChecklistChild(boolean b) {
-		isChecklistChild = b;
-		return this;
 	}
 	
 	public TaskItem completed(boolean b) {

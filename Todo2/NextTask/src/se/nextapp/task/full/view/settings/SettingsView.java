@@ -14,6 +14,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -55,6 +56,8 @@ public class SettingsView extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+		
 		LayoutInflater.from(activity).inflate(R.layout.settings, this, true);
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
@@ -129,7 +132,7 @@ public class SettingsView extends ContentView {
 		d.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 		((ImageView)findViewById(R.id.icon_expand1)).setBackgroundDrawable(d);
 		((ImageView)findViewById(R.id.icon_expand2)).setBackgroundDrawable(d);
-
+		
 		setColors();
 	}
 

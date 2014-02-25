@@ -148,15 +148,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/help"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/content_padding"
+                android:text="@string/need_help"
+                android:textSize="@dimen/text_large" />
         </LinearLayout>
     </ScrollView>
-
-    <TextView
-        android:id="@+id/help"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/content_padding"
-        android:text="@string/need_help"
-        android:textSize="@dimen/text_large" />
 
 </LinearLayout>

@@ -92,6 +92,7 @@
     <string name="thank_you_for_your_feedback">Tack för din feedback</string>
     <string name="oops_something_went_wrong">Oj! Något gick fel.</string>
     <string name="send">Skicka</string>
+    <string name="sending">Skickar</string>
     <string name="before_due">före förfallodatum</string>
     
     <string name="weekly">Varje vecka</string>

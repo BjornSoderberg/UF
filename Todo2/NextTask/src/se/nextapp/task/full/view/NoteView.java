@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import se.nextapp.task.full.MainActivity;
 import se.nextapp.task.full.R;
 import se.nextapp.task.full.misc.App;
+import se.nextapp.task.full.tutorial.TutorialState;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +26,9 @@ public class NoteView extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+		
 		LayoutInflater.from(activity).inflate(R.layout.note_view, this, true);
-
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
 		descTV = (TextView) findViewById(R.id.descTV);
@@ -80,6 +82,8 @@ public class NoteView extends ContentView {
 	}
 
 	private void startEditDescription() {
+		if (activity.getTutorialState() != TutorialState.END && activity.getTutorialState() != TutorialState.CHANGE_DESCRIPTION) return;
+		
 		descTV.setVisibility(View.GONE);
 		descET.setVisibility(View.VISIBLE);
 		activity.enableCheck();

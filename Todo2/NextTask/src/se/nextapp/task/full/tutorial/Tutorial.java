@@ -21,12 +21,15 @@ public class Tutorial {
 	public static int selectedOptionsItem = -1;
 	public static boolean wentBackOnce = false;
 
-	public static void positionItems(final TextView text, final ImageView img, final TutorialState e, final MainActivity a) {
-		text.setVisibility(View.GONE);
-		img.setVisibility(View.GONE);
+	public static void positionItems(final TextView text, final ImageView img, final TutorialState s, final MainActivity a) {
+//		text.setVisibility(View.GONE);
+//		img.setVisibility(View.GONE);
 
 		a.setColors();
 		a.getOpenContentView().setColors();
+		
+		int timeToWait = App.ANIMATION_DURATION + 100;
+		if(s == TutorialState.INTRO) timeToWait = 0;
 
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
@@ -38,12 +41,12 @@ public class Tutorial {
 
 				textParams.setMargins(10, 10, 10, 10);
 
-				if (e == TutorialState.INTRO) {
+				if (s == TutorialState.INTRO) {
 					textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 					img.setVisibility(View.GONE);
 
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ADD_TASK) {
+				} else if (s == TutorialState.ADD_TASK) {
 					textParams.addRule(RelativeLayout.BELOW, img.getId());
 					textParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
@@ -52,7 +55,7 @@ public class Tutorial {
 
 					text.setVisibility(View.VISIBLE);
 					img.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ENTER_TASK) {
+				} else if (s == TutorialState.ENTER_TASK) {
 					textParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 					try {
 						for (int id = a.getData().getInt(App.NUM_IDS) - 1; id >= 0; id--) {
@@ -97,9 +100,9 @@ public class Tutorial {
 					img.setVisibility(View.VISIBLE);
 					text.setVisibility(View.VISIBLE);
 
-				} else if (e == TutorialState.INTRODUCE_TASK) {
+				} else if (s == TutorialState.INTRODUCE_TASK) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.SET_DUE_DATE) {
+				} else if (s == TutorialState.SET_DUE_DATE) {
 					if (a.getOpenContentView() instanceof TaskView) {
 						TaskView t = (TaskView) a.getOpenContentView();
 						View v = t.getDueDateView();
@@ -107,76 +110,76 @@ public class Tutorial {
 					}
 
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.SET_REMINDER) {
+				} else if (s == TutorialState.SET_REMINDER) {
 					if(a.getOpenContentView() instanceof TaskView) {
 						((TaskView) a.getOpenContentView()).setColors();
 					}
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.CHANGE_NAME) {
+				} else if (s == TutorialState.CHANGE_NAME) {
 					a.getNameTV().setBackgroundColor(0xff8899dd);
 
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.GO_BACK) {
+				} else if (s == TutorialState.GO_BACK) {
 					a.getBackButton().setBackgroundColor(0xffffffff);
 
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.CHECK_TASK) {
+				} else if (s == TutorialState.CHECK_TASK) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.PRIORITIZE_TASK) {
+				} else if (s == TutorialState.PRIORITIZE_TASK) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ADD_FOLDER) {
+				} else if (s == TutorialState.ADD_FOLDER) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ENTER_FOLDER) {
+				} else if (s == TutorialState.ENTER_FOLDER) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.INTRODUCE_FOLDER) {
+				} else if (s == TutorialState.INTRODUCE_FOLDER) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ADD_NOTE) {
+				} else if (s == TutorialState.ADD_NOTE) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ENTER_NOTE) {
+				} else if (s == TutorialState.ENTER_NOTE) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.INTRODUCE_NOTE) {
+				} else if (s == TutorialState.INTRODUCE_NOTE) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.CHANGE_DESCRIPTION) {
+				} else if (s == TutorialState.CHANGE_DESCRIPTION) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.GO_BACK2) {
+				} else if (s == TutorialState.GO_BACK2) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ENABLE_OPTIONS) {
+				} else if (s == TutorialState.ENABLE_OPTIONS) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.CHANGE_ORDER) {
+				} else if (s == TutorialState.CHANGE_ORDER) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.REMOVE_ITEMS) {
+				} else if (s == TutorialState.REMOVE_ITEMS) {
 					text.setVisibility(View.VISIBLE);
 					selectedOptionsItem = App.OPTIONS_REMOVE;
 					a.getOptionsBar().updateItems();
-				} else if (e == TutorialState.GROUP_ITEMS) {
+				} else if (s == TutorialState.GROUP_ITEMS) {
 					text.setVisibility(View.VISIBLE);
 					selectedOptionsItem = App.OPTIONS_GROUP_ITEMS;
 					a.getOptionsBar().updateItems();
-				} else if (e == TutorialState.SELECT_ALL) {
+				} else if (s == TutorialState.SELECT_ALL) {
 					text.setVisibility(View.VISIBLE);
 					selectedOptionsItem = App.OPTIONS_SELECT_ALL;
 					a.getOptionsBar().updateItems();
-				} else if (e == TutorialState.MOVE_ITEMS) {
+				} else if (s == TutorialState.MOVE_ITEMS) {
 					text.setVisibility(View.VISIBLE);
 					selectedOptionsItem = App.OPTIONS_MOVE;
 					a.getOptionsBar().updateItems();
-				} else if (e == TutorialState.DISABLE_OPTIONS) {
+				} else if (s == TutorialState.DISABLE_OPTIONS) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.SHOW_MENU) {
+				} else if (s == TutorialState.SHOW_MENU) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.ENABLE_MENU_OPTIONS) {
+				} else if (s == TutorialState.ENABLE_MENU_OPTIONS) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.OPEN_SETTINGS) {
+				} else if (s == TutorialState.OPEN_SETTINGS) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.CHANGE_THEME) {
+				} else if (s == TutorialState.CHANGE_THEME) {
 					text.setVisibility(View.VISIBLE);
-				} else if (e == TutorialState.OUTRO) {
+				} else if (s == TutorialState.OUTRO) {
 					text.setVisibility(View.VISIBLE);
 				} else {
 					a.endTutorial();
 				}
 			}
-		}, App.ANIMATION_DURATION * 2);
+		}, timeToWait);
 	}
 
 	public static TutorialState getNextTutorial(boolean madeAction, TutorialState current, MainActivity a) {

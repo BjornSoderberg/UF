@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,6 +31,8 @@ import android.widget.TextView;
 
 import com.espian.flyin.library.SimpleGestureFilter.SimpleGestureListener;
 import com.espian.flyin.library.xml.DynamicListView;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
@@ -59,13 +60,14 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 	private boolean isDragging = false;
 	private boolean isInOptionsMode = false;
+	private boolean isVisible = false;
 
 	private OnFlyInItemClickListener callback;
 
 	public ArrayList<FlyInMenuItem> menuItems;
 
 	public void clearMenuItems() {
-		if(menuItems != null) menuItems.clear();
+		if (menuItems != null) menuItems.clear();
 	}
 
 	public void addMenuItem(FlyInMenuItem i) {
@@ -217,10 +219,10 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 
 			listView.setMenuItems(menuItems);
 		}
-		
+
 		setColors();
 	}
-	
+
 	public void setColors() {
 		mMenuHolder.setBackgroundColor(getResources().getColor(activity.isDarkTheme() ? R.color.menu_background_dark : R.color.menu_background_light));
 	}
@@ -235,7 +237,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	public void showMenu() {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
 		disableOptions();
-		
+
 		// mOutsideView.setVisibility(View.VISIBLE);
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
@@ -262,12 +264,13 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		contentOffset = width;
 
 		isDragging = false;
+		isVisible = true;
 	}
 
 	public void hideMenu() {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
 		disableOptions();
-		
+
 		mMenuHolder.setVisibility(View.VISIBLE);
 		if (mCustomView != null) {
 			mCustomView.setVisibility(View.VISIBLE);
@@ -283,24 +286,35 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		ObjectAnimator flyIn = ObjectAnimator.ofFloat(x, "translationX", contentOffset - width, -width);
 		ObjectAnimator activity = ObjectAnimator.ofFloat(v, "translationX", contentOffset, 0);
 
-		flyIn.setInterpolator(decel);
-		activity.setInterpolator(decel);
+		activity.addListener(new AnimatorListener() {
+			public void onAnimationCancel(Animator arg0) {
+			}
 
-		AnimatorSet showFlyIn = new AnimatorSet();
-		showFlyIn.playTogether(flyIn, activity);
-		showFlyIn.setDuration(animationDuration).start();
-
-		// Hides the menu views when the animation has ended
-		new Handler().postDelayed(new Runnable() {
-			public void run() {
+			public void onAnimationEnd(Animator arg0) {
 				mMenuHolder.setVisibility(View.GONE);
 				if (mCustomView != null) {
 					mCustomView.setVisibility(View.GONE);
 				}
 
 				isDragging = false;
+				isVisible = false;
+				contentOffset = 0;
 			}
-		}, animationDuration);
+
+			public void onAnimationRepeat(Animator arg0) {
+			}
+
+			public void onAnimationStart(Animator arg0) {
+			}
+		});
+
+		flyIn.setInterpolator(decel);
+		activity.setInterpolator(decel);
+
+		AnimatorSet showFlyIn = new AnimatorSet();
+		showFlyIn.playTogether(flyIn, activity);
+		showFlyIn.setDuration(animationDuration);
+		showFlyIn.start();
 
 		contentOffset = 0;
 	}
@@ -308,7 +322,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	public void moveMenu(int dx) {
 		if (getContext().getResources().getString(R.string.is_in_master_view).equals("true")) return;
 		disableOptions();
-		
+
 		if (contentOffset + dx < 0) dx = 0 - contentOffset;
 		if (contentOffset + dx > width) dx = width - contentOffset;
 		if (dx == 0) return;
@@ -336,6 +350,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		showFlyIn.setDuration(0).start();
 
 		contentOffset += dx;
+		isVisible = true;
 	}
 
 	private void expandView(final View view) {
@@ -388,7 +403,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 	}
 
 	public boolean isVisible() {
-		return contentOffset != 0;
+		return contentOffset != 0 && isVisible;
 	}
 
 	public int test() {
@@ -483,11 +498,10 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// if (convertView == null || convertView instanceof TextView)
 			View view = null;
 			FlyInMenuItem item = menuItems.get(position);
 
-			if(!isInOptionsMode) view = getFolderView(item);
+			if (!isInOptionsMode) view = getFolderView(item);
 			else view = getOptionsView(item);
 
 			view.setId(item.getId());
@@ -508,8 +522,6 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 				else view.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 1));
 			}
 
-//			if (item.getId() == movingItemId) view.setVisibility(View.INVISIBLE);
-
 			int drawableId = R.drawable.ic_folder;
 			if (App.getNumberOfTasksOverDue(item.getId(), activity.getData()) > 0) drawableId = R.drawable.ic_folder_due;
 			else if (App.getNumberOfTasksCompleted(item.getId(), false, activity.getData()) == 0 && App.getNumberOfTasksCompleted(item.getId(), true, activity.getData()) > 0) drawableId = R.drawable.ic_folder_check;
@@ -518,15 +530,18 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 			d.setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.item_text_color), PorterDuff.Mode.MULTIPLY));
 			((ImageView) view.findViewById(R.id.icon)).setBackgroundDrawable(d);
 
+			view.setBackgroundColor(0); // For some reason this seems to solve
+										// the bug with wrong colors on the menu
+										// items
 			if (item.isOpen()) view.setBackgroundDrawable(getContext().getResources().getDrawable(activity.isDarkTheme() ? R.drawable.fly_item_background_dark_selected : R.drawable.fly_item_background_light_selected));
 			else view.setBackgroundDrawable(getContext().getResources().getDrawable(activity.isDarkTheme() ? R.drawable.fly_item_background_dark : R.drawable.fly_item_background_light));
 
 			return view;
 		}
-		
+
 		private View getOptionsView(final FlyInMenuItem item) {
 			final View view = inflater.inflate(R.layout.fly_options_item, null);
-			
+
 			TextView text = (TextView) view.findViewById(R.id.item_text);
 			text.setText(item.getTitle());
 			text.setOnLongClickListener(new OnLongClickListener() {
@@ -535,33 +550,34 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 					return true;
 				}
 			});
-			
-			if(item.getId() == movingItemId) view.setVisibility(View.INVISIBLE);
-			
-			
+
+			if (item.getId() == movingItemId) view.setVisibility(View.INVISIBLE);
+
 			Drawable d = ((ImageView) view.findViewById(R.id.remove_icon)).getBackground().mutate();
 			d.setColorFilter(new PorterDuffColorFilter(getContext().getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 			((ImageView) view.findViewById(R.id.remove_icon)).setBackgroundDrawable(d);
 			((FrameLayout) view.findViewById(R.id.item_remove)).setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					new CollapseAnimation(view, animationDuration, (int)getResources().getDimension(R.dimen.item_height)).animate();
-					
+					new CollapseAnimation(view, animationDuration, (int) getResources().getDimension(R.dimen.item_height)).animate();
+
 					new Handler().postDelayed(new Runnable() {
 						public void run() {
 							view.setVisibility(View.GONE);
-							
-							activity.remove(item.getId());
+
+							if (getCount() > 1) activity.removeWithChildren(item.getId());
 						}
 					}, animationDuration);
 				}
 			});
 			
+			if(getCount() <= 1) ((ImageView) view.findViewById(R.id.remove_icon)).getBackground().setAlpha((int) (0.3 * 0xff));
+				
 			Drawable dd = ((ImageView) view.findViewById(R.id.move_icon)).getBackground().mutate();
 			dd.setColorFilter(new PorterDuffColorFilter(getContext().getResources().getColor(R.color.icon_color), PorterDuff.Mode.MULTIPLY));
 			((ImageView) view.findViewById(R.id.move_icon)).setBackgroundDrawable(dd);
-			
+
 			view.setBackgroundDrawable(getContext().getResources().getDrawable(activity.isDarkTheme() ? R.drawable.fly_item_background_dark : R.drawable.fly_item_background_light));
-			
+
 			return view;
 		}
 	}
@@ -591,7 +607,7 @@ public class FlyInMenu extends LinearLayout implements SimpleGestureListener {
 		activity.disabledMenuOptions();
 		setMenuItems();
 	}
-	
+
 	public boolean isInOptionsMode() {
 		return isInOptionsMode;
 	}

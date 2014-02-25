@@ -27,6 +27,7 @@ import se.nextapp.task.full.view.settings.SelectLanguage;
 import se.nextapp.task.full.view.settings.SettingsView;
 import se.nextapp.task.full.view.settings.feedback.FeedbackView;
 import se.nextapp.task.full.xml.OptionsBar;
+import se.nextapp.task.full.xml.TutorialSlideView;
 import se.nextapp.task.full.xml.Wrapper;
 import se.nextapp.task.full.xml.dynamic.DynamicTextView;
 import android.annotation.SuppressLint;
@@ -35,6 +36,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
@@ -44,7 +46,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -197,7 +198,7 @@ public class MainActivity extends FlyInFragmentActivity {
 				data = new JSONObject();
 				data.put(App.NUM_IDS, 0);
 
-				addMenuItem("Inbox", App.FOLDER);
+				addMenuItem("Inbox");
 				openMenuItem(0);
 
 				if (freeVersion) {
@@ -249,8 +250,6 @@ public class MainActivity extends FlyInFragmentActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
-		updateData();
 	}
 
 	private void initXML() {
@@ -325,7 +324,7 @@ public class MainActivity extends FlyInFragmentActivity {
 					protected void onResult(Object result) {
 						super.onResult(result);
 
-						if (result instanceof String) addMenuItem((String) result, App.FOLDER);
+						if (result instanceof String) addMenuItem((String) result);
 					}
 				};
 
@@ -561,8 +560,8 @@ public class MainActivity extends FlyInFragmentActivity {
 		if (tutorial == TutorialState.ADD_TASK) showTutorial(getNextTutorial(true));
 	}
 
-	public void addMenuItem(String name, String type) {
-		data = App.add(name, type, -1, data);
+	public void addMenuItem(String name) {
+		data = App.add(name, App.FOLDER, -1, data);
 		editor.put(App.DATA, data.toString());
 
 		try {
@@ -610,6 +609,10 @@ public class MainActivity extends FlyInFragmentActivity {
 		removeWithChildrenLoop(id);
 
 		updateData();
+		
+		if(id == openObjectId) {
+			getDataFromSharedPreferences();
+		}
 	}
 
 	public void removeWithChildrenLoop(int id) {
@@ -953,7 +956,7 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		wrapper.invalidate();
 
-		if (isAnimationOngoing) scrollHandler.postDelayed(scrollRunnable, 16);
+		if (isAnimationOngoing) scrollHandler.postDelayed(scrollRunnable, scrollFps);
 		else {
 			currentContentOffset = offset;
 			isMoving = false;
@@ -1013,6 +1016,8 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void enableOptions() {
+		if(tutorial != TutorialState.ENABLE_OPTIONS && tutorial != TutorialState.END)return; 
+		
 		if (isEditingTitle()) endEditTitle(false);
 		if (tutorial == TutorialState.ENABLE_OPTIONS) showTutorial(getNextTutorial(true));
 
@@ -1066,6 +1071,8 @@ public class MainActivity extends FlyInFragmentActivity {
 			else hideMenu();
 			return;
 		}
+		
+		if(isInMasterView() && getFlyInMenu().isInOptionsMode()) getFlyInMenu().disableOptions();
 
 		if (isEditingTitle()) {
 			endEditTitle(true);
@@ -1156,6 +1163,10 @@ public class MainActivity extends FlyInFragmentActivity {
 
 	public int getContentHeight() {
 		return height - getBarHeight() - getBarBorderHeight();
+	}
+	
+	public int getTotalHeight() {
+		return height;
 	}
 
 	public JSONObject getData() {
@@ -1303,7 +1314,6 @@ public class MainActivity extends FlyInFragmentActivity {
 
 		Intent refresh = new Intent(this, MainActivity.class);
 		refresh.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-		// refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		overridePendingTransition(0, 0);
 		refresh.putExtra(App.OPEN, SettingsView.SETTINGS);
 		startActivity(refresh);
@@ -1320,6 +1330,7 @@ public class MainActivity extends FlyInFragmentActivity {
 	public void setColors() {
 		titleBar.setBackgroundColor(getResources().getColor(isDarkTheme() ? R.color.background_color_dark : R.color.aqua_blue));
 		nameTV.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
+		nameTV.setHintTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
 		nameTV.setBackgroundColor(0);
 		nameET.setTextColor(getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white));
 		int iconColor = getResources().getColor(isDarkTheme() ? R.color.aqua_blue : R.color.white);
@@ -1389,11 +1400,21 @@ public class MainActivity extends FlyInFragmentActivity {
 	}
 
 	public void startTutorial(TutorialState startState) {
+		if(startState == TutorialState.END) return;
+
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		RelativeLayout rr = (RelativeLayout) findViewById(R.id.overlay);
+		rr.setVisibility(View.VISIBLE);
+		rr.addView(new TutorialSlideView(this));
+		
+		if(true) return;
+		
 		getDataFromSharedPreferences();
 		RelativeLayout r = (RelativeLayout) findViewById(R.id.overlay);
 		r.setVisibility(View.VISIBLE);
 
-		tutorial = startState;
+		tutorial = TutorialState.END;
 		showTutorial(startState);
 
 		((FrameLayout) findViewById(R.id.tutorial_quit)).setOnClickListener(new OnClickListener() {
@@ -1413,7 +1434,7 @@ public class MainActivity extends FlyInFragmentActivity {
 		});
 
 		if (isInMasterView()) ((RelativeLayout.LayoutParams) findViewById(R.id.tutorial_quit).getLayoutParams()).setMargins(getMenuWidth(), 0, 0, 0);
-
+		updateData();
 	}
 
 	public void showTutorial(TutorialState tut) {

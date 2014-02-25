@@ -32,8 +32,9 @@ public class SelectLanguage extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+		
 		LayoutInflater.from(getContext()).inflate(R.layout.select_language_view, this, true);
-
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 		initLanguages();
 

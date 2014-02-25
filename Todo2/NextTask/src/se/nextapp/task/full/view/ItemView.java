@@ -52,8 +52,9 @@ public class ItemView extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+		
 		LayoutInflater.from(activity).inflate(R.layout.item_view, this, true);
-
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
 		contentItems = new ArrayList<ContentItem>();
@@ -226,7 +227,7 @@ public class ItemView extends ContentView {
 		order = order.substring(0, order.length() - 1);
 		activity.updateChildrenOrder(order, parentId);
 	}
-
+ 
 	public void toggleItem(int id) {
 		// If the selected items contains the id it is removed
 		for (ContentItem i : selectedItems) {

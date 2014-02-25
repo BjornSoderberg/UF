@@ -29,8 +29,9 @@ public class FeedbackView extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+		
 		LayoutInflater.from(activity).inflate(R.layout.feedback, this, true);
-
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 
 		message = (EditText) findViewById(R.id.messageET);
@@ -59,11 +60,16 @@ public class FeedbackView extends ContentView {
 	}
 
 	private void sendFeedback() {
-		if (!App.isNetworkAvailable(activity) || !App.hasInternetAccess(activity)) {
+		if (!App.isNetworkAvailable(activity)) {
 			Toast.makeText(activity, "No Internet connectio+++n", Toast.LENGTH_LONG).show();
 			return;
 		}
-
+		
+		send.setText(getResources().getString(R.string.sending) + "...");
+		// Makes unpressable until result comes + sets other text color to let user know
+		send.setEnabled(false);
+		send.setTextColor(getResources().getColor(activity.isDarkTheme() ? R.color.text_color_checked_dark : R.color.text_color_checked_light));
+		
 		String msg = message.getText().toString();
 		String mail = this.mail.getText().toString();
 		if (msg.length() == 0) return;
@@ -84,6 +90,10 @@ public class FeedbackView extends ContentView {
 			message.setText("");
 			mail.setText("");
 		} else send.setText(getResources().getString(R.string.oops_something_went_wrong));
+		
+		// Enabling and setting original text color
+		send.setEnabled(true);
+		send.setTextColor(getResources().getColor(activity.isDarkTheme() ? R.color.text_color_dark : R.color.text_color_light));
 	}
 
 	public void setColors() {

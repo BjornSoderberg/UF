@@ -53,6 +53,7 @@
             android:singleLine="true"
             android:hint="@string/no_name"
             android:textColor="#ffffff"
+            android:textColorHint="#88ffffff"
             android:textSize="@dimen/text_large" />
 
         <se.nextapp.task.full.xml.dynamic.DynamicEditText

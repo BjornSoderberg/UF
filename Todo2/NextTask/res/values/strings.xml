@@ -92,6 +92,7 @@
     <string name="thank_you_for_your_feedback">Thank you for your feedback</string>
     <string name="oops_something_went_wrong">Oops! Something went wrong</string>
     <string name="send">Send</string>
+    <string name="sending">Sending</string>
     <string name="before_due">before due</string>
     
     <string name="weekly">Weekly</string>

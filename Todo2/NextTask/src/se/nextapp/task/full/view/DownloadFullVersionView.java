@@ -36,6 +36,8 @@ public class DownloadFullVersionView extends ContentView {
 	}
 
 	protected void init() {
+		super.init();
+		
 		LayoutInflater.from(activity).inflate(R.layout.download_full_version_view, this, true);
 		setLayoutParams(new LayoutParams(activity.getContentWidth(), LayoutParams.FILL_PARENT));
 	}

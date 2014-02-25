@@ -5,6 +5,7 @@ import se.nextapp.task.full.R;
 import se.nextapp.task.full.gesture.SimpleGestureFilter;
 import se.nextapp.task.full.gesture.SimpleGestureFilter.SimpleGestureListener;
 import se.nextapp.task.full.misc.App;
+import se.nextapp.task.full.tutorial.TutorialState;
 import se.nextapp.task.full.view.NoteView;
 import se.nextapp.task.full.view.TaskView;
 import android.content.Context;
@@ -79,8 +80,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 	public boolean onTouchEvent(MotionEvent e) {
 		if (activity == null) return false;
 		if (!activity.canRun()) return false;
-		
-		if(!canDrag) return false;
+		if (!canDrag) return false;
 
 		if (addTouch) return onAddTouchEvent(e);
 
@@ -111,7 +111,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 
 				if (isDragging) {
 					int dx = x - lastX;
-					activity.getFlyInMenu().moveMenu(dx);
+					moveMenu(dx);
 					lastX = x;
 				}
 			}
@@ -126,8 +126,8 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 					if (dragStartLocation == MENU_OPEN) activity.hideMenu();
 					else activity.showMenu();
 				} else {
-					if (activity.getFlyInMenu().getContentOffset() > activity.getContentWidth() / 2) activity.showMenu();
-					else activity.hideMenu();
+					if (activity.getFlyInMenu().getContentOffset() > activity.getContentWidth() / 2) showMenu();
+					else hideMenu();
 				}
 			} else {
 				FrameLayout b = activity.getMenuButton();
@@ -206,8 +206,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		// if the back button is visible and the user touches
 		// the button, the menu should not open
 		if (x < b.getRight() && y < b.getBottom()) {
-			if (activity.getPosInWrapper() != 0 || activity.isInOptions()) return false;
-			else {
+			if (activity.getPosInWrapper() == 0 && !activity.isInOptions()) {
 				canDrag = true;
 				return true;
 			}
@@ -247,6 +246,22 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 		detector.onTouchEvent(e);
 		return super.dispatchTouchEvent(e);
 	}
+	
+	private void moveMenu(int dx) {
+		if(activity.getTutorialState() != TutorialState.END && activity.getTutorialState() != TutorialState.SHOW_MENU) return;
+		
+		activity.getFlyInMenu().moveMenu(dx);
+	}
+	
+	private void showMenu() {
+		if(activity.getTutorialState() != TutorialState.END && activity.getTutorialState() != TutorialState.SHOW_MENU) return;
+		
+		activity.getFlyInMenu().showMenu();
+	}
+	
+	private void hideMenu() {
+		activity.getFlyInMenu().hideMenu();
+	}
 
 	public void onSwipe(int direction) {
 		if (!isDragging && !activity.isMoving()) {
@@ -257,7 +272,7 @@ public class Wrapper extends RelativeLayout implements SimpleGestureListener {
 					return;
 				} else activity.goBack();
 				// Should solve bug with nothing happening on swipe
-				if (posBefore == activity.getPosInWrapper() && !activity.getFlyInMenu().isVisible()) activity.showMenu();
+				if (posBefore == activity.getPosInWrapper() && !activity.getFlyInMenu().isVisible()) showMenu();
 			}
 		}
 	}

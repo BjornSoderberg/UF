@@ -373,23 +373,6 @@ public class App {
 		return ni != null && ni.isConnected();
 	}
 
-	public static boolean hasInternetAccess(Context context) {
-		if (isNetworkAvailable(context)) {
-			try {
-				HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
-				urlc.setRequestProperty("User-Agent", "Test");
-				urlc.setRequestProperty("Connection", "close");
-				urlc.setConnectTimeout(1500);
-				urlc.connect();
-				return (urlc.getResponseCode() == 200);
-			} catch (IOException e) {
-			}
-		} else {
-		}
-		return false;
-
-	}
-
 	public static String capitalizeFirstWordInSentences(String phrase) {
 		int pos = 0;
 		boolean capitalize = true;

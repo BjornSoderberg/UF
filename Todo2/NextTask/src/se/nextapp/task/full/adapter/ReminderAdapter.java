@@ -8,6 +8,7 @@ import se.nextapp.task.full.animation.CollapseAnimation;
 import se.nextapp.task.full.dialog.date_and_time.DateAndTimeDialog;
 import se.nextapp.task.full.misc.App;
 import se.nextapp.task.full.misc.Reminder;
+import se.nextapp.task.full.tutorial.TutorialState;
 import se.nextapp.task.full.view.TaskView;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
@@ -232,6 +233,10 @@ public class ReminderAdapter extends BaseAdapter {
 		}
 
 		view.setBackgroundColor(taskView.getActivity().getResources().getColor(colorId));
+
+		// Disables the spinners if the tutorial is not in the correct state
+		if (taskView.getActivity().getTutorialState() != TutorialState.SET_REMINDER && taskView.getActivity().getTutorialState() != TutorialState.END) spinner.setEnabled(false);
+		else spinner.setEnabled(true);
 
 		return view;
 	}

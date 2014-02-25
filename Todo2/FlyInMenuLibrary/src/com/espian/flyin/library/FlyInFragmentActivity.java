@@ -120,7 +120,7 @@ public abstract class FlyInFragmentActivity extends FragmentActivity implements 
 		return null;
 	}
 
-	public void remove(int id) {
+	public void removeWithChildren(int id) {
 
 	}
 
